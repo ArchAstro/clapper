@@ -1,0 +1,21 @@
+{
+  "name": "intern-promo",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "preview": "agenticvids preview src/index.tsx",
+    "render": "agenticvids render src/index.tsx --composition intern-promo --out out/intern-promo.mp4",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@agenticvids/cli": "workspace:*",
+    "@agenticvids/core": "workspace:*",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0"
+  }
+}

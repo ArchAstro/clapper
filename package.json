@@ -1,0 +1,17 @@
+{
+  "name": "agenticvids-monorepo",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.7.0",
+  "scripts": {
+    "build": "pnpm -r --filter './packages/*' run build",
+    "typecheck": "pnpm -r run typecheck",
+    "test": "pnpm -r run test",
+    "preview": "pnpm --filter intern-promo preview",
+    "render": "pnpm --filter intern-promo render"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.9.0"
+  }
+}

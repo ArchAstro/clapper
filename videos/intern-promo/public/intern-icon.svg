@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180">
+  <defs>
+    <linearGradient id="tile" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#453f34"/>
+      <stop offset="1" stop-color="#1d1912"/>
+    </linearGradient>
+    <linearGradient id="panel" x1="0" y1="0" x2="0.6" y2="1">
+      <stop offset="0" stop-color="#3f8060"/>
+      <stop offset="1" stop-color="#2a5642"/>
+    </linearGradient>
+    <filter id="drop" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="8" stdDeviation="11" flood-color="#000000" flood-opacity="0.38"/>
+    </filter>
+  </defs>
+  <rect width="180" height="180" rx="24" fill="url(#tile)"/>
+  <!-- The page: a site being written, headline in the brand pink. -->
+  <rect x="84" y="24" width="78" height="132" rx="8" fill="#f4f1e8"/>
+  <rect x="96" y="38" width="40" height="7" rx="3.5" fill="#e7a8bb"/>
+  <rect x="96" y="57" width="54" height="7" rx="3.5" fill="#ddd5c2"/>
+  <rect x="96" y="76" width="54" height="7" rx="3.5" fill="#ddd5c2"/>
+  <rect x="96" y="95" width="54" height="7" rx="3.5" fill="#ddd5c2"/>
+  <rect x="96" y="114" width="54" height="7" rx="3.5" fill="#ddd5c2"/>
+  <!-- The letter panel, floating over the page. -->
+  <path d="M 0 34 L 86 34 Q 96 34 96 44 L 96 136 Q 96 146 86 146 L 0 146 Z" fill="url(#panel)" filter="url(#drop)"/>
+  <g fill="#f4f1e8">
+    <rect x="26" y="49" width="44" height="13" rx="2"/>
+    <rect x="40" y="49" width="16" height="82" rx="2"/>
+    <rect x="26" y="118" width="44" height="13" rx="2"/>
+  </g>
+</svg>

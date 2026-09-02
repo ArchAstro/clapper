@@ -1,0 +1,23 @@
+{
+  "name": "showcase",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "preview": "agenticvids preview src/index.tsx",
+    "render": "agenticvids render src/index.tsx",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "render:all": "agenticvids render src/index.tsx -c ledger --out out/ledger.mp4 && agenticvids render src/index.tsx -c orbit --out out/orbit.mp4 && agenticvids render src/index.tsx -c nimbus --out out/nimbus.mp4 --crf 21 && agenticvids render src/index.tsx -c archdev --out out/archdev.mp4 --crf 20",
+    "review-kit": "node scripts/review-kit.mjs"
+  },
+  "dependencies": {
+    "@agenticvids/cli": "workspace:*",
+    "@agenticvids/core": "workspace:*",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0"
+  }
+}

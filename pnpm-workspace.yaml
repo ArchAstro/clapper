@@ -1,0 +1,6 @@
+packages:
+  - packages/*
+  - videos/*
+allowBuilds:
+  esbuild: true
+  ffmpeg-static: true

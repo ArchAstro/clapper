@@ -1,0 +1,21 @@
+import { chromium } from "playwright";
+const S = "/private/tmp/claude-501/-Users-calvin-projects-agenticvids/eb7a0f0d-0892-49fc-8ffd-46e64552b083/scratchpad";
+const browser = await chromium.launch();
+const page = await browser.newPage({ viewport: { width: 1600, height: 1000 } });
+const errors = [];
+page.on("pageerror", (e) => errors.push(e.message));
+page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
+await page.goto("http://127.0.0.1:4399/?composition=intern-promo&frame=700", { waitUntil: "networkidle" });
+await page.waitForSelector(".comp", { timeout: 30000 });
+await page.waitForTimeout(1500);
+await page.screenshot({ path: `${S}/studio-1.png` });
+await page.keyboard.press("Space");
+await page.waitForTimeout(1200);
+await page.keyboard.press("Space");
+await page.waitForTimeout(300);
+const time = await page.textContent(".time");
+await page.click(".comp:nth-child(3)"); // smoke
+await page.waitForTimeout(800);
+await page.screenshot({ path: `${S}/studio-2.png` });
+console.log(JSON.stringify({ time, comps: await page.$$eval(".comp", (els) => els.map((e) => e.textContent)), tracks: await page.$$eval(".track .bar", (els) => els.length), errors }));
+await browser.close();

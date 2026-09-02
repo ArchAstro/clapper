@@ -1,0 +1,31 @@
+/* tryintern.dev brand tokens (from services/node/intern-fe/app/styles.css) */
+:root {
+  --paper: #ffffff;
+  --paper-high: #fafaf8;
+  --ink: #1b1811;
+  --muted: #5f5a4c;
+  --line: #e9e9e4;
+  --accent: #2e5c46;
+  --accent-deep: #234a38;
+  --accent-ink: #eef4ef;
+  --accent-soft: #3e8763;
+  --rust: #a23c2a;
+  --dark: #15130c;
+  --dark-ink: #f0ece0;
+  --dark-muted: #a49d8b;
+  --dark-line: #2b2820;
+  --sage: #a9cbb6;
+  --font-display: "Instrument Serif", "Iowan Old Style", Georgia, serif;
+  --font-body: "Schibsted Grotesk", "Avenir Next", "Helvetica Neue", system-ui, sans-serif;
+  --font-mono: "Fragment Mono", "SF Mono", "Cascadia Mono", monospace;
+}
+.promo {
+  font-family: var(--font-body);
+  color: var(--ink);
+  background: var(--paper);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+.promo * { box-sizing: border-box; }
+.display { font-family: var(--font-display); font-weight: 400; letter-spacing: -0.01em; }
+.mono { font-family: var(--font-mono); }
