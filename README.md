@@ -105,7 +105,8 @@ registerRoot(Root);
    `ik2()` is two-bone inverse kinematics with an outward elbow; `useEyeBlink()` / `useBreath()` are deterministic idle motion.
    `<Bubble x y kind="speech"|"thought" tail at exitAt>` pops a bubble from its tail tip.
    `videos/showcase/src/archdev/person.tsx` is the reference rig built on them.
-7. **Media & readiness.** `<Img/>`, `<Video/>` (currentTime driven by the frame), `useFont()`, and `delayRender()/continueRender()`
+7. **Media & readiness.** `<Img/>`, `<Video/>` (currentTime driven by the frame; its soundtrack is mixed into the render unless
+   `audio={false}`, with `volume`/`fadeIn`/`fadeOut`), `useFont()`, and `delayRender()/continueRender()`
    for anything async: the harness waits for all handles, fonts and images before capturing a frame.
 8. **Determinism helpers.** `useRandom(seed)`, `random()`, `noise1d()`.
 9. **Formats.** `<Composition id="spot" formats={{ "9:16": { width: 1080, height: 1920 } }}>` also registers `spot@9:16` with the same
@@ -144,6 +145,8 @@ Lint rules (exit code 1 on errors): `blank-after-cut` (near-black frame right af
 `performance.now`, timers or rAF in the video's sources; append `// agenticvids-ok` to a line to allow it).
 The DOM rules sample three frames per scene where that scene is on screen alone, measure glyph ranges of the innermost
 copy elements, and only judge boxes that hold still for three frames, so entrances, exits and wipes are not "collisions".
+They only see elements tagged `data-copy` (the core `Copy`, `Reveal`, `Eyebrow` and `Bubble` set it); add `data-copy=""` to your
+own headline elements to opt in. The brief says so when a composition has none.
 
 ## Studio
 

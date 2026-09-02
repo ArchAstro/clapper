@@ -348,7 +348,8 @@ export async function reviewComposition(o: ReviewOptions): Promise<ReviewResult>
   // 6. brief
   const files = fs.readdirSync(dir).sort();
   const sceneTable = scenes.map((s) => `| ${s.name} | ${s.start} | ${(s.start / fps).toFixed(2)} s | ${s.end - s.start} (${((s.end - s.start) / fps).toFixed(1)} s) |`).join("\n");
-  const lintText = `${o.lint === false ? "- skipped (--no-lint)" : `- checked ${cuts.length} cut(s) for blank frames, ${checked.copyBoxes} copy element(s) across ${checked.frames} sampled frame(s) for safe-area/overlap, and the source for non-determinism`}\n${issues.map((i) => `- **${i.level}** \`${i.rule}\`${i.frame !== undefined ? ` @${i.frame}` : ""}${i.scene ? ` [${i.scene}]` : ""}: ${i.message}`).join("\n") || "- clean"}`;
+  const optIn = o.lint !== false && checked.copyBoxes === 0 ? "\n- **no copy elements found**: the safe-area/overlap rules only see elements tagged `data-copy` (core `Copy`, `Reveal`, `Eyebrow`, `Bubble` do this); add `data-copy=\"\"` to your own headline elements to opt in" : "";
+  const lintText = `${o.lint === false ? "- skipped (--no-lint)" : `- checked ${cuts.length} cut(s) for blank frames, ${checked.copyBoxes} copy element(s) across ${checked.frames} sampled frame(s) for safe-area/overlap, and the source for non-determinism`}${optIn}\n${issues.map((i) => `- **${i.level}** \`${i.rule}\`${i.frame !== undefined ? ` @${i.frame}` : ""}${i.scene ? ` [${i.scene}]` : ""}: ${i.message}`).join("\n") || "- clean"}`;
   const brief = `# Review brief: ${meta.id}
 
 - video: \`${path.relative(o.projectDir, video)}\` · ${meta.width}×${meta.height} · ${fps} fps · ${total} frames (${(total / fps).toFixed(1)} s)${audio ? "" : " · **no audio track**"}

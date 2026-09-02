@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, type CSSProperties, type ImgHTMLAttributes, type VideoHTMLAttributes } from "react";
 import { continueRender, delayRender } from "./registry";
+import { Audio } from "./audio";
 import { useFps, useFrame, useRenderMode } from "./timeline";
 
 /** Resolve a file in your project's `public/` folder. */
@@ -33,13 +34,18 @@ export interface VideoProps extends Omit<VideoHTMLAttributes<HTMLVideoElement>, 
   /** Seconds to skip into the file. */
   startFrom?: number;
   playbackRate?: number;
+  /** Mix the file's own audio into the render (default true). The <video> element itself is always muted in the harness. */
+  audio?: boolean;
+  volume?: number;
+  fadeIn?: number;
+  fadeOut?: number;
 }
 
 /**
  * <video> whose currentTime is a function of the frame, so renders are
  * deterministic. Audio of the video is NOT mixed; pair with <Audio src={sameFile}/>.
  */
-export function Video({ src, startFrom = 0, playbackRate = 1, style, ...rest }: VideoProps) {
+export function Video({ src, startFrom = 0, playbackRate = 1, audio = true, volume = 1, fadeIn = 0, fadeOut = 0, style, ...rest }: VideoProps) {
   const ref = useRef<HTMLVideoElement>(null);
   const frame = useFrame();
   const fps = useFps();
@@ -64,7 +70,12 @@ export function Video({ src, startFrom = 0, playbackRate = 1, style, ...rest }: 
     el.addEventListener("error", finish, { once: true });
     return () => finish();
   }, [src, target, fps]);
-  return <video ref={ref} src={src} muted playsInline preload="auto" style={style} {...rest} />;
+  return (
+    <>
+      {audio && <Audio src={src} startFrom={startFrom} playbackRate={playbackRate} volume={volume} fadeIn={fadeIn} fadeOut={fadeOut} name={`video ${src.split("/").pop()}`} />}
+      <video ref={ref} src={src} muted playsInline preload="auto" style={style} {...rest} />
+    </>
+  );
 }
 
 /** Load a font from a URL and block rendering until it is ready. */
