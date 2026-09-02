@@ -1,59 +1,102 @@
-# clapper
+# Clapper
 
-Write videos in React. Render them to MP4.
+Write videos in React. Render them to MP4. Review them like a studio would.
 
-Every frame is a pure function of `frame`. You compose scenes with ordinary React
-(hooks, context, CSS, SVG, third-party libraries, KaTeX…), a timeline of
-`<Sequence>`s positions them in time, and a headless-Chromium harness renders
-each frame deterministically and pipes it into ffmpeg. Sounds are React
-elements too: they register cues that get mixed into the final file.
+Every frame is a pure function of `useFrame()`. You compose scenes with ordinary React (hooks, context, CSS, SVG, any
+library, KaTeX), a scene plan positions them in time, sounds are React elements that register cues, and a headless
+Chromium harness renders each frame deterministically into ffmpeg. The same entry opens in a browser editor for scrubbing,
+and one command turns a render into a critique kit a reviewer (human or agent) can judge frame by frame.
 
 ```
-videos/intern-promo/src/index.tsx     packages/cli (Node)                    output
-┌──────────────────────────┐   ┌───────────────────────────────────────┐   ┌──────────┐
-│ registerRoot(Root)       │   │ vite build ─► serve ─► Playwright     │   │  .mp4    │
-│  <Composition id=… />    │──►│  per frame: setFrame(n) → screenshot  │──►│  h264 +  │
-│   <Sequence>/<Camera>/…  │   │  PNG stream ─► ffmpeg (libx264)       │   │  aac     │
-│   <Tone>/<Audio> cues    │   │  cues ─► offline synth + amix ─► mux  │   │          │
-└──────────────────────────┘   └───────────────────────────────────────┘   └──────────┘
-          ▲
-   `clapper preview` mounts the same entry in the studio: scrub, play, tracks, live audio
+videos/<name>/src/index.tsx            packages/cli (Node)                        output
+┌──────────────────────────┐   ┌───────────────────────────────────────────┐   ┌──────────┐
+│ registerRoot(Root)       │   │ vite build ─► serve ─► Playwright         │   │  .mp4    │
+│  <Composition scenes=…/> │──►│  per frame: setFrame(n) → screenshot      │──►│  h264 +  │
+│   <Scenes>/<Camera>/…    │   │  JPEG stream ─► ffmpeg (libx264)          │   │  aac     │
+│   <Tone>/<Pattern>/<Duck>│   │  cues ─► offline stereo synth ─► mix ─► mux│   │          │
+└──────────────────────────┘   └───────────────────────────────────────────┘   └──────────┘
+          ▲                                     │
+   `clapper preview` = the studio               └─► `clapper review` = contact sheet, cut strips, loudness, lint, brief.md
 ```
+
+## What is in the box
+
+1. **`@clapper/core`** — the React runtime: timeline and scenes, tweens and springs, camera, text effects, transitions,
+   LaTeX, media, an audio DSL synthesized offline (tones, plucks, FM piano, patterns, drones, keystrokes, ducking),
+   hand-drawn "boiling ink" primitives, and two character rigs. Browser code only.
+2. **`@clapper/cli`** — `clapper render · still · preview · compositions · cues · review · doctor`. Vite bundling,
+   Playwright frame capture, ffmpeg encoding, audio synthesis and mixing. Runs its TypeScript natively on Node 24+.
+3. **The studio** — a browser editor: live thumbnails, viewport overlays, an NLE timeline with lanes per audio kind,
+   an inspector with cue preview, and a scratch panel that compiles TSX in the browser.
+4. **The review loop** — `clapper review` writes the kit and a brief with a reviewer prompt; the lint catches blank or flat
+   frames after cuts, copy collisions, copy outside the safe area, and non-determinism in sources.
+5. **Reference projects** — `videos/showcase` (six agency-style spots incl. the ArchDev character films), `videos/intern-promo`,
+   `videos/archdev-site` (product pages), and `videos/_template` to start from.
+
+## Install
+
+```bash
+pnpm install                                   # Node 24+, pnpm 11; allowBuilds lets ffmpeg-static and esbuild install
+cd packages/cli && pnpm exec playwright install chromium
+pnpm exec clapper doctor                       # Node, Chromium, ffmpeg (libx264, aac, filters), React resolution
+pnpm typecheck && pnpm test                    # 36 unit tests: math, scenes, rigs, sketch, offline synth, ducking
+```
+
+The repository is a pnpm workspace; nothing is published. Video projects depend on the packages with `workspace:*`.
+
+## Your first video in ten minutes
+
+```bash
+cp -r videos/_template videos/hello && cd videos/hello   # then set "name" in package.json
+pnpm install
+pnpm preview                                   # studio at http://127.0.0.1:4321
+```
+
+Open `src/index.tsx`. The template is the whole pattern in 90 lines:
+
+1. **`defineScenes`** owns time. `{ hook: { seconds: 2.5 }, proof: { seconds: 4, transition: { type: "fade", duration: "0.4s" } } }`
+   gives `scenes.total`, `scenes.start("proof")`, `scenes.cuts()`. Pass it to `<Composition scenes={…}>` and render with
+   `<Scenes plan>`. Never hand-sum starts; every timing prop takes frames or `"1.2s"`.
+2. **Scenes are components.** `useFrame()` inside a scene is local. Anything on screen is a function of it.
+3. **One `<Score/>`** at the root holds the sound: a `<Drone>` bed, a `<Pattern>` motif on the scene's start frame, a
+   `<Thump>` on the cut, a `<Duck>` under the end card. Cues are elements, so they live next to what they score.
+4. **`data.ts`** holds every number and string the copy uses. **`theme.css`** holds tokens on a root class.
+
+Then iterate:
+
+```bash
+pnpm still -- --scene hook                     # first, middle, last frame of a scene → out/stills
+pnpm exec clapper still src/index.tsx -c spot --scene proof --every 10
+pnpm review                                    # out/review/spot/: contact-sheet.png, cut-*.png, spectrogram, lint, brief.md
+pnpm render                                    # out/spot.mp4
+pnpm exec clapper render src/index.tsx -c spot@9:16   # the template registers a 9:16 variant; useFormat() restages
+```
+
+Read `out/review/spot/brief.md`: it has the scene table, what each file shows, the lint results, and a reviewer prompt.
+Hand that folder to a reviewer (a subagent works well: creative director, audio director, feed strategist), apply the
+frame-referenced fixes, re-render, repeat. Two or three rounds is typical for showcase-grade work.
+
+## Rules that keep renders deterministic
+
+- Everything on screen is a pure function of `useFrame()`. No wall-clock time, timers or `Math.random` (use `useRandom`,
+  `noise1d`). The lint flags violations.
+- A composition that throws fails the render, and the error names the scene and local frame.
+- Give every hard-cut scene something on screen at local frame 0 (an eyebrow, a rule, a caption box). The lint flags
+  blank and flat first frames.
+- Sounds register while their sequence is mounted; the renderer visits every frame, so that is fine.
 
 ## Layout
 
 | Path | What |
 | --- | --- |
-| `packages/core` | `@clapper/core` — the React runtime (timeline, sequences, tweens, springs, camera, audio, text effects, transitions, LaTeX, media). Browser code only. |
-| `packages/cli` | `@clapper/cli` — `clapper render / still / preview / compositions`. Vite bundling, Playwright frame capture, ffmpeg encoding, audio synthesis and mixing. |
-| `videos/intern-promo` | The tryintern.dev promo built with it (`pnpm render`, `pnpm preview`). |
-| `videos/showcase` | Three agency-style spots for made-up SaaS products (Ledger, Orbit, Nimbus) with synthesized sound, each iterated against a creative-director review loop. `src/kit.tsx` is the reusable motion vocabulary. |
-
-## Quick start
-
-```bash
-pnpm install                       # allowBuilds in pnpm-workspace.yaml lets ffmpeg-static + esbuild run their installs
-cd packages/cli && pnpm exec playwright install chromium
-
-cd videos/intern-promo
-pnpm preview                       # studio at http://127.0.0.1:4321 — space play, ←/→ frame, shift ×10, l loop, m mute
-pnpm render                        # → out/intern-promo.mp4 (~57s, 1080p30, AAC)
-pnpm exec clapper still src/index.tsx -c intern-promo --frame 100,226,392 --out out/stills
-pnpm exec clapper compositions src/index.tsx
-```
-
-A video project is any folder with a `package.json`, a `public/` for assets
-(`staticFile("x.png")`) and an entry that calls `registerRoot`:
-
-```tsx
-import { Composition, registerRoot } from "@clapper/core";
-import { Promo } from "./promo";
-
-function Root() {
-  return <Composition id="promo" component={Promo} width={1920} height={1080} fps={30} durationInSeconds={57} />;
-}
-registerRoot(Root);
-```
+| `packages/core` | `@clapper/core`: runtime, audio DSL, sketch primitives, `@clapper/core/rigs` (Person, Scribble), `/latex`, `/player` (studio), `/harness`. |
+| `packages/cli` | `@clapper/cli`: the `clapper` command, renderer, offline synth and mixer, review kit and lint, doctor. `test/` has the unit tests, `review-check.mjs` (lint fixture), `studio-check.mjs`, `dom-probe.mjs`. |
+| `videos/_template` | Starter project: scenes, score, data, theme, scripts, a 9:16 variant. |
+| `videos/showcase` | Ledger, Orbit, Nimbus (agency spots), ArchDev v1/v2 (character film with a continuous score), ArchDev v3 (rage-comic cut). `README.md` has the review scores per round. |
+| `videos/intern-promo` | The tryintern.dev promo (57 s). |
+| `videos/archdev-site` | ArchDev product-page compositions (hero, plans, prs). |
+| `docs/` | `friction-log.md` (what hurt and what was built for it), `archdev-audio-audit.md` (measured before/after of the audio engine). |
+| `CLAUDE.md` | The working rules for agents in this repo. |
 
 ## The model
 
@@ -181,11 +224,6 @@ own headline elements to opt in. The brief says so when a composition has none.
 
 `packages/cli/test/studio-check.mjs` drives the studio headlessly (screenshots, playback, overlays, a scratch compile) against
 `clapper preview … --port 4399`.
-
-## Starting a video
-
-Copy `videos/_template` to `videos/<name>`: `data.ts` for every number and string, `defineScenes()` for timing, one `<Score/>`,
-a theme class with tokens, and scripts for preview / still / review / render. It registers a `9:16` format variant as an example.
 
 ## Extending
 
