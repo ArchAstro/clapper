@@ -76,7 +76,12 @@ registerRoot(Root);
 4. **Camera.** `<Camera keyframes={[{frame:0, zoom:1}, {frame:40, x:600, y:300, zoom:2.5}]}>` pans/zooms/rotates over
    children laid out in composition space; zoom interpolates in log space; unspecified values inherit.
 5. **Sound.** `<Audio src startFrom volume fadeIn fadeOut loop playbackRate/>` for files; `<Tone freq="C5" wave attack decay sustain release glide/>`,
-   `<Chime notes/>`, `<Whoosh/>`, `<Click/>`, `<Pad notes/>`, `<Thump/>`, `<Riser/>`, `<Pop/>`, `<Arp notes step/>`, `<Alert/>` synthesized with no assets. A cue starts at the enclosing
+   `<Chime notes/>`, `<Whoosh/>`, `<Click/>`, `<Pad notes/>`, `<Thump/>`, `<Riser/>`, `<Pop/>`, `<Arp notes step/>`, `<Alert/>` synthesized with no assets.
+   Music and foley: `<Pluck>` (Karplus–Strong), `<EPiano>` (FM), `<Chord strum>`, `<Pattern steps bpm>` (step sequencer), `<Drone>`, `<RoomTone>`,
+   `<Keystroke>` and `<Typing text>` (layered mechanical keys synced to a Typewriter). Every tone takes `pan`, `spread`, `reverb`, `cutoff`, `lfo`, `detune`;
+   the offline mixer is stereo with a reverb bus. `automation={{ volume: [[frame, gain]…], cutoff: [[frame, hz]…] }}` automates a
+   long cue across scene cuts (put beds in a root-level `<Score/>` so they never restart at a cut). `agenticvids cues <entry> -c <id>`
+   prints the cue inventory; `videos/showcase/scripts/audio-cuts.mjs` prints short-term loudness around cuts. A cue starts at the enclosing
    sequence's start + `at`. The studio plays cues live (Web Audio); the renderer synthesizes tones offline in Node,
    sums them into one track, and mixes file cues with ffmpeg (`adelay`/`afade`/`amix`).
 6. **Text & SVG.** `<Typewriter/>` (+ `typedLength()` to sync clicks), `<SplitText by="word|char|line"/>`, `<Counter/>`,

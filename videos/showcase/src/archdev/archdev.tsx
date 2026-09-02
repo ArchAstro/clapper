@@ -1,7 +1,6 @@
-import { AbsoluteFill, Alert, Animate, Arp, Camera, Chime, Click, Counter, Draw, Easing, Img, Pad, Pop, Riser, Sequence, SpringPresets, Thump, Tone, TransitionSeries, Typewriter, Whoosh, interpolate, noise1d, progress, spring, staticFile, transitionSeriesLength, useFps, useFrame } from "@agenticvids/core";
+import { AbsoluteFill, Animate, Camera, Chord, Counter, Draw, Drone, EPiano, Easing, Img, Pattern, Pluck, Riser, RoomTone, Sequence, SpringPresets, Thump, Tone, TransitionSeries, Typewriter, Typing, Whoosh, interpolate, noise1d, progress, spring, staticFile, transitionSeriesLength, useFps, useFrame } from "@agenticvids/core";
 import type { CSSProperties, ReactNode } from "react";
 import { Eyebrow, Grain, Reveal, Vignette, EXPO, INOUT, QUINT } from "../kit";
-import { TypeClicks } from "../nimbus/typeclicks";
 import { Archie, Desk, Person, POSES, usePose, type ArchieState, type Pose } from "./person";
 
 /**
@@ -34,7 +33,7 @@ export function ArchDev() {
 
 /* ------------------------------ furniture ------------------------------- */
 
-function Room({ children, dark = 0 }: { children?: ReactNode; dark?: number }) {
+export function Room({ children, dark = 0 }: { children?: ReactNode; dark?: number }) {
   return (
     <AbsoluteFill style={{ background: `radial-gradient(90% 70% at 50% 62%, #2a3237 0%, #1e2326 55%, #171b1e 100%)` }}>
       <div style={{ position: "absolute", inset: 0, backgroundImage: "repeating-linear-gradient(0deg, rgba(211,198,170,0.035) 0 1px, transparent 1px 4px)", opacity: 0.8 }} />
@@ -46,10 +45,10 @@ function Room({ children, dark = 0 }: { children?: ReactNode; dark?: number }) {
   );
 }
 
-const DESK = { x: 960, y: 730, s: 1.45 };
+export const DESK = { x: 960, y: 730, s: 1.45 };
 
 /** Person + desk + laptop, all in one place so layering is right. */
-function Workstation({ pose, typing = 0, screen, x = DESK.x, y = DESK.y, s = DESK.s, screenGlow = 1 }: { pose: Pose; typing?: number; screen?: ReactNode; x?: number; y?: number; s?: number; screenGlow?: number }) {
+export function Workstation({ pose, typing = 0, screen, x = DESK.x, y = DESK.y, s = DESK.s, screenGlow = 1 }: { pose: Pose; typing?: number; screen?: ReactNode; x?: number; y?: number; s?: number; screenGlow?: number }) {
   const sw = 172 * s, sh = 96 * s;
   const left = x - sw / 2, top = y - 104 * s;
   return (
@@ -69,23 +68,23 @@ function Workstation({ pose, typing = 0, screen, x = DESK.x, y = DESK.y, s = DES
   );
 }
 
-function Copy({ children, at, muted = false, accent = false, exitAt, size = 56, top = 820, plate = false }: { children: ReactNode; at: number; muted?: boolean; accent?: boolean; exitAt?: number; size?: number; top?: number; plate?: boolean }) {
+export function Copy({ children, at, muted = false, accent = false, exitAt, size = 56, top = 820, plate = false, z }: { children: ReactNode; at: number; muted?: boolean; accent?: boolean; exitAt?: number; size?: number; top?: number; plate?: boolean; z?: number }) {
   const color = accent ? "var(--amber)" : muted ? "var(--muted)" : "var(--fg)";
   return (
-    <Reveal at={at} duration={26} exitAt={exitAt} className="display" style={{ position: "absolute", left: plate ? 100 : 120, top, fontSize: size, color }}>
+    <Reveal at={at} duration={26} exitAt={exitAt} className="display" style={{ position: "absolute", left: plate ? 100 : 120, top, fontSize: size, color, zIndex: z }}>
       {plate ? <span style={{ display: "inline-block", padding: "6px 20px", background: "rgba(30,35,38,0.9)", borderRadius: 10, boxShadow: "0 12px 40px rgba(0,0,0,0.5)" }}>{children}</span> : children}
     </Reveal>
   );
 }
 
-function Clock({ time, at = 0 }: { time: string; at?: number }) {
+export function Clock({ time, at = 0 }: { time: string; at?: number }) {
   return <Animate from={{ opacity: 0 }} at={at} duration={10} className="mono" style={{ position: "absolute", right: 120, top: 92, fontSize: 22, color: "var(--muted)", letterSpacing: "0.12em" }}>{time}</Animate>;
 }
 
-const SPIN = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏";
+export const SPIN = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏";
 
 /* --------------------------------- 1 · open ------------------------------ */
-function Open() {
+export function Open({ bed = true, zoom = 1, hook = false }: { bed?: boolean; zoom?: number; hook?: boolean }) {
   const frame = useFrame();
   const pose = usePose([
     { frame: 0, pose: POSES.typing },
@@ -97,31 +96,46 @@ function Open() {
     { frame: 92, pose: { ...POSES.typing, headTilt: 6, mouth: 0.45 } },
   ]);
   const cmd = "archdev run --agents 12";
+  const typeAt = hook ? 2 : 16;
+  const claimAt = hook ? 60 : 74;
   return (
     <Room>
-      <Pad notes={["D2", "A2"]} wave="sine" volume={0.05} fadeIn={20} fadeOut={10} />
-      <TypeClicks text={cmd} at={16} cps={26} every={1} volume={0.05} freq={1500} />
-      <Pop at={74} freq={1100} volume={0.14} />
-      <Workstation
-        pose={pose}
-        typing={frame > 12 && frame < 70 ? 1 : 0}
-        screen={
-          <div className="mono">
-            <div style={{ color: "var(--muted)" }}>~/work/acme</div>
-            <div>
-              <span style={{ color: "var(--green)" }}>$ </span>
-              <Typewriter text={cmd} at={16} cps={26} cursorAfter={false} />
+      {bed && (
+        <>
+          <RoomTone volume={0.022} />
+          <Drone notes={["D2"]} volume={0.03} cutoff={300} fadeIn={24} fadeOut={12} />
+          <Pattern bpm={84} step={0.5} at={4} steps="D3 . A3 . D4 . F4 . E4 . A3 . D4 . C4 ." wave="pluck" brightness={0.35} volume={0.2} reverb={0.35} width={0.3} />
+        </>
+      )}
+      <Typing text={cmd} at={typeAt} cps={26} volume={0.2} />
+      <EPiano note="A4" at={claimAt} ring={1.6} volume={0.16} reverb={0.45} />
+      <Camera keyframes={[{ frame: 0, x: 960, y: 560, zoom }]}>
+        <Workstation
+          pose={pose}
+          typing={frame >= typeAt - 2 && frame < claimAt - 4 ? 1 : 0}
+          screen={
+            <div className="mono">
+              <div style={{ color: "var(--muted)" }}>~/work/acme</div>
+              <div>
+                <span style={{ color: "var(--green)" }}>$ </span>
+                <Typewriter text={cmd} at={typeAt} cps={26} cursorAfter={false} />
+              </div>
+              <Sequence from={claimAt} layout="none" name="claimed">
+                <div style={{ color: "var(--green)" }}>✓ 12 agents claimed 12 tasks</div>
+                <div style={{ color: "var(--muted)" }}>overseer attached · worktrees ready</div>
+              </Sequence>
             </div>
-            <Sequence from={74} layout="none" name="claimed">
-              <div style={{ color: "var(--green)" }}>✓ 12 agents claimed 12 tasks</div>
-              <div style={{ color: "var(--muted)" }}>overseer attached · worktrees ready</div>
-            </Sequence>
-          </div>
-        }
-      />
-      <Animate from={{ opacity: 0 }} at={4} duration={12} style={{ position: "absolute", left: 120, top: 92 }}>
-        <Eyebrow color="var(--muted)">22:47 · one developer · twelve agents · one plan</Eyebrow>
+          }
+        />
+      </Camera>
+      <Animate from={{ opacity: 0 }} at={hook ? 0 : 4} duration={hook ? 4 : 12} style={{ position: "absolute", left: 120, top: 92 }}>
+        <Eyebrow color="var(--muted)" style={hook ? { fontSize: 26 } : undefined}>{hook ? "22:47 · tonight" : "22:47 · one developer · twelve agents · one plan"}</Eyebrow>
       </Animate>
+      {hook && (
+        <>
+          <Copy at={6} exitAt={78} size={60} z={8}>One developer. Twelve agents.</Copy>
+        </>
+      )}
       <Clock time={`22:47:${String(10 + Math.floor(frame / 30)).padStart(2, "0")}`} at={4} />
     </Room>
   );
@@ -146,7 +160,7 @@ const PLAN_LINES = (() => {
   return out;
 })();
 
-function Sheet({ height, width = 340 }: { height: number; width?: number }) {
+export function Sheet({ height, width = 340 }: { height: number; width?: number }) {
   const frame = useFrame();
   const lineH = 19;
   const visible = Math.min(PLAN_LINES.length, Math.ceil(height / lineH));
@@ -161,7 +175,7 @@ function Sheet({ height, width = 340 }: { height: number; width?: number }) {
   );
 }
 
-function Plan() {
+export function Plan({ bed = true, zoomStart = 1 }: { bed?: boolean; zoomStart?: number }) {
   const frame = useFrame();
   const pose = usePose([
     { frame: 0, pose: POSES.typing },
@@ -176,13 +190,20 @@ function Plan() {
   for (let f = 12; f < 150; f += 3) ticks.push(f);
   return (
     <Room>
-      <Thump at={0} volume={0.35} from={90} to={30} />
-      <Pad notes={["D2", "A2"]} wave="sine" volume={0.05} fadeIn={0} fadeOut={20} />
-      <Whoosh at={6} from={200} to={1400} volume={0.12} />
-      <Riser at={40} durationInFrames={110} volume={0.16} from={150} to={2600} />
-      {ticks.map((f, i) => <Click key={f} at={f} volume={0.03 + (i / ticks.length) * 0.03} freq={1600 + (i % 4) * 200} name={`pl${f}`} />)}
-      <Thump at={156} volume={0.55} from={110} to={38} />
-      <Camera keyframes={[{ frame: 0, zoom: 1 }, { frame: 24, zoom: 1 }, { frame: 120, x: 960, y: 470, zoom: 0.74, easing: INOUT }]}>
+      {bed && (
+        <>
+          <Thump at={0} volume={0.3} from={90} to={30} />
+          <RoomTone volume={0.02} />
+          <Drone notes={["D2", "A2"]} volume={0.03} cutoff={260} fadeIn={0} fadeOut={20} />
+          <Pattern bpm={84} step={0.5} at={6} steps="D4 . C4 . A3 . G3 . F3 . E3 . D3 . C3 . D3 . . . A2 . . ." wave="pluck" brightness={0.3} volume={0.2} reverb={0.4} width={0.3} repeat={2} />
+        </>
+      )}
+      <Whoosh at={6} from={200} to={1400} volume={0.1} />
+      <Riser at={40} durationInFrames={110} volume={0.11} from={150} to={2600} />
+      {ticks.map((f, i) => <Tone key={f} at={f} durationInFrames={2} freq={1100 + (i % 4) * 150} wave="noise" attack={0.001} decay={0.018} sustain={0} release={0.01} volume={0.02 + (i / ticks.length) * 0.025} pan={-0.35} name={`pl${f}`} />)}
+      <Thump at={156} volume={0.5} from={110} to={38} />
+      <Pluck note="D2" at={156} ring={3} brightness={0.3} volume={0.34} reverb={0.5} />
+      <Camera keyframes={[{ frame: 0, x: 960, y: zoomStart === 1 ? 540 : 560, zoom: zoomStart }, { frame: 24, x: 960, y: zoomStart === 1 ? 540 : 560, zoom: zoomStart }, { frame: 120, x: 960, y: 470, zoom: 0.74, easing: INOUT }]}>
         <div style={{ position: "absolute", left: -700, right: -700, top: -1400, bottom: -300, background: "radial-gradient(60% 40% at 50% 60%, #262e33, #1e2326 70%)" }} />
         <div style={{ position: "absolute", left: -700, right: -700, top: 866, height: 1, background: "rgba(211,198,170,0.12)" }} />
         <Sheet height={sheetH} />
@@ -202,7 +223,7 @@ function Plan() {
 }
 
 /* ------------------------------ 3 · the agents --------------------------- */
-const WIN: { x: number; y: number; id: number }[] = [
+export const WIN: { x: number; y: number; id: number }[] = [
   { x: 150, y: 150, id: 1 }, { x: 520, y: 120, id: 2 }, { x: 1300, y: 130, id: 3 }, { x: 1560, y: 300, id: 4 },
   { x: 120, y: 420, id: 5 }, { x: 1540, y: 560, id: 6 }, { x: 330, y: 640, id: 7 }, { x: 1290, y: 400, id: 8 },
   { x: 720, y: 90, id: 9 }, { x: 1000, y: 110, id: 10 }, { x: 160, y: 760, id: 11 }, { x: 1420, y: 780, id: 12 },
@@ -217,7 +238,7 @@ const LOGS = [
   ["migrating users", "backfill 41%", "backfill 41%"],
   ["opened PR #409", "CI queued", "CI queued (4 min)"],
 ];
-function AgentWindow({ i, at, state, jitter }: { i: number; at: number; state: ArchieState; jitter: number }) {
+export function AgentWindow({ i, at, state, jitter }: { i: number; at: number; state: ArchieState; jitter: number }) {
   const frame = useFrame();
   const fps = useFps();
   const w = WIN[i];
@@ -247,7 +268,7 @@ function AgentWindow({ i, at, state, jitter }: { i: number; at: number; state: A
   );
 }
 
-function Agents() {
+export function Agents({ bed = true, denseAlerts = true }: { bed?: boolean; denseAlerts?: boolean }) {
   const frame = useFrame();
   const arcL = { ...POSES.swivelL, lhx: -340, lhy: -300, headTurn: -0.5 }; // left hand mid-flight, biased up
   const arcR = { ...POSES.swivelR, rhx: 270, rhy: -330, headTurn: 0.5 };
@@ -277,20 +298,26 @@ function Agents() {
     return "working";
   };
   const pops: number[] = [];
-  for (let i = 0; i < 20; i++) pops.push(i < 12 ? 6 + i * 7 : 118 + (i - 12) * 6);
+  for (let i = 0; i < 20; i++) pops.push(i < 12 ? 6 + i * 7 : 118 + (i - 12) * 6 + (i === 17 ? 2 : 0)); // keep pops off the alert frames
   return (
     <Room>
-      <Thump at={0} volume={0.5} from={120} to={40} />
-      <Pad notes={["D2", "A2"]} wave="sine" volume={0.045} fadeOut={16} />
-      <Arp notes={["D4", "F4", "A4", "C5"]} step={6} repeat={10} at={4} volume={0.05} wave="triangle" />
-      <Arp notes={["A3", "C4", "E4", "G4", "A4"]} step={5} repeat={9} at={48} volume={0.045} wave="sine" name="arp2" />
-      <Arp notes={["D5", "E5", "F5", "G5", "A5", "Bb5"]} step={4} repeat={7} at={96} volume={0.035} wave="square" name="arp3" />
-      {pops.map((f, i) => <Pop key={i} at={f} freq={700 + (i % 5) * 90} volume={0.12} name={`w${i}`} />)}
-      <Alert at={132} volume={0.26} />
-      <Alert at={140} volume={0.2} name="a2" />
-      <Alert at={148} volume={0.24} name="a3" />
-      <Thump at={172} volume={0.6} from={140} to={42} />
-      <Riser at={S3 - 40} durationInFrames={40} volume={0.18} />
+      {bed && (
+        <>
+          <Thump at={0} volume={0.45} from={120} to={40} />
+          <RoomTone volume={0.02} />
+          <Drone notes={["D2", "A2"]} volume={0.045} cutoff={420} lfo={{ rate: 0.6, depth: 0.4 }} fadeOut={16} />
+          <Pattern bpm={84} step={0.5} at={2} steps="D3 F3 A3 C4 D4 C4 A3 F3" wave="pluck" brightness={0.55} volume={0.25} reverb={0.3} width={0.4} repeat={7} name="bass" />
+          <Pattern bpm={84} step={0.25} at={44} steps="D5 F5 A5 C6 E6 C6 A5 F5" wave="pluck" brightness={0.8} volume={0.15} reverb={0.35} width={0.7} repeat={9} name="high" />
+          <Pattern bpm={84} step={0.25} at={96} steps="D4 . . . F4 . . . A4 . . . Ab4! . . ." wave="epiano" volume={0.18} reverb={0.3} width={0.3} repeat={4} name="stabs" />
+        </>
+      )}
+      {pops.map((f, i) => <EPiano key={i} at={f} note={["D5", "F5", "A5", "C6", "E6"][i % 5]} ring={0.45} volume={0.11} reverb={0.35} pan={(WIN[i].x - 960) / 1200} name={`w${i}`} />)}
+      <Chord at={132} notes={["Eb5", "A5"]} wave="pluck" ring={0.7} volume={0.3} reverb={0.3} width={0.2} name="alert1" />
+      {denseAlerts && <Chord at={140} notes={["E5", "Bb5"]} wave="pluck" ring={0.7} volume={0.26} reverb={0.3} width={0.2} name="alert2" />}
+      <Chord at={148} notes={["F5", "B5"]} wave="pluck" ring={0.9} volume={0.3} reverb={0.3} width={0.2} name="alert3" />
+      <Thump at={172} volume={0.55} from={140} to={42} />
+      <Pluck note="D2" at={172} ring={2.5} brightness={0.25} volume={0.3} reverb={0.5} name="boom" />
+      {bed && <Riser at={S3 - 40} durationInFrames={40} volume={0.14} />}
       <Workstation pose={pose} typing={frame < 22 ? 1 : 0} screen={<div className="mono"><div style={{ color: "var(--muted)" }}>overseer · 12 running</div><div>{SPIN[frame % 10]} tail -f agents/*.log</div><div style={{ color: "var(--muted)" }}>{Math.floor(frame * 7.3)} lines/s</div></div>} />
       {WIN.map((_, i) => (
         <AgentWindow key={i} i={i} at={pops[i]} state={states(i)} jitter={jitter} />
@@ -308,7 +335,7 @@ function Agents() {
 }
 
 /* ------------------------------- 4 · the blank --------------------------- */
-function Blank() {
+export function Blank({ bed = true }: { bed?: boolean }) {
   const frame = useFrame();
   const pose = usePose([
     { frame: 0, pose: POSES.hollow },
@@ -322,13 +349,18 @@ function Blank() {
   const thought = "…what was agent 7 doing?";
   return (
     <Room dark={0.35}>
-      <Pad notes={["D1", "A1"]} wave="sine" volume={0.06} fadeIn={6} fadeOut={30} />
-      <Tone at={30} durationInFrames={S4 - 30} freq={2400} wave="sine" attack={1.4} decay={0.2} sustain={1} release={0.6} volume={0.035} fadeOut={20} name="tinnitus" />
-      <Thump at={18} volume={0.32} from={80} to={36} name="hb1" />
-      <Thump at={28} volume={0.2} from={70} to={34} name="hb2" />
-      <Thump at={78} volume={0.32} from={80} to={36} name="hb3" />
-      <Thump at={88} volume={0.2} from={70} to={34} name="hb4" />
-      <TypeClicks text={thought} at={62} cps={16} every={1} volume={0.04} freq={1300} />
+      {bed && (
+        <>
+          <RoomTone volume={0.02} cutoff={380} />
+          <Drone notes={["D1"]} wave="sine" volume={0.03} cutoff={140} lfo={{ rate: 0.12, depth: 0.5 }} spread={0} reverb={0.2} fadeIn={6} fadeOut={30} />
+        </>
+      )}
+      <EPiano note="E6" at={34} ring={4.5} volume={0.04} reverb={0.7} pan={0.4} name="ring" />
+      <Thump at={18} volume={0.28} from={80} to={36} name="hb1" />
+      <Thump at={28} volume={0.17} from={70} to={34} name="hb2" />
+      <Thump at={78} volume={0.28} from={80} to={36} name="hb3" />
+      <Thump at={88} volume={0.17} from={70} to={34} name="hb4" />
+      <Typing text={thought} at={62} cps={16} volume={0.07} />
       <Workstation
         pose={pose}
         screenGlow={0.6}
@@ -391,12 +423,14 @@ function Overseer() {
   const dark = interpolate(frame, [0, 30], [0.35, 0]);
   return (
     <Room dark={dark}>
-      <Pad notes={["D2", "A2", "F#3"]} wave="triangle" volume={0.05} fadeIn={16} fadeOut={20} />
-      <Whoosh at={0} from={300} to={1800} volume={0.14} />
-      <Chime at={12} notes={["D4", "F#4", "A4", "E5"]} spacing={3} volume={0.24} wave="sine" />
-      <Arp notes={["D4", "A4", "F#5", "A4"]} step={8} repeat={12} at={40} volume={0.03} wave="sine" name="calm" />
-      {rows.map((r, i) => <Pop key={i} at={r.at} freq={800 + i * 120} volume={0.14} name={`row${i}`} />)}
-      <Chime at={140} notes={["A4", "D5"]} spacing={4} volume={0.16} name="tag" />
+      <RoomTone volume={0.02} />
+      <Drone notes={["D2"]} volume={0.03} cutoff={220} fadeIn={16} fadeOut={20} />
+      <Whoosh at={0} from={300} to={1800} volume={0.12} />
+      <Chord at={12} notes={["D3", "A3", "F#4", "C#5", "E5"]} wave="epiano" strum={2} ring={3.2} volume={0.11} reverb={0.5} width={0.6} name="dmaj9" />
+      <Pattern bpm={84} step={0.5} at={40} steps="D4 A4 F#5 A4 E5 A4 F#5 A4" wave="pluck" brightness={0.5} volume={0.1} reverb={0.4} width={0.5} repeat={8} name="calm" />
+      <Chord at={140} notes={["G3", "D4", "B4", "F#5"]} wave="epiano" strum={2} ring={3} volume={0.1} reverb={0.5} width={0.6} name="gmaj7" />
+      <Chord at={226} notes={["D3", "A3", "F#4", "A4", "D5"]} wave="epiano" strum={2} ring={3.5} volume={0.11} reverb={0.5} width={0.6} name="d" />
+      {rows.map((r, i) => <EPiano key={i} at={r.at} note={["A5", "D6", "F#6"][i]} ring={1.2} volume={0.09} reverb={0.45} pan={0.4} name={`row${i}`} />)}
       <Workstation pose={pose} x={wx} y={wy} s={ws} typing={frame > 90 ? 0.5 : 0} screen={<div className="mono"><div style={{ color: "var(--muted)" }}>archdev · overseer</div><div style={{ color: "var(--green)" }}>✓ 12 running · 3 ready for review</div><div style={{ color: "var(--muted)" }}>nothing needs you until 09:00</div></div>} />
       {/* the chaos windows flying into the board */}
       {WIN.slice(0, 12).map((w, i) => {
@@ -461,8 +495,10 @@ function End() {
   const fade = progress(frame, S6 - 18, 18, Easing.inCubic);
   return (
     <AbsoluteFill style={{ background: "#1e2326" }}>
-      <Pad notes={["D2", "A2", "F#3"]} wave="triangle" volume={0.05} fadeIn={6} fadeOut={40} />
-      <Chime at={0} notes={["D4", "F#4", "A4", "D5", "F#5"]} spacing={3} volume={0.22} wave="sine" />
+      <RoomTone volume={0.02} fadeOut={40} />
+      <Drone notes={["D2"]} volume={0.03} cutoff={220} fadeIn={6} fadeOut={50} />
+      <Chord at={0} notes={["D3", "A3", "F#4", "A4", "D5", "F#5"]} wave="epiano" strum={3} ring={4} volume={0.13} reverb={0.55} width={0.7} name="final" />
+      <Pattern bpm={84} step={0.25} at={8} steps="D5 F#5 A5 D6" wave="pluck" brightness={0.6} volume={0.13} reverb={0.5} width={0.4} name="flourish" />
       <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 22 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 28, transform: `scale(${0.8 + 0.2 * pop})`, opacity: pop }}>
           <Img src={staticFile("archdev-mark.png")} style={{ width: 150, height: 150, borderRadius: 34, boxShadow: "0 30px 70px rgba(0,0,0,0.5)" }} />

@@ -123,7 +123,7 @@ export function Person({ pose, x = 0, y = 0, scale = 1, color = "#d3c6aa", accen
   const lElbow = ik(-shoulderX, shoulderY, lHand[0], lHand[1], -1);
   const rElbow = ik(shoulderX, shoulderY, rHand[0], rHand[1], 1);
 
-  const feat = pose.headTurn * 13; // facial feature shift
+  const feat = pose.headTurn * 17; // facial feature shift
   const eyeY = headCy - 4 + pose.headTilt * 0.35;
   const eyeRy = 6.5 * eyesOpen;
   const browY = eyeY - 16 - pose.brow * -3 + (pose.brow < 0 ? pose.brow * 6 : 0);

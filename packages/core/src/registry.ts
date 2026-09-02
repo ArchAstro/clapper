@@ -18,8 +18,14 @@ export interface CompositionEntry extends CompositionMeta {
   component: ComponentType<any>;
 }
 
+export type Wave = "sine" | "triangle" | "square" | "sawtooth" | "noise" | "pluck" | "epiano";
+
 export interface ToneSpec {
-  wave: "sine" | "triangle" | "square" | "sawtooth" | "noise";
+  /**
+   * sine/triangle/square/sawtooth: classic oscillators. noise: filtered noise.
+   * pluck: Karplus–Strong string (guitar/harp/felt-piano-like). epiano: 2-op FM Rhodes-like.
+   */
+  wave: Wave;
   /** Hz. For noise: the lowpass cutoff. */
   freq: number;
   /** Optional glide target in Hz (linear over the cue). */
@@ -31,6 +37,27 @@ export interface ToneSpec {
   release: number;
   /** Extra partials for a richer tone: [ratio, gain][] */
   partials?: [number, number][];
+  /** pluck/epiano: seconds to ring down to -60 dB. Default 1.2. */
+  ring?: number;
+  /** pluck: 0 (felt, dark) .. 1 (bright, metallic). Default 0.6. */
+  brightness?: number;
+  /** One-pole lowpass applied after synthesis, in Hz. */
+  cutoff?: number;
+  /** Stereo position -1..1. Default 0. */
+  pan?: number;
+  /** Detuned second voice, 0..1 (width). Default 0. */
+  spread?: number;
+  /** Reverb send 0..1. Default 0. */
+  reverb?: number;
+  /** Amplitude tremolo. */
+  lfo?: { rate: number; depth: number };
+  /** Cent offset for the whole cue (humanization). */
+  detune?: number;
+  /**
+   * Envelopes relative to the cue start, as [frame, value] breakpoints
+   * (piecewise linear). `volume` multiplies the cue; `cutoff` overrides the lowpass in Hz.
+   */
+  automation?: { volume?: [number, number][]; cutoff?: [number, number][] };
 }
 
 export interface AudioCue {

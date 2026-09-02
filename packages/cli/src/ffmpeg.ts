@@ -67,7 +67,7 @@ export function startFrameEncoder(o: VideoEncodeOptions) {
 
 /* ------------------------------ audio mixing ------------------------------- */
 
-import type { AudioCue } from "@agenticvids/core";
+import type { AudioCue, ToneSpec } from "@agenticvids/core";
 
 export interface MixOptions {
   cues: AudioCue[];
@@ -92,9 +92,9 @@ export async function mixAudio(o: MixOptions): Promise<string | null> {
   // composition with hundreds of clicks still costs ffmpeg exactly one input.
   const toneCues = o.cues.filter((c) => c.kind === "tone" && c.tone);
   if (toneCues.length) {
-    const track = renderToneTrack(toneCues, o.fps, o.durationInFrames, sr);
+    const [tl, tr] = renderToneTrack(toneCues, o.fps, o.durationInFrames, sr);
     const src = path.join(o.workDir, "tones.wav");
-    fs.writeFileSync(src, encodeWav(track, sr));
+    fs.writeFileSync(src, encodeWav(tl, sr, tr));
     inputs.push("-i", src);
     filters.push(`[${idx}:a]aformat=sample_fmts=fltp:sample_rates=${sr}:channel_layouts=stereo[a${idx}]`);
     idx++;
@@ -135,32 +135,6 @@ export async function mixAudio(o: MixOptions): Promise<string | null> {
   return o.out;
 }
 
-/** Sum every tone cue into one mono float track of the full duration (with volume + fades applied). */
-export function renderToneTrack(cues: AudioCue[], fps: number, durationInFrames: number, sr: number): Float32Array {
-  const n = Math.ceil((durationInFrames / fps) * sr);
-  const track = new Float32Array(n);
-  let peak = 0;
-  for (const cue of cues) {
-    const startSec = cue.startFrame / fps;
-    const lenSec = Math.max(0, Math.min(cue.endFrame, durationInFrames) - cue.startFrame) / fps;
-    if (lenSec <= 0 || startSec >= durationInFrames / fps) continue;
-    const mono = renderToneSamples(cue, lenSec, sr);
-    const offset = Math.round(startSec * sr);
-    const fadeIn = (cue.fadeInFrames / fps) * sr;
-    const fadeOut = (cue.fadeOutFrames / fps) * sr;
-    for (let i = 0; i < mono.length && offset + i < n; i++) {
-      let g = cue.volume;
-      if (fadeIn > 0 && i < fadeIn) g *= i / fadeIn;
-      if (fadeOut > 0 && i > mono.length - fadeOut) g *= Math.max(0, (mono.length - i) / fadeOut);
-      track[offset + i] += mono[i] * g;
-    }
-  }
-  for (let i = 0; i < n; i++) peak = Math.max(peak, Math.abs(track[i]));
-  // Soft-limit so a loud stack never clips.
-  if (peak > 0.98) for (let i = 0; i < n; i++) track[i] *= 0.98 / peak;
-  return track;
-}
-
 function clampTempo(rate: number): number {
   return Math.min(100, Math.max(0.5, rate));
 }
@@ -179,52 +153,241 @@ function resolveSrc(src: string, publicDir: string): string {
 export async function muxAudio(video: string, audio: string, out: string, opts: { audioBitrate?: string; codec?: string; loudnorm?: boolean | number } = {}) {
   const ext = path.extname(out).toLowerCase();
   const acodec = opts.codec ?? (ext === ".webm" ? "libopus" : "aac");
-  // Normalise to a streaming-friendly integrated loudness (default -16 LUFS) so
-  // quiet synthesized mixes come out at a sane level.
+  // Normalise to a streaming-friendly integrated loudness (default -16 LUFS);
+  // LRA 16 keeps the quiet scenes quiet.
   const lufs = opts.loudnorm === false ? null : typeof opts.loudnorm === "number" ? opts.loudnorm : -16;
-  const af = lufs === null ? [] : ["-af", `loudnorm=I=${lufs}:TP=-1.5:LRA=11`];
+  const af = lufs === null ? [] : ["-af", `loudnorm=I=${lufs}:TP=-1.5:LRA=16`];
   await runFfmpeg(["-y", "-i", video, "-i", audio, "-map", "0:v:0", "-map", "1:a:0", "-c:v", "copy", ...af, "-ar", "48000", "-c:a", acodec, "-b:a", opts.audioBitrate ?? "192k", "-shortest", "-movflags", "+faststart", out]);
 }
 
-/* -------------------------------- synth ------------------------------------ */
-
-/** Offline tone synthesis to a 16-bit stereo WAV buffer. Matches the studio's AudioEngine. */
-export function renderToneWav(cue: AudioCue, lenSec: number, sr: number): Buffer {
-  return encodeWav(renderToneSamples(cue, lenSec, sr), sr);
+/**
+ * Sum every tone cue into one STEREO track of the full duration (volume, fades,
+ * pan and reverb send applied), then run the reverb bus and soft-limit.
+ */
+export function renderToneTrack(cues: AudioCue[], fps: number, durationInFrames: number, sr: number): [Float32Array, Float32Array] {
+  const n = Math.ceil((durationInFrames / fps) * sr);
+  const L = new Float32Array(n);
+  const R = new Float32Array(n);
+  const wetL = new Float32Array(n);
+  const wetR = new Float32Array(n);
+  let anyWet = false;
+  for (const cue of cues) {
+    const startSec = cue.startFrame / fps;
+    const lenSec = Math.max(0, Math.min(cue.endFrame, durationInFrames) - cue.startFrame) / fps;
+    if (lenSec <= 0 || startSec >= durationInFrames / fps) continue;
+    const spec = cue.tone!;
+    const [mL, mR] = renderToneStereo(cue, lenSec, sr, fps);
+    const offset = Math.round(startSec * sr);
+    const fadeIn = (cue.fadeInFrames / fps) * sr;
+    const fadeOut = (cue.fadeOutFrames / fps) * sr;
+    const send = spec.reverb ?? 0;
+    if (send > 0) anyWet = true;
+    const volEnv = spec.automation?.volume;
+    for (let i = 0; i < mL.length && offset + i < n; i++) {
+      let g = cue.volume;
+      if (fadeIn > 0 && i < fadeIn) g *= i / fadeIn;
+      if (fadeOut > 0 && i > mL.length - fadeOut) g *= Math.max(0, (mL.length - i) / fadeOut);
+      if (volEnv) g *= envelopeAt(volEnv, (i / sr) * fps);
+      L[offset + i] += mL[i] * g;
+      R[offset + i] += mR[i] * g;
+      if (send > 0) {
+        wetL[offset + i] += mL[i] * g * send;
+        wetR[offset + i] += mR[i] * g * send;
+      }
+    }
+  }
+  if (anyWet) {
+    const rl = reverb(wetL, sr, 0);
+    const rr = reverb(wetR, sr, 1);
+    for (let i = 0; i < n; i++) {
+      L[i] += rl[i];
+      R[i] += rr[i];
+    }
+  }
+  let peak = 0;
+  for (let i = 0; i < n; i++) peak = Math.max(peak, Math.abs(L[i]), Math.abs(R[i]));
+  if (peak > 0.98) {
+    const k = 0.98 / peak;
+    for (let i = 0; i < n; i++) {
+      L[i] *= k;
+      R[i] *= k;
+    }
+  }
+  return [L, R];
 }
 
-/** Offline tone synthesis: mono float samples (no cue volume applied). */
+/** Schroeder reverb: 4 parallel combs + 2 series allpasses. `variant` decorrelates L/R. */
+function reverb(input: Float32Array, sr: number, variant: 0 | 1): Float32Array {
+  const n = input.length;
+  const out = new Float32Array(n);
+  const combMs = variant === 0 ? [29.7, 37.1, 41.1, 43.7] : [30.9, 36.1, 42.3, 44.9];
+  const fb = 0.84;
+  const combs = combMs.map((ms) => ({ buf: new Float32Array(Math.round((ms * sr) / 1000)), i: 0, lp: 0 }));
+  const apMs = [5.0, 1.7];
+  const aps = apMs.map((ms) => ({ buf: new Float32Array(Math.round((ms * sr) / 1000)), i: 0 }));
+  for (let t = 0; t < n; t++) {
+    const x = input[t];
+    let y = 0;
+    for (const c of combs) {
+      const d = c.buf[c.i];
+      // damped feedback (one-pole lowpass in the loop) for a warm tail
+      c.lp = c.lp * 0.35 + d * 0.65;
+      c.buf[c.i] = x + c.lp * fb;
+      c.i = (c.i + 1) % c.buf.length;
+      y += d;
+    }
+    y *= 0.25;
+    for (const a of aps) {
+      const d = a.buf[a.i];
+      const v = y + d * -0.7;
+      a.buf[a.i] = v;
+      a.i = (a.i + 1) % a.buf.length;
+      y = d + v * 0.7;
+    }
+    out[t] = y * 0.6;
+  }
+  return out;
+}
+
+/** Offline tone synthesis to a 16-bit stereo WAV buffer. */
+export function renderToneWav(cue: AudioCue, lenSec: number, sr: number): Buffer {
+  const [l, r] = renderToneStereo(cue, lenSec, sr);
+  return encodeWav(l, sr, r);
+}
+
+/** Mono synthesis (legacy helper): left channel of the stereo render. */
 export function renderToneSamples(cue: AudioCue, lenSec: number, sr: number): Float32Array {
+  return renderToneStereo(cue, lenSec, sr)[0];
+}
+
+/** Synthesize one cue as a stereo pair (no cue volume applied). */
+export function renderToneStereo(cue: AudioCue, lenSec: number, sr: number, fps = 30): [Float32Array, Float32Array] {
   const spec = cue.tone!;
   const n = Math.ceil(lenSec * sr);
-  const samples = new Float32Array(n);
+  const det = Math.pow(2, (spec.detune ?? 0) / 1200);
+  const mono = renderVoice(spec, n, sr, det, 12345, fps);
+  let L = mono;
+  let R = mono;
+  if ((spec.spread ?? 0) > 0 && spec.wave !== "noise") {
+    const cents = 4 + 10 * spec.spread!;
+    const v2 = renderVoice(spec, n, sr, det * Math.pow(2, cents / 1200), 777, fps);
+    const v3 = renderVoice(spec, n, sr, det * Math.pow(2, -cents / 1200), 999, fps);
+    L = new Float32Array(n);
+    R = new Float32Array(n);
+    const w = spec.spread!;
+    for (let i = 0; i < n; i++) {
+      L[i] = (mono[i] + v2[i] * w) / (1 + w);
+      R[i] = (mono[i] + v3[i] * w) / (1 + w);
+    }
+  } else if (spec.wave === "noise" && (spec.spread ?? 0) > 0) {
+    R = renderVoice(spec, n, sr, det, 4242, fps);
+  }
+  // constant-power pan
+  const pan = Math.max(-1, Math.min(1, spec.pan ?? 0));
+  const gl = Math.cos(((pan + 1) * Math.PI) / 4);
+  const gr = Math.sin(((pan + 1) * Math.PI) / 4);
+  const outL = new Float32Array(n);
+  const outR = new Float32Array(n);
+  for (let i = 0; i < n; i++) {
+    outL[i] = L[i] * gl * 1.2;
+    outR[i] = R[i] * gr * 1.2;
+  }
+  return [outL, outR];
+}
+
+/** Piecewise-linear breakpoint envelope: [frame, value][] evaluated at a (fractional) frame. */
+export function envelopeAt(points: [number, number][], frame: number): number {
+  if (points.length === 0) return 1;
+  if (frame <= points[0][0]) return points[0][1];
+  for (let i = 1; i < points.length; i++) {
+    const [f0, v0] = points[i - 1];
+    const [f1, v1] = points[i];
+    if (frame <= f1) return f1 === f0 ? v1 : v0 + ((v1 - v0) * (frame - f0)) / (f1 - f0);
+  }
+  return points[points.length - 1][1];
+}
+
+function adsr(spec: ToneSpec, t: number, lenSec: number): number {
   const { attack, decay, sustain, release } = spec;
   const relStart = Math.max(0, lenSec - release);
-  const partials: [number, number][] = spec.wave === "noise" ? [] : [[1, 1], ...(spec.partials ?? [])];
-  let phase = partials.map(() => 0);
-  // noise state
-  let seed = 12345;
-  let lp = 0;
-  let lp2 = 0;
-  for (let i = 0; i < n; i++) {
-    const t = i / sr;
-    let env: number;
-    if (t < attack) env = attack > 0 ? t / attack : 1;
-    else if (t < attack + decay) env = 1 - (1 - sustain) * ((t - attack) / decay);
-    else env = sustain;
-    if (t >= relStart) env *= release > 0 ? Math.max(0, 1 - (t - relStart) / release) : 0;
-    const f = spec.freq + ((spec.freqEnd ?? spec.freq) - spec.freq) * (t / lenSec);
-    let v = 0;
-    if (spec.wave === "noise") {
-      seed = (seed * 1664525 + 1013904223) >>> 0;
-      const white = (seed / 4294967296) * 2 - 1;
-      // two-pole lowpass with cutoff f
+  let env: number;
+  if (t < attack) env = attack > 0 ? t / attack : 1;
+  else if (t < attack + decay) env = 1 - (1 - sustain) * ((t - attack) / decay);
+  else env = sustain;
+  if (t >= relStart) env *= release > 0 ? Math.max(0, 1 - (t - relStart) / release) : 0;
+  return env;
+}
+
+function renderVoice(spec: ToneSpec, n: number, sr: number, detune: number, seed0: number, fps = 30): Float32Array {
+  const out = new Float32Array(n);
+  const lenSec = n / sr;
+  const f0 = spec.freq * detune;
+  const f1 = (spec.freqEnd ?? spec.freq) * detune;
+  const ring = spec.ring ?? 1.2;
+  let seed = seed0 >>> 0;
+  const rnd = () => {
+    seed = (seed * 1664525 + 1013904223) >>> 0;
+    return seed / 4294967296;
+  };
+
+  if (spec.wave === "pluck") {
+    // Karplus–Strong: noise burst through a delay loop with a damped averaging filter.
+    const period = Math.max(2, Math.round(sr / f0));
+    const buf = new Float32Array(period);
+    const bright = spec.brightness ?? 0.6;
+    let lp = 0;
+    for (let i = 0; i < period; i++) {
+      const w = rnd() * 2 - 1;
+      lp += (w - lp) * (0.15 + 0.85 * bright); // darker = more pre-filtering
+      buf[i] = lp;
+    }
+    const g = Math.pow(10, -3 / (f0 * Math.max(0.05, ring))); // -60 dB at `ring` seconds
+    let idx = 0;
+    for (let i = 0; i < n; i++) {
+      const cur = buf[idx];
+      const nxt = buf[(idx + 1) % period];
+      const y = (cur + nxt) * 0.5 * g;
+      buf[idx] = y;
+      idx = (idx + 1) % period;
+      out[i] = cur * adsr(spec, i / sr, lenSec);
+    }
+  } else if (spec.wave === "epiano") {
+    // 2-operator FM, Rhodes-like: bell partial decays fast, body rings.
+    let ph = 0;
+    let phm = 0;
+    let phb = 0;
+    for (let i = 0; i < n; i++) {
+      const t = i / sr;
+      const f = f0 + (f1 - f0) * (t / lenSec);
+      ph += (2 * Math.PI * f) / sr;
+      phm += (2 * Math.PI * f * 14) / sr;
+      phb += (2 * Math.PI * f) / sr;
+      const bell = Math.exp(-t / 0.12) * 1.6;
+      const body = Math.exp(-t / Math.max(0.2, ring / 3)) * 0.9 + 0.15;
+      const amp = Math.exp((-6.9 * t) / Math.max(0.05, ring));
+      const v = Math.sin(ph + bell * Math.sin(phm)) * 0.7 + Math.sin(phb * 1.0 + body * Math.sin(phb * 1.0)) * 0.4 + Math.sin(ph * 2) * 0.06;
+      out[i] = v * amp * adsr(spec, t, lenSec);
+    }
+  } else if (spec.wave === "noise") {
+    let lp = 0;
+    let lp2 = 0;
+    for (let i = 0; i < n; i++) {
+      const t = i / sr;
+      const f = f0 + (f1 - f0) * (t / lenSec);
+      const white = rnd() * 2 - 1;
       const rc = 1 / (2 * Math.PI * Math.max(20, f));
-      const a = (1 / sr) / (rc + 1 / sr);
+      const a = 1 / sr / (rc + 1 / sr);
       lp += a * (white - lp);
       lp2 += a * (lp - lp2);
-      v = lp2 * 3;
-    } else {
+      out[i] = lp2 * 3 * adsr(spec, t, lenSec);
+    }
+  } else {
+    const partials: [number, number][] = [[1, 1], ...(spec.partials ?? [])];
+    const phase = partials.map(() => 0);
+    for (let i = 0; i < n; i++) {
+      const t = i / sr;
+      const f = f0 + (f1 - f0) * (t / lenSec);
+      let v = 0;
       for (let p = 0; p < partials.length; p++) {
         const [ratio, g] = partials[p];
         phase[p] += (2 * Math.PI * f * ratio) / sr;
@@ -245,16 +408,40 @@ export function renderToneSamples(cue: AudioCue, lenSec: number, sr: number): Fl
         }
         v += w * g;
       }
+      out[i] = v * adsr(spec, t, lenSec) * 0.6;
     }
-    samples[i] = v * env * 0.6;
   }
-  return samples;
+  // post: lowpass (optionally automated) and tremolo
+  const cutEnv = spec.automation?.cutoff;
+  if (spec.cutoff || cutEnv) {
+    let lp = 0;
+    let a = 0;
+    let lastHz = -1;
+    for (let i = 0; i < n; i++) {
+      const hz = cutEnv ? envelopeAt(cutEnv, (i / sr) * fps) : spec.cutoff!;
+      if (hz !== lastHz) {
+        const rc = 1 / (2 * Math.PI * Math.max(20, hz));
+        a = 1 / sr / (rc + 1 / sr);
+        lastHz = hz;
+      }
+      lp += a * (out[i] - lp);
+      out[i] = lp;
+    }
+  }
+  if (spec.lfo && spec.lfo.depth > 0) {
+    const { rate, depth } = spec.lfo;
+    for (let i = 0; i < n; i++) {
+      const t = i / sr;
+      out[i] *= 1 - depth * 0.5 * (1 - Math.cos(2 * Math.PI * rate * t));
+    }
+  }
+  return out;
 }
 
-function encodeWav(mono: Float32Array, sr: number): Buffer {
+function encodeWav(left: Float32Array, sr: number, right?: Float32Array): Buffer {
   const channels = 2;
   const bytesPerSample = 2;
-  const dataLen = mono.length * channels * bytesPerSample;
+  const dataLen = left.length * channels * bytesPerSample;
   const buf = Buffer.alloc(44 + dataLen);
   buf.write("RIFF", 0);
   buf.writeUInt32LE(36 + dataLen, 4);
@@ -269,12 +456,11 @@ function encodeWav(mono: Float32Array, sr: number): Buffer {
   buf.writeUInt16LE(16, 34);
   buf.write("data", 36);
   buf.writeUInt32LE(dataLen, 40);
+  const r = right ?? left;
   let o = 44;
-  for (let i = 0; i < mono.length; i++) {
-    const s = Math.max(-1, Math.min(1, mono[i]));
-    const v = Math.round(s * 32767);
-    buf.writeInt16LE(v, o);
-    buf.writeInt16LE(v, o + 2);
+  for (let i = 0; i < left.length; i++) {
+    buf.writeInt16LE(Math.round(Math.max(-1, Math.min(1, left[i])) * 32767), o);
+    buf.writeInt16LE(Math.round(Math.max(-1, Math.min(1, r[i])) * 32767), o + 2);
     o += 4;
   }
   return buf;

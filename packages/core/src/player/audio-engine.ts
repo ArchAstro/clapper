@@ -136,7 +136,7 @@ export class AudioEngine {
       const partials: [number, number][] = [[1, 1], ...(spec.partials ?? [])];
       for (const [ratio, g] of partials) {
         const osc = ctx.createOscillator();
-        osc.type = spec.wave;
+        osc.type = spec.wave === "pluck" ? "triangle" : spec.wave === "epiano" ? "sine" : spec.wave;
         const f0 = spec.freq + ((spec.freqEnd ?? spec.freq) - spec.freq) * (offsetSec / total);
         osc.frequency.setValueAtTime(f0 * ratio, now);
         if (spec.freqEnd !== undefined) osc.frequency.linearRampToValueAtTime(spec.freqEnd * ratio, now + remaining);

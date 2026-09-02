@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { parseArgs } from "node:util";
 import { buildHarness, serveBuilt, startStudio } from "./bundle.ts";
-import { probeCompositions, renderComposition, renderStill, renderStills } from "./render.ts";
+import { collectCues, probeCompositions, renderComposition, renderStill, renderStills } from "./render.ts";
 
 const HELP = `agenticvids — React → MP4
 
@@ -11,6 +11,7 @@ Usage:
   agenticvids still <entry> [options]       Render one frame to PNG
   agenticvids preview <entry> [--port N]    Open the studio (scrub, play, inspect)
   agenticvids compositions <entry>          List registered compositions
+  agenticvids cues <entry> -c <id>          List the audio cues of a composition (audit)
 
 Render options:
   -c, --composition <id>   Composition id (default: the only/first one)
@@ -80,6 +81,37 @@ export async function main(argv: string[]) {
         for (const c of comps) console.log(`${c.id}\t${c.width}x${c.height}\t${c.fps}fps\t${c.durationInFrames} frames (${(c.durationInFrames / c.fps).toFixed(2)}s)`);
       } finally {
         await server.close();
+      }
+      return;
+    }
+    case "cues": {
+      const outDir = await buildHarness({ entry, projectDir, mode: "harness" });
+      const server = await serveBuilt({ entry, projectDir, mode: "harness" }, outDir);
+      try {
+        const comps = await probeCompositions(server.url);
+        const compositionId = values.composition ?? comps[0]?.id;
+        if (!compositionId) throw new Error("No compositions registered");
+        const cues = await collectCues(server.url, compositionId, props);
+        const fps = comps.find((c) => c.id === compositionId)?.fps ?? 30;
+        if (values.out) {
+          fs.writeFileSync(values.out, JSON.stringify(cues, null, 2));
+          console.log(`Wrote ${cues.length} cues to ${values.out}`);
+        }
+        const byKind = new Map<string, number>();
+        for (const c of cues) {
+          const k = c.kind === "tone" ? `tone:${c.tone?.wave}` : `file`;
+          byKind.set(k, (byKind.get(k) ?? 0) + 1);
+        }
+        console.log(`${cues.length} cues in "${compositionId}"`);
+        for (const [k, n] of [...byKind.entries()].sort((a, b) => b[1] - a[1])) console.log(`  ${k.padEnd(16)} ${n}`);
+        console.log("start\tend\tvol\tkind\tdetail\tid");
+        for (const c of cues) {
+          const detail = c.kind === "tone" ? `${c.tone?.wave} ${Math.round(c.tone?.freq ?? 0)}Hz${c.tone?.reverb ? ` rev${c.tone.reverb}` : ""}${c.tone?.pan ? ` pan${c.tone.pan}` : ""}` : c.src;
+          console.log(`${(c.startFrame / fps).toFixed(2)}s\t${(c.endFrame / fps).toFixed(2)}s\t${c.volume.toFixed(2)}\t${c.kind}\t${detail}\t${c.id.split("|")[0].split("/").slice(1).join("/")}`);
+        }
+      } finally {
+        await server.close();
+        if (!values["keep-build"]) fs.rmSync(outDir, { recursive: true, force: true });
       }
       return;
     }

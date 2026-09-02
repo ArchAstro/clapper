@@ -69,6 +69,24 @@ export async function probeCompositions(url: string): Promise<CompositionMeta[]>
   }
 }
 
+/** Visit every frame in a throwaway page and return the merged audio cue list. */
+export async function collectCues(url: string, compositionId: string, props?: Record<string, unknown>): Promise<AudioCue[]> {
+  const browser = await chromium.launch({ args: CHROME_ARGS });
+  try {
+    const page = await openHarnessPage(browser, url, { width: 320, height: 180 }, 0.25, () => {});
+    const meta: CompositionMeta = await page.evaluate(({ id, p }) => window.__agenticvids!.select(id, p), { id: compositionId, p: props ?? {} });
+    // Cues register when their sequence is mounted; stepping every 4th frame is enough
+    // because no cue is shorter than a sequence's mount window at that stride... except
+    // one-frame sequences, so step every frame when the composition is short.
+    const stride = meta.durationInFrames > 2400 ? 4 : 1;
+    for (let f = 0; f < meta.durationInFrames; f += stride) await page.evaluate((fr) => window.__agenticvids!.setFrame(fr), f);
+    const cues: AudioCue[] = await page.evaluate(() => window.__agenticvids!.collectAudio());
+    return cues.sort((a, b) => a.startFrame - b.startFrame);
+  } finally {
+    await browser.close();
+  }
+}
+
 export interface RenderResult {
   out: string;
   frames: number;
