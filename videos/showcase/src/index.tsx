@@ -6,6 +6,8 @@ import { Orbit, ORBIT_LEN } from "./orbit/orbit";
 import { Nimbus, NIMBUS_LEN } from "./nimbus/nimbus";
 import { ArchDev, ARCHDEV_LEN } from "./archdev/archdev";
 import { ArchDev2, SCENES as ARCHDEV2_SCENES } from "./archdev/archdev2";
+import { ArchDev3, SCENES as ARCHDEV3_SCENES } from "./archdev3/archdev3";
+import { ScribbleSheet } from "./archdev3/rigtest";
 
 /** Three made-up SaaS products, three visual systems, one framework. */
 function Root() {
@@ -16,6 +18,8 @@ function Root() {
       <Composition id="nimbus" component={Nimbus} width={1920} height={1080} fps={30} durationInFrames={NIMBUS_LEN} />
       <Composition id="archdev" component={ArchDev} width={1920} height={1080} fps={30} durationInFrames={ARCHDEV_LEN} />
       <Composition id="archdev2" component={ArchDev2} width={1920} height={1080} fps={30} scenes={ARCHDEV2_SCENES} />
+      <Composition id="archdev3" component={ArchDev3} width={1920} height={1080} fps={30} scenes={ARCHDEV3_SCENES} />
+      <Composition id="scribble-sheet" component={ScribbleSheet} width={1920} height={1080} fps={30} durationInFrames={90} />
     </>
   );
 }

@@ -1,0 +1,22 @@
+/** Every number and line of copy in ArchDev v3. */
+export const D = {
+  time0: "9:00 AM.",
+  prompt: "add dark mode",
+  thought0: "one small feature :)",
+  planLines: 2431,
+  planCaption: "The plan was 2,431 lines.",
+  agentsCaption: "Then there were six.",
+  agentsCaption2: "Each one needed something.",
+  agents: ["agent-01 · migrate", "agent-02 · tests", "agent-03 · api", "agent-04 · docs", "agent-05 · infra", "agent-06 · retry"],
+  prLines: 1284,
+  prTitle: "PR #1284 · 47 files",
+  prStat: "+1,284  −312",
+  readTo: 300,
+  reviewCaption: "The PR was 1,284 lines.",
+  reviewCaption2: "Approved at 1:52. Read to line 300.",
+  night: "2:00 AM.",
+  thought1: "…",
+  thought2: "what was I building?",
+  teaseCaption: "There's a better way.",
+  url: "archdev.ai · soon",
+};

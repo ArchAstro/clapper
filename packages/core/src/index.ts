@@ -15,3 +15,4 @@ export * from "./scenes";
 export * from "./primitives";
 export * from "./rig";
 export * from "./bubble";
+export * from "./sketch";

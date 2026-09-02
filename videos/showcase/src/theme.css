@@ -43,3 +43,15 @@
 }
 .archdev .display { font-family: var(--display); font-variation-settings: "opsz" 96, "wght" 600; letter-spacing: -0.03em; line-height: 0.95; }
 .archdev .mono { font-family: var(--mono); font-feature-settings: "tnum"; }
+
+/* ArchDev v3: rage comic. Paper, ink, one red pencil. */
+.archdev3 {
+  --paper: #f5f3ee; --ink: #161616; --grey: #cfcdc7; --light: #e9e7e1; --red: #d2382c; --muted: #6f6c66;
+  --hand: "Patrick Hand", "Comic Sans MS", cursive;
+  --marker: "Gochi Hand", "Patrick Hand", cursive;
+  --script: "Caveat", "Patrick Hand", cursive;
+  font-family: var(--hand); color: var(--ink); background: var(--paper);
+}
+.archdev3 .hand { font-family: var(--hand); }
+.archdev3 .marker { font-family: var(--marker); letter-spacing: 0.01em; }
+.archdev3 .script { font-family: var(--script); font-weight: 700; }
