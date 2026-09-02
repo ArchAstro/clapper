@@ -10,7 +10,8 @@
     "./latex": "./src/latex.tsx",
     "./player": "./src/player/index.tsx",
     "./harness": "./src/harness/index.tsx",
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./rigs": "./src/rigs/index.ts"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json --noEmit",

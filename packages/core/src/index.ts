@@ -16,3 +16,4 @@ export * from "./primitives";
 export * from "./rig";
 export * from "./bubble";
 export * from "./sketch";
+export * from "./sketch-kit";

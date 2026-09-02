@@ -188,7 +188,7 @@ Harness errors already fail the render; add the scene name and local frame from 
 ### P1-1 Core text primitives — DONE (`Reveal`, `Copy`, `Eyebrow`, `Rule` in core with `data-copy` tags; showcase kit re-exports)
 `Reveal` (masked line reveal with `from`, `skew`, `exitAt`), `Copy` (positioned display copy with optional plate), `Eyebrow`, `Rule`. All three projects re-implemented them; the plate-before-text bug came from a project copy.
 
-### P1-2 Character toolkit in core — DONE except a shipped generic rig (`definePoses`, `usePose` with `arc`, `ik2`, `useEyeBlink`, `useBreath`, `<Bubble>`)
+### P1-2 Character toolkit in core — DONE (`definePoses`, `usePose`/`evalPose` with `arc`, `ik2`, `useEyeBlink`, `useBreath`, `<Bubble>`; two shipped rigs in `@agenticvids/core/rigs`: `Person` and `Scribble`; comic kit in core)
 Move `person.tsx` ideas into a generic rig: `definePose()`, typed `Pose` with named poses, `usePose(keys)` with arc-biased midpoints (`arc: 20`), two-bone `ik()`, blink/breath/idle generators, `<Bubble>` (thought/speech). Ship the monoline developer as the first rig.
 
 ### P1-3 Studio upgrades — PARTLY DONE (scene markers on the scrubber, `[`/`]` jump); cue colours by kind, cue inspector, pose scrubber still open

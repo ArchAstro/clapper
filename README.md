@@ -103,8 +103,10 @@ registerRoot(Root);
    { at: "0.8s", pose: "lookUp", ease: "outBack", arc: 24 }], { arcChannels: [["lhx","lhy"],["rhx","rhy"]] })` blends channels
    per frame and, when a key sets `arc`, lifts the hand targets through a midpoint so travel curves instead of sliding.
    `ik2()` is two-bone inverse kinematics with an outward elbow; `useEyeBlink()` / `useBreath()` are deterministic idle motion.
-   `<Bubble x y kind="speech"|"thought" tail at exitAt>` pops a bubble from its tail tip.
-   `videos/showcase/src/archdev/person.tsx` is the reference rig built on them.
+   `<Bubble x y kind="speech"|"thought" tail at exitAt>` pops a bubble from its tail tip. `evalPose()` is the pure blend behind `usePose()`.
+   Two characters ship in `@agenticvids/core/rigs`: `<Person pose>` (the monoline developer, with `PERSON_POSES`, `usePersonPose`,
+   `<Archie>` and `<Desk>`) and `<Scribble pose typing fury>` (the rage-comic developer, `SCRIBBLE_POSES`, `useScribblePose`).
+   Both are pure functions of a pose record, the frame and, for Scribble, the boil seed; ArchDev v1–v3 use them as-is.
 7. **Media & readiness.** `<Img/>`, `<Video/>` (currentTime driven by the frame; its soundtrack is mixed into the render unless
    `audio={false}`, with `volume`/`fadeIn`/`fadeOut`), `useFont()`, and `delayRender()/continueRender()`
    for anything async: the harness waits for all handles, fonts and images before capturing a frame.
@@ -113,6 +115,10 @@ registerRoot(Root);
    `scribble` (a zigzag "line of text") and `hatchLines` for pencil-animation lines that boil while motion stays at full frame rate.
    `<Rough points seed amp fill hatch>` draws one shape with an optional solid or hatched fill and a doubled marker stroke;
    `<RoughRect>`, `<RoughEllipse>`, `<RoughLine>` wrap it; `<Panel seed>` is a paper sheet with a hand-drawn comic frame.
+   Comic ingredients on top: `<Caption>` (boxed caption that pencils itself in), `<SfxWord>` (onomatopoeia that pops with
+   overshoot), `<SketchWindow title lines>` (a sketched window with scribbled text), `<SketchThought>`, `<PaperScroll foldAt>`
+   (unrolls and folds over an edge), `<SketchStamp>` and `<PencilScratch at>` (the sound of drawing). They read `--ink`,
+   `--paper`, `--red`, `--hand`, `--marker` from your theme with sensible fallbacks; the fonts themselves are yours to ship.
    `videos/showcase/src/archdev3` is the reference rage-comic film built on them.
 10. **Formats.** `<Composition id="spot" formats={{ "9:16": { width: 1080, height: 1920 } }}>` also registers `spot@9:16` with the same
    component and scene map. Inside, `useFormat()` gives `{ name, width, height, aspect, portrait, square, pick({ "9:16": 48, default: 64 }) }`

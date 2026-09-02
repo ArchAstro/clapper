@@ -30,37 +30,39 @@ export interface PoseKey<P extends Record<keyof P, number>, N extends string> {
 
 const EASES: Record<string, EasingFn> = { linear: Easing.linear, outBack: Easing.outBack, inOutCubic: Easing.inOutCubic, outExpo: Easing.outExpo, outQuint: Easing.outQuint };
 
-/**
- * Blend pose keys at the local frame.
- * `arcChannels` are [x, y] channel pairs that get a lifted midpoint when a key sets `arc`.
- */
-export function usePose<P extends Record<keyof P, number>, N extends string>(
-  poses: Record<N, P>,
-  keys: PoseKey<P, N>[],
-  options: { arcChannels?: [keyof P & string, keyof P & string][]; offset?: Frames } = {},
-): P {
+export interface PoseOptions<P> {
+  /** [x, y] channel pairs that get a lifted midpoint when a key sets `arc`. */
+  arcChannels?: [keyof P & string, keyof P & string][];
+  offset?: Frames;
+}
+
+/** Pure pose blend at a local frame (what usePose returns). */
+export function evalPose<P extends Record<keyof P, number>, N extends string>(poses: Record<N, P>, keys: PoseKey<P, N>[], frame: number, fps: number, options: PoseOptions<P> = {}): P {
+  const resolved = keys.map((k) => ({
+    frame: resolveFrames(k.at, fps),
+    pose: (typeof k.pose === "string" ? poses[k.pose as N] : k.pose) as unknown as Record<string, number>,
+    easing: typeof k.ease === "string" ? EASES[k.ease] : k.ease ?? Easing.inOutCubic,
+    arc: k.arc ?? 0,
+  }));
+  const kf: any[] = [];
+  resolved.forEach((k, i) => {
+    if (k.arc && i > 0) {
+      const prev = resolved[i - 1];
+      const mid: Record<string, number> = {};
+      for (const ch of Object.keys(k.pose)) mid[ch] = (prev.pose[ch] + k.pose[ch]) / 2;
+      for (const [, yCh] of options.arcChannels ?? []) if (yCh in mid) mid[yCh] -= k.arc;
+      kf.push({ frame: Math.round((prev.frame + k.frame) / 2), easing: Easing.inOutCubic, ...mid });
+    }
+    kf.push({ frame: k.frame, easing: k.easing, ...k.pose });
+  });
+  return evalKeyframes(kf, frame - resolveFrames(options.offset ?? 0, fps), fps) as unknown as P;
+}
+
+/** Blend pose keys at the local frame (see evalPose). */
+export function usePose<P extends Record<keyof P, number>, N extends string>(poses: Record<N, P>, keys: PoseKey<P, N>[], options: PoseOptions<P> = {}): P {
   const frame = useFrame();
   const fps = useFps();
-  return useMemo(() => {
-    const resolved = keys.map((k) => ({
-      frame: resolveFrames(k.at, fps),
-      pose: (typeof k.pose === "string" ? poses[k.pose as N] : k.pose) as unknown as Record<string, number>,
-      easing: typeof k.ease === "string" ? EASES[k.ease] : k.ease ?? Easing.inOutCubic,
-      arc: k.arc ?? 0,
-    }));
-    const kf: any[] = [];
-    resolved.forEach((k, i) => {
-      if (k.arc && i > 0) {
-        const prev = resolved[i - 1];
-        const mid: Record<string, number> = {};
-        for (const ch of Object.keys(k.pose)) mid[ch] = (prev.pose[ch] + k.pose[ch]) / 2;
-        for (const [, yCh] of options.arcChannels ?? []) if (yCh in mid) mid[yCh] -= k.arc;
-        kf.push({ frame: Math.round((prev.frame + k.frame) / 2), easing: Easing.inOutCubic, ...mid });
-      }
-      kf.push({ frame: k.frame, easing: k.easing, ...k.pose });
-    });
-    return evalKeyframes(kf, frame - resolveFrames(options.offset ?? 0, fps), fps) as unknown as P;
-  }, [poses, keys, frame, fps, options.arcChannels, options.offset]);
+  return useMemo(() => evalPose(poses, keys, frame, fps, options), [poses, keys, frame, fps, options.arcChannels, options.offset]);
 }
 
 /** Two-bone IK: returns the elbow for shoulder (sx,sy) reaching target (tx,ty); the elbow bends outward from centre (side ±1). */

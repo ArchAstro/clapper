@@ -218,3 +218,28 @@ it("sketch: rect, ellipse, scribble and hatch produce well-formed geometry", () 
   expect(lines.length).toBeGreaterThan(8);
   for (const [[x1, y1], [x2, y2]] of lines) expect(Math.hypot(x2 - x1, y2 - y1)).toBeGreaterThan(100);
 });
+
+import { definePoses, evalPose } from "../src/rig";
+import { PERSON_POSES } from "../src/rigs/person";
+import { SCRIBBLE_POSES } from "../src/rigs/scribble";
+
+it("evalPose: hits named poses exactly on keys, blends between, and arcs lift the hand channels", () => {
+  const P = definePoses({ a: { x: 0, hx: 0, hy: 0 }, b: { x: 10, hx: 100, hy: 0 } });
+  expect(evalPose(P, [{ at: 0, pose: "a" }, { at: 20, pose: "b" }], 0, 30)).toEqual({ x: 0, hx: 0, hy: 0 });
+  expect(evalPose(P, [{ at: 0, pose: "a" }, { at: 20, pose: "b" }], 20, 30)).toEqual({ x: 10, hx: 100, hy: 0 });
+  const mid = evalPose(P, [{ at: 0, pose: "a" }, { at: 20, pose: "b", ease: "linear" }], 10, 30);
+  expect(mid.x).toBeCloseTo(5, 5);
+  const arc = evalPose(P, [{ at: 0, pose: "a" }, { at: 20, pose: "b", arc: 30 }], 10, 30, { arcChannels: [["hx", "hy"]] });
+  expect(arc.hy).toBeCloseTo(-30, 5);
+  expect(arc.hx).toBeCloseTo(50, 5);
+  expect(evalPose(P, [{ at: "1s", pose: "b" }], 30, 30).x).toBe(10);
+});
+
+it("shipped rigs: every named pose fills every channel", () => {
+  for (const poses of [PERSON_POSES, SCRIBBLE_POSES] as Record<string, Record<string, number>>[]) {
+    const names = Object.keys(poses);
+    const channels = Object.keys(poses[names[0]]);
+    expect(names.length).toBeGreaterThan(5);
+    for (const n of names) for (const c of channels) expect(typeof poses[n][c]).toBe("number");
+  }
+});
