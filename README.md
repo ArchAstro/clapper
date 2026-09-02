@@ -109,7 +109,12 @@ registerRoot(Root);
    `audio={false}`, with `volume`/`fadeIn`/`fadeOut`), `useFont()`, and `delayRender()/continueRender()`
    for anything async: the harness waits for all handles, fonts and images before capturing a frame.
 8. **Determinism helpers.** `useRandom(seed)`, `random()`, `noise1d()`.
-9. **Formats.** `<Composition id="spot" formats={{ "9:16": { width: 1080, height: 1920 } }}>` also registers `spot@9:16` with the same
+9. **Hand-drawn.** `useBoil(4)` returns a seed that steps every 4 frames; feed it to `roughPath`, `roughRect`, `roughEllipse`,
+   `scribble` (a zigzag "line of text") and `hatchLines` for pencil-animation lines that boil while motion stays at full frame rate.
+   `<Rough points seed amp fill hatch>` draws one shape with an optional solid or hatched fill and a doubled marker stroke;
+   `<RoughRect>`, `<RoughEllipse>`, `<RoughLine>` wrap it; `<Panel seed>` is a paper sheet with a hand-drawn comic frame.
+   `videos/showcase/src/archdev3` is the reference rage-comic film built on them.
+10. **Formats.** `<Composition id="spot" formats={{ "9:16": { width: 1080, height: 1920 } }}>` also registers `spot@9:16` with the same
    component and scene map. Inside, `useFormat()` gives `{ name, width, height, aspect, portrait, square, pick({ "9:16": 48, default: 64 }) }`
    for restaging; render with `-c spot@9:16`.
 

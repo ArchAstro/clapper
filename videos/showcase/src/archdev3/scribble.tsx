@@ -1,4 +1,4 @@
-import { Rough, RoughEllipse, definePoses, ik2, roughPath, useBoil, useFrame, usePose as usePoseCore, type Frames, type SketchPt } from "@agenticvids/core";
+import { Rough, RoughEllipse, definePoses, ik2, roughPath, useBoil, useEyeBlink, useFrame, usePose as usePoseCore, type Frames, type SketchPt } from "@agenticvids/core";
 import { useMemo, type CSSProperties } from "react";
 
 /**
@@ -70,6 +70,7 @@ const HEAD_Y = -246;
 export function Scribble({ pose, x = 0, y = 0, scale = 1, typing = 0, fury = 0, desk = true, ink = INK, paper = PAPER, style }: { pose: SPose; x?: number; y?: number; scale?: number; typing?: number; fury?: number; desk?: boolean; ink?: string; paper?: string; style?: CSSProperties }) {
   const frame = useFrame();
   const seed = useBoil(4);
+  const blink = useEyeBlink({ period: 97, length: 6, offset: 41 });
   const breath = Math.sin(frame / 13) * 1.4;
   const bobL = typing ? Math.sin(frame * 1.7) * 7 * typing : 0;
   const bobR = typing ? Math.sin(frame * 1.7 + Math.PI) * 7 * typing : 0;
@@ -93,7 +94,8 @@ export function Scribble({ pose, x = 0, y = 0, scale = 1, typing = 0, fury = 0, 
     return out;
   }, []);
   const angry = pose.brow > 0.5;
-  const eyeR = 4 + Math.max(0, pose.eyes - 1) * 9;
+  const eyes = !angry && blink > 0.6 && pose.eyes >= 0.3 ? 0.1 : pose.eyes;
+  const eyeR = 4 + Math.max(0, eyes - 1) * 9;
   const arm = (sh: SketchPt, el: [number, number], hand: SketchPt, side: 1 | -1, ghost = 0) => {
     const dx = ghost * 16 * side;
     const dy = ghost * -12;
@@ -118,7 +120,7 @@ export function Scribble({ pose, x = 0, y = 0, scale = 1, typing = 0, fury = 0, 
       <g transform={`rotate(${pose.tilt} ${headC[0]} ${headC[1]})`}>
         <RoughEllipse cx={headC[0]} cy={headC[1]} rx={HEAD_R} ry={HEAD_R} seed={seed + 2} amp={2.4} fill={paper} stroke={ink} width={5} />
         {/* eyes */}
-        {pose.eyes < 0.3 ? (
+        {eyes < 0.3 ? (
           <>
             <Rough points={[[headC[0] - 38, headC[1] - 12], [headC[0] - 14, headC[1] - 10]]} seed={seed + 3} amp={1} stroke={ink} width={4} passes={1} />
             <Rough points={[[headC[0] + 14, headC[1] - 10], [headC[0] + 38, headC[1] - 12]]} seed={seed + 4} amp={1} stroke={ink} width={4} passes={1} />
@@ -130,14 +132,14 @@ export function Scribble({ pose, x = 0, y = 0, scale = 1, typing = 0, fury = 0, 
           </>
         ) : (
           <>
-            {pose.eyes > 1.2 && (
+            {eyes > 1.2 && (
               <>
                 <RoughEllipse cx={headC[0] - 26} cy={headC[1] - 14} rx={eyeR + 5} ry={eyeR + 6} seed={seed + 5} amp={1} fill={paper} stroke={ink} width={3} passes={1} />
                 <RoughEllipse cx={headC[0] + 26} cy={headC[1] - 14} rx={eyeR + 5} ry={eyeR + 6} seed={seed + 6} amp={1} fill={paper} stroke={ink} width={3} passes={1} />
               </>
             )}
-            <circle cx={headC[0] - 26 + (pose.pupil - 0.5) * 8} cy={headC[1] - 14 + Math.max(0, pose.pupil - 0.5) * 10} r={Math.max(2.5, 4.5 * Math.min(1, pose.eyes))} fill={ink} />
-            <circle cx={headC[0] + 26 + (pose.pupil - 0.5) * 8} cy={headC[1] - 14 + Math.max(0, pose.pupil - 0.5) * 10} r={Math.max(2.5, 4.5 * Math.min(1, pose.eyes))} fill={ink} />
+            <circle cx={headC[0] - 26 + (pose.pupil - 0.5) * 8} cy={headC[1] - 14 + Math.max(0, pose.pupil - 0.5) * 10} r={Math.max(2.5, 4.5 * Math.min(1, eyes))} fill={ink} />
+            <circle cx={headC[0] + 26 + (pose.pupil - 0.5) * 8} cy={headC[1] - 14 + Math.max(0, pose.pupil - 0.5) * 10} r={Math.max(2.5, 4.5 * Math.min(1, eyes))} fill={ink} />
           </>
         )}
         {/* brows (the angry eye strokes already are the brows) */}

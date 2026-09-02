@@ -7,10 +7,10 @@ import { POSES, Scribble, usePose } from "./scribble";
 /**
  * ARCHDEV v3 — the rage comic. Same story as v2 (plan → six agents → the
  * 1,284-line PR → 2 AM → tease), drawn in boiling ink on paper with one red
- * pencil. Panels are hard cuts with a paper flip. 32.5 s.
+ * pencil. Panels are hard cuts with a paper flip. 31.3 s.
  */
 export const SCENES = defineScenes(
-  { open: { frames: 90 }, plan: { frames: 195 }, agents: { frames: 255 }, review: { frames: 180 }, blank: { frames: 135 }, tease: { frames: 120 } },
+  { open: { frames: 90 }, plan: { frames: 175 }, agents: { frames: 210 }, review: { frames: 210 }, blank: { frames: 135 }, tease: { frames: 120 } },
   { fps: 30 },
 );
 
@@ -28,7 +28,7 @@ function Scratch({ at, volume = 0.13, length = 9, pan = 0 }: { at: Frames; volum
 }
 
 /** Comic caption box, top-left by default. */
-function Caption({ at, x = 28, y = 28, w, size = 40, exitAt, children }: { at: Frames; x?: number; y?: number; w: number; size?: number; exitAt?: Frames; children: ReactNode }) {
+function Caption({ at, x = 28, y = 28, w, size = 40, exitAt, textDelay = 5, children }: { at: Frames; x?: number; y?: number; w: number; size?: number; exitAt?: Frames; textDelay?: number; children: ReactNode }) {
   const seed = useBoil(4);
   const frame = useFrame();
   const h = size * 1.35 + 22;
@@ -42,7 +42,7 @@ function Caption({ at, x = 28, y = 28, w, size = 40, exitAt, children }: { at: F
           <RoughRect x={3} y={3} w={w - 6} h={h - 6} seed={seed + 21} amp={1.6} stroke={INK} width={4} fill={PAPER} passes={1} />
         </Draw>
       </svg>
-      <Reveal at={(at as number) + 5} duration={16} className="hand" style={{ position: "absolute", left: 18, top: 7, fontSize: size, lineHeight: 1.3, whiteSpace: "nowrap" }}>
+      <Reveal at={(at as number) + textDelay} duration={16} className="hand" style={{ position: "absolute", left: 18, top: 7, fontSize: size, lineHeight: 1.3, whiteSpace: "nowrap" }}>
         {children}
       </Reveal>
     </div>
@@ -64,14 +64,14 @@ function Sfx({ at, x, y, rot = -6, size = 72, color = INK, exitAt, children }: {
 }
 
 /** A sketched window: title bar, three buttons, scribbled lines. Sketches itself in. */
-function Win({ x, y, w, h, title, at = 0, lines = 6, seedOff = 0, shake = 0, exitAt, z, right, children }: { x: number; y: number; w: number; h: number; title: string; at?: number; lines?: number; seedOff?: number; shake?: number; exitAt?: number; z?: number; right?: ReactNode; children?: ReactNode }) {
+function Win({ x, y, w, h, title, at = 0, lines = 6, seedOff = 0, shake = 0, dx = 0, dy = 0, exitAt, z, right, children }: { x: number; y: number; w: number; h: number; title: string; at?: number; lines?: number; seedOff?: number; shake?: number; dx?: number; dy?: number; exitAt?: number; z?: number; right?: ReactNode; children?: ReactNode }) {
   const seed = useBoil(4) + seedOff * 13;
   const frame = useFrame();
   if (frame < at || (exitAt !== undefined && frame >= exitAt)) return null;
   const sx = shake ? Math.sin(frame * 4.1 + seedOff) * 4 * shake : 0;
   const sy = shake ? Math.cos(frame * 3.3 + seedOff * 2) * 3 * shake : 0;
   return (
-    <div style={{ position: "absolute", left: x + sx, top: y + sy, width: w, height: h, zIndex: z }}>
+    <div style={{ position: "absolute", left: x + sx + dx, top: y + sy + dy, width: w, height: h, zIndex: z }}>
       <svg width={w} height={h} style={{ position: "absolute", inset: 0, overflow: "visible" }}>
         <Draw at={at} duration={12} each={1.5}>
           <RoughRect x={3} y={3} w={w - 6} h={h - 6} seed={seed + 1} amp={1.8} stroke={INK} width={4} fill={PAPER} />
@@ -92,7 +92,7 @@ function Win({ x, y, w, h, title, at = 0, lines = 6, seedOff = 0, shake = 0, exi
 }
 
 /** Thought bubble drawn in ink; (x, y) is the small trailing puff near the head. */
-function Thought({ at, x, y, w = 320, h = 110, size = 36, exitAt, children }: { at: number; x: number; y: number; w?: number; h?: number; size?: number; exitAt?: number; children: ReactNode }) {
+function Thought({ at, x, y, w = 320, h = 110, size = 40, exitAt, children }: { at: number; x: number; y: number; w?: number; h?: number; size?: number; exitAt?: number; children: ReactNode }) {
   const frame = useFrame();
   const seed = useBoil(4);
   const p = progress(frame, at, 12, Easing.outBack);
@@ -113,18 +113,23 @@ function Thought({ at, x, y, w = 320, h = 110, size = 36, exitAt, children }: { 
 }
 
 /** The plan, unrolling off the window and over the edge of the desk. */
-function Scroll({ at, x, y, w, maxH }: { at: number; x: number; y: number; w: number; maxH: number }) {
+function Scroll({ at, x, y, w, maxH, foldAt }: { at: number; x: number; y: number; w: number; maxH: number; /** local y of the desk edge: below it the paper folds over and hangs down the desk face */ foldAt: number }) {
   const frame = useFrame();
   const seed = useBoil(4);
-  const h = interpolate(frame, [at, at + 100], [30, maxH], { easing: Easing.inOutCubic });
+  const h = interpolate(frame, [at, at + 90], [30, maxH], { easing: Easing.inOutCubic });
   const n = Math.max(0, Math.floor((h - 26) / 26));
+  const bend = 34; // px the hanging part shifts toward the viewer
+  const off = (py: number) => (py > foldAt ? (Math.min(1, (py - foldAt) / 60)) * bend : 0);
+  const outline: [number, number][] = h > foldAt ? [[2, 0], [w - 2, 0], [w - 2, foldAt], [w - 2 + bend, foldAt + 60], [w - 2 + bend, h], [2 + bend, h], [2 + bend, foldAt + 60], [2, foldAt]] : [[2, 0], [w - 2, 0], [w - 2, h], [2, h]];
   return (
     <svg width={w} height={maxH + 30} style={{ position: "absolute", left: x, top: y, overflow: "visible" }}>
-      <path d={roughRect(2, 0, w - 4, h, seed + 31, 2)} fill={PAPER} stroke={INK} strokeWidth={4} />
-      {Array.from({ length: n }).map((_, i) => (
-        <path key={i} d={scribble(22, 26 + i * 26, (w - 56) * (0.35 + sketchHash(5, i) * 0.6), seed + 40 + i)} fill="none" stroke={INK} strokeWidth={2} opacity={0.5} />
-      ))}
-      <path d={roughEllipse(w / 2, h + 2, w / 2 - 2, 13, seed + 33, 1.5)} fill="var(--light)" stroke={INK} strokeWidth={4} />
+      <path d={roughPath(outline, seed + 31, 2, true)} fill={PAPER} stroke={INK} strokeWidth={4} />
+      {h > foldAt && <path d={roughPath([[2, foldAt], [w - 2, foldAt]], seed + 32, 1.2)} fill="none" stroke={INK} strokeWidth={2.5} opacity={0.55} />}
+      {Array.from({ length: n }).map((_, i) => {
+        const py = 26 + i * 26;
+        return <path key={i} d={scribble(22 + off(py), py, (w - 56) * (0.35 + sketchHash(5, i) * 0.6), seed + 40 + i)} fill="none" stroke={INK} strokeWidth={2} opacity={0.5} />;
+      })}
+      <path d={roughEllipse(w / 2 + off(h), h + 2, w / 2 - 2, 13, seed + 33, 1.5)} fill="var(--light)" stroke={INK} strokeWidth={4} />
     </svg>
   );
 }
@@ -157,17 +162,18 @@ function Open() {
   return (
     <Panel seed={seed}>
       <Scribble pose={pose} x={FIG.x} y={FIG.y} typing={frame > 40 ? 0.55 : 0} />
-      <Caption at={3} w={260}>{D.time0}</Caption>
-      <Win x={70} y={150} w={560} h={230} title="terminal" at={8} lines={3} seedOff={1}>
+      {/* poster frame: the caption is already drawn at frame 0, the terminal starts sketching at once */}
+      <Caption at={-8} textDelay={8} w={260}>{D.time0}</Caption>
+      <Win x={70} y={150} w={560} h={230} title="terminal" at={0} lines={3} seedOff={1}>
         <div className="hand" style={{ position: "absolute", left: 26, top: 164, fontSize: 32 }}>
           <span style={{ color: "var(--muted)" }}>› </span>
           <Typewriter text={D.prompt} at={34} cps={13} />
         </div>
         <Typing text={D.prompt} at={34} cps={13} volume={0.16} pan={-0.3} />
       </Win>
-      <Thought at={16} x={990} y={400} w={330} h={110} exitAt={82}>{D.thought0}</Thought>
-      <Scratch at={3} volume={0.09} />
-      <Scratch at={8} pan={-0.3} />
+      <Thought at={9} x={990} y={400} w={340} h={110} exitAt={82}>{D.thought0}</Thought>
+      <Scratch at={0} pan={-0.3} />
+      <Scratch at={9} volume={0.08} pan={0.3} length={6} />
     </Panel>
   );
 }
@@ -179,19 +185,19 @@ function Plan() {
     { at: 0, pose: "reading" },
     { at: 34, pose: "wide", ease: "outBack" },
     { at: 96, pose: { ...POSES.wide, tilt: 16, pupil: 1, hy: 14, hx: 30 } },
-    { at: 168, pose: "dead", ease: "inOutCubic" },
+    { at: 150, pose: { ...POSES.wide, tilt: 4, pupil: 0.6, hy: 0, hx: 0, eyes: 1.5, open: 0.7 }, ease: "outBack" },
   ]);
   return (
     <Panel seed={seed}>
       <Scribble pose={pose} x={FIG.x} y={FIG.y} />
       <Win x={1130} y={60} w={560} h={230} title="PLAN.md" at={4} lines={4} seedOff={2} right={<span style={{ color: RED }}><Counter from={12} to={D.planLines} at={30} duration={120} format={(n) => `${Math.round(n).toLocaleString()} lines`} /></span>} />
-      <Scroll at={30} x={1172} y={290} w={476} maxH={640} />
+      <Scroll at={30} x={1172} y={290} w={476} maxH={660} foldAt={FIG.y - 290} />
       <Sfx at={40} x={960} y={330} rot={6} size={44} color="var(--muted)" exitAt={80}>hmm.</Sfx>
       <Sfx at={84} x={980} y={310} rot={-4} size={56} color="var(--muted)" exitAt={124}>wait.</Sfx>
-      <Sfx at={128} x={960} y={280} rot={5} size={84} color={RED} exitAt={190}>WAIT.</Sfx>
+      <Sfx at={128} x={960} y={280} rot={5} size={84} color={RED}>WAIT.</Sfx>
       <Caption at={100} w={640}>{D.planCaption}</Caption>
       <Scratch at={4} pan={0.3} />
-      <Whoosh at={30} durationInFrames={70} from={1100} to={260} volume={0.11} name="unroll" />
+      <Whoosh at={30} durationInFrames={64} from={1100} to={260} volume={0.11} name="unroll" />
       {Array.from({ length: 9 }).map((_, i) => (
         <Click key={i} at={34 + i * 11} volume={0.05} freq={1500 + i * 60} name="page" />
       ))}
@@ -208,61 +214,70 @@ const WINS = [
   { x: 640, y: 22, w: 400, h: 170 },
   { x: 1060, y: 22, w: 400, h: 170 },
 ];
-const PINGS = [96, 108, 118, 126, 131, 135, 150, 164, 176, 190, 204, 220, 236];
+const PINGS = [80, 92, 102, 110, 116, 121, 140, 152, 164, 176, 188, 200];
 
 function Agents() {
   const seed = useBoil(4);
   const frame = useFrame();
-  const FURY = 132;
+  const FURY = 126;
   const fury = progress(frame, FURY, 8, Easing.outCubic);
+  // the windows get blown outward by the hammering: columns slide off the sides, the top row flies up
+  const scatter = progress(frame, FURY, 16, Easing.outBack);
   const pose = usePose([
-    { at: 0, pose: "typing" },
-    { at: 18, pose: "swivelL", ease: "outBack" },
-    { at: 46, pose: "swivelR", ease: "outBack", arc: 14 },
-    { at: 72, pose: "swivelL", ease: "outBack", arc: 14 },
-    { at: 96, pose: "swivelR", ease: "outBack", arc: 12 },
-    { at: 116, pose: "wide", ease: "outBack" },
+    { at: 0, pose: { ...POSES.wide, eyes: 1.5, open: 0.7, tilt: 4 } },
+    { at: 14, pose: "swivelL", ease: "outBack", arc: 10 },
+    { at: 42, pose: "swivelR", ease: "outBack", arc: 14 },
+    { at: 68, pose: "swivelL", ease: "outBack", arc: 14 },
+    { at: 92, pose: "swivelR", ease: "outBack", arc: 12 },
+    { at: 112, pose: "wide", ease: "outBack" },
     { at: FURY, pose: "rage", ease: "outBack", arc: 22 },
-    { at: 250, pose: "rage" },
+    { at: 208, pose: "rage" },
   ]);
   return (
-    <Camera keyframes={[{ frame: 0, zoom: 1 }, { frame: FURY - 4, zoom: 1 }, { frame: FURY + 18, zoom: 1.16, x: 960, y: 590, easing: Easing.outCubic }]}>
+    <Camera keyframes={[{ frame: 0, zoom: 1 }, { frame: FURY - 2, zoom: 1 }, { frame: FURY + 12, zoom: 1.24, x: 960, y: 620, easing: Easing.outBack }]}>
       <Panel seed={seed}>
         {WINS.map((w, i) => (
-          <Win key={i} {...w} title={D.agents[i]} at={8 + i * 14} lines={3} seedOff={10 + i} shake={fury * 0.8} />
+          <Win key={i} {...w} title={D.agents[i]} at={i * 12} lines={3} seedOff={10 + i} shake={fury * 0.8} dx={i < 2 ? -scatter * 150 : i < 4 ? scatter * 150 : 0} dy={i >= 4 ? -scatter * 260 : 0} />
         ))}
         {WINS.map((w, i) => (
-          <Sfx key={`p${i}`} at={10 + i * 14} x={w.x + w.w - 150} y={w.y - 26} rot={i % 2 ? 8 : -8} size={54} color={RED} exitAt={10 + i * 14 + 26}>
+          <Sfx key={`p${i}`} at={2 + i * 12} x={w.x + w.w - 150} y={w.y - 26} rot={i % 2 ? 8 : -8} size={54} color={RED} exitAt={2 + i * 12 + 26}>
             PING!
           </Sfx>
         ))}
-        {PINGS.map((f, i) => (
-          <Sfx key={`q${i}`} at={f} x={WINS[i % 6].x + 120 + (i % 3) * 60} y={WINS[i % 6].y + 60 + (i % 2) * 40} rot={(i % 5) * 4 - 8} size={40 + (i % 3) * 8} color={RED} exitAt={f + 22}>
-            {i % 3 === 0 ? "needs input" : i % 3 === 1 ? "PING!" : "?"}
-          </Sfx>
-        ))}
+        {PINGS.map((f, i) => {
+          // after the scatter only the side columns remain on screen; the nags ride along with them
+          const wi = f >= FURY ? i % 4 : i % 6;
+          const w = WINS[wi];
+          const dx = f >= FURY ? (wi < 2 ? -150 : 150) : 0;
+          return (
+            <Sfx key={`q${i}`} at={f} x={w.x + dx + (f >= FURY ? (wi < 2 ? 330 : -90) : wi < 2 ? 170 : 60) + (i % 3) * 30} y={w.y + 60 + (i % 2) * 40} rot={(i % 5) * 4 - 8} size={40 + (i % 3) * 8} color={RED} exitAt={f + 22}>
+              {i % 3 === 0 ? "needs input" : i % 3 === 1 ? "PING!" : "?"}
+            </Sfx>
+          );
+        })}
         <Scribble pose={pose} x={FIG.x} y={FIG.y} typing={frame >= FURY ? 1 : frame < 18 ? 0.5 : 0} fury={fury} />
-        {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
-          <Sfx key={`t${i}`} at={FURY + 6 + i * 13} x={[600, 1080, 560, 1120, 640, 1060, 700, 1000][i]} y={[500, 470, 560, 540, 420, 600, 640, 380][i]} rot={i % 2 ? 10 : -12} size={60 + (i % 3) * 14} exitAt={FURY + 6 + i * 13 + 34}>
-            {i % 4 === 3 ? "TAPTAPTAP" : "TAP"}
+        {[0, 1, 2, 3, 4, 5].map((i) => (
+          <Sfx key={`t${i}`} at={FURY + 6 + i * 12} x={[600, 1080, 560, 1120, 640, 1060][i]} y={[500, 470, 560, 540, 420, 600][i]} rot={i % 2 ? 10 : -12} size={64 + (i % 3) * 14} exitAt={FURY + 6 + i * 12 + 36}>
+            {i % 3 === 2 ? "TAPTAPTAP" : "TAP"}
           </Sfx>
         ))}
-        <Caption at={4} x={60} y={60} w={520} exitAt={FURY + 4}>{D.agentsCaption}</Caption>
-        <Caption at={FURY + 8} x={150} y={130} w={660}>{D.agentsCaption2}</Caption>
+        <Caption at={0} textDelay={3} x={60} y={60} w={520} exitAt={FURY + 4}>{D.agentsCaption}</Caption>
+        <Caption at={FURY + 8} x={210} y={175} w={660}>{D.agentsCaption2}</Caption>
         {/* sound: six pings on arrival, nags, then the hammering */}
         {WINS.map((_, i) => (
-          <Alert key={`a${i}`} at={10 + i * 14} volume={0.16} name="ping" />
+          <Alert key={`a${i}`} at={2 + i * 12} volume={0.16} name="ping" />
         ))}
         {WINS.map((_, i) => (
-          <Scratch key={`s${i}`} at={8 + i * 14} volume={0.08} pan={i < 2 ? -0.5 : i < 4 ? 0.5 : 0} />
+          <Scratch key={`s${i}`} at={i * 12} volume={0.08} pan={i < 2 ? -0.5 : i < 4 ? 0.5 : 0} />
         ))}
         {PINGS.map((f, i) => (
           <Alert key={`n${i}`} at={f} volume={0.11 + (i % 3) * 0.02} name="nag" />
         ))}
         <Thump at={FURY} volume={0.4} from={140} to={50} name="fury-hit" />
-        {Array.from({ length: 60 }).map((_, i) => (
+        {Array.from({ length: 40 }).map((_, i) => (
           <Keystroke key={`k${i}`} at={FURY + 2 + i * 2 + (i % 3 === 0 ? 1 : 0)} volume={0.3 + (i % 4) * 0.05} seed={i} pan={i % 2 ? 0.25 : -0.25} />
         ))}
+        <Whoosh at={FURY} durationInFrames={10} from={600} to={2400} volume={0.1} name="scatter" />
       </Panel>
     </Camera>
   );
@@ -278,6 +293,7 @@ function Review() {
     { at: STAMP - 10, pose: { ...POSES.dead, rhx: 60, rhy: -34 }, ease: "outBack", arc: 16 },
     { at: STAMP + 2, pose: { ...POSES.dead, rhx: 60, rhy: -18 }, ease: "outExpo" },
     { at: STAMP + 30, pose: { ...POSES.dead, mouth: 0.2 }, ease: "inOutCubic" },
+    { at: STAMP + 70, pose: { ...POSES.dead, mouth: 0.2, tilt: 3, hy: 22 }, ease: "inOutCubic" },
   ]);
   const read = Math.min(D.readTo, Math.round(interpolate(frame, [12, 100], [0, D.readTo], { easing: Easing.linear })));
   return (
@@ -340,11 +356,11 @@ function Blank() {
         <div className="hand" style={{ position: "absolute", left: 24, top: 6, fontSize: 27, color: "var(--muted)" }}>untitled</div>
       </div>
       <Scribble pose={pose} x={FIG.x} y={FIG.y} />
-      <Caption at={4} w={260}>{D.night}</Caption>
-      <Thought at={44} x={990} y={410} w={200} h={90} size={64} exitAt={86}>{D.thought1}</Thought>
-      <Thought at={92} x={990} y={410} w={400} h={110} size={38}>{D.thought2}</Thought>
-      {[0, 1, 2, 3].map((i) => (
-        <Click key={i} at={8 + i * 30} volume={0.06} freq={1700} name="tick" />
+      <Caption at={0} textDelay={3} w={260}>{D.night}</Caption>
+      <Thought at={22} x={990} y={410} w={200} h={90} size={64} exitAt={66}>{D.thought1}</Thought>
+      <Thought at={72} x={990} y={410} w={420} h={110} size={40}>{D.thought2}</Thought>
+      {[0, 1, 2, 3, 4].map((i) => (
+        <Click key={i} at={8 + i * 30} volume={0.16} freq={1700} name="tick" />
       ))}
     </Panel>
   );
@@ -373,6 +389,13 @@ function Tease() {
           </Draw>
         </g>
       </svg>
+      <svg width={1760} height={920} style={{ position: "absolute", inset: 0, overflow: "visible", pointerEvents: "none" }}>
+        <g transform="translate(880 240) scale(1.05)">
+          <Draw at={98} duration={12}>
+            <path d={roughEllipse(NODES[0][0], NODES[0][1], 24, 24, seed + 340, 1.4)} fill="none" stroke={RED} strokeWidth={3.5} />
+          </Draw>
+        </g>
+      </svg>
       <Caption at={66} w={560}>{D.teaseCaption}</Caption>
       <Reveal at={88} duration={22} className="script" style={{ position: "absolute", left: 0, right: 0, bottom: 34, textAlign: "center", fontSize: 64, color: RED }}>
         {D.url}
@@ -382,6 +405,7 @@ function Tease() {
       <Scratch at={MARK + 28} volume={0.1} length={12} pan={-0.2} />
       <Scratch at={66} volume={0.08} />
       {frame >= 88 && <Scratch at={88} volume={0.08} length={16} />}
+      <Scratch at={98} volume={0.07} length={10} pan={0.1} />
     </Panel>
   );
 }
@@ -396,21 +420,24 @@ function Score() {
       <Sequence from={S.start("open")} durationInFrames={S.duration("open")} name="score-open">
         <Pattern bpm={104} step={0.25} at={4} steps="C4 . E4 . G4 . E4 . A4 . G4 . E4 . C4 ." wave="pluck" brightness={0.7} volume={0.12} reverb={0.25} repeat={2} humanize={0.02} name="motif" />
         <Pattern bpm={104} step={0.5} at={4} steps="C3 . G2 . A2 . G2 ." wave="pluck" brightness={0.4} volume={0.13} reverb={0.15} repeat={3} name="bass" />
+        <Pluck note="C5" at={S.duration("open") - 8} volume={0.12} reverb={0.3} name="open-close" />
       </Sequence>
       <Sequence from={S.start("plan")} durationInFrames={S.duration("plan")} name="score-plan">
         <Pattern bpm={104} step={0.25} at={0} steps="C4 . E4 G4 . . A4 . B4 . . . C5 . . ." wave="pluck" brightness={0.7} volume={0.11} reverb={0.3} repeat={4} humanize={0.02} name="plan-motif" />
         <Pattern bpm={104} step={0.5} at={0} steps="C3 . G2 . F2 . G2 ." wave="pluck" brightness={0.4} volume={0.13} reverb={0.15} repeat={4} name="plan-bass" />
+        <Pluck note="G4" at={S.duration("plan") - 8} volume={0.12} reverb={0.3} name="plan-close" />
       </Sequence>
       <Sequence from={S.start("agents")} durationInFrames={S.duration("agents")} name="score-agents">
         <Pattern bpm={116} step={0.25} at={0} steps="E4 . E4 . F4 . F4 . G4 . G4 . A4 . A4 ." wave="pluck" brightness={0.75} volume={0.11} reverb={0.3} repeat={3} humanize={0.02} name="agents-rise" />
         <Pattern bpm={116} step={0.5} at={0} steps="A2 . A2 . C3 . D3 ." wave="pluck" brightness={0.45} volume={0.14} reverb={0.15} repeat={5} name="agents-bass" />
-        <Pattern bpm={116} step={0.125} at={132} steps="A4 A4 C5 A4 D5 A4 C5 A4 A4 A4 C5 A4 E5 A4 C5 A4" wave="pluck" brightness={0.8} volume={0.07} reverb={0.35} repeat={2} humanize={0.01} name="fury-tremolo" />
+        <Pattern bpm={116} step={0.125} at={126} steps="A4 A4 C5 A4 D5 A4 C5 A4 A4 A4 C5 A4 E5 A4 C5 A4" wave="pluck" brightness={0.8} volume={0.14} reverb={0.35} repeat={2} humanize={0.01} name="fury-tremolo" />
       </Sequence>
       <Sequence from={S.start("review")} durationInFrames={S.duration("review")} name="score-review">
         <Pattern bpm={92} step={0.5} at={0} steps="A2 . . . C3 . . . E3 . . . D3 . . ." wave="pluck" brightness={0.4} volume={0.13} reverb={0.25} repeat={2} name="review-bass" />
         <Pattern bpm={92} step={0.25} at={0} steps="E4 . . . C4 . . . A3 . . . . . . ." wave="epiano" volume={0.08} reverb={0.4} repeat={3} name="review-sigh" />
       </Sequence>
-      <Duck at={S.start("blank") - 4} durationInFrames={S.duration("blank") + 2} depth={0.08} attack={6} release={26} />
+      {/* starts after the paper flip so the whoosh is not swallowed; releases before the next flip */}
+      <Duck at={S.start("blank") + 8} durationInFrames={S.duration("blank") - 24} depth={0.2} attack={8} release={12} />
       <Sequence from={S.start("tease")} durationInFrames={S.duration("tease")} name="score-tease">
         <Chord at={18} notes={["C3", "G3", "E4", "B4"]} wave="epiano" strum={3} ring={3} volume={0.09} reverb={0.5} width={0.5} name="tease-chord" />
         <Pattern bpm={104} step={0.25} at={66} steps="C5 . E5 . G5 ." wave="pluck" brightness={0.7} volume={0.1} reverb={0.45} name="tease-motif" />

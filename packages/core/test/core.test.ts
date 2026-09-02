@@ -187,3 +187,34 @@ it("formats register size variants that share the component and scene map", () =
   expect(getComposition("spot@1:1")!.durationInFrames).toBe(90);
   expect(base.format).toBeUndefined();
 });
+
+import { hatchLines, roughEllipse, roughPath, roughRect, scribble, sketchHash } from "../src/sketch";
+
+it("sketch: rough paths are deterministic per seed, differ across seeds, and stay near the polyline", () => {
+  const pts: [number, number][] = [[0, 0], [100, 0], [100, 60]];
+  const a = roughPath(pts, 7, 2);
+  expect(roughPath(pts, 7, 2)).toBe(a);
+  expect(roughPath(pts, 8, 2)).not.toBe(a);
+  expect(a.startsWith("M")).toBe(true);
+  expect(a).toContain("Q");
+  const nums = [...a.matchAll(/-?\d+(?:\.\d+)?/g)].map((m) => Number(m[0]));
+  for (let i = 0; i < nums.length; i += 2) {
+    expect(nums[i]).toBeGreaterThan(-4);
+    expect(nums[i]).toBeLessThan(104);
+    expect(nums[i + 1]).toBeGreaterThan(-4);
+    expect(nums[i + 1]).toBeLessThan(64);
+  }
+  expect(roughPath([[0, 0]], 1)).toBe("");
+  expect(sketchHash(3, 4)).toBeGreaterThanOrEqual(0);
+  expect(sketchHash(3, 4)).toBeLessThan(1);
+  expect(sketchHash(3, 4)).toBe(sketchHash(3, 4));
+});
+
+it("sketch: rect, ellipse, scribble and hatch produce well-formed geometry", () => {
+  expect(roughRect(10, 10, 100, 50, 1, 1)).toMatch(/^M/);
+  expect(roughEllipse(50, 50, 30, 20, 2, 1)).toMatch(/^M/);
+  expect(scribble(0, 0, 140, 3)).toMatch(/^M/);
+  const lines = hatchLines(0, 0, 100, 50, 10, 0, -45, 0);
+  expect(lines.length).toBeGreaterThan(8);
+  for (const [[x1, y1], [x2, y2]] of lines) expect(Math.hypot(x2 - x1, y2 - y1)).toBeGreaterThan(100);
+});
