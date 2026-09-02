@@ -84,6 +84,8 @@ interface Box {
   h: number;
   text: string;
   kind: string;
+  /** Index of the enclosing copy element (siblings inside one line share it), -1 for top-level. */
+  group: number;
 }
 
 /** DOM checks on sampled frames: copy outside the safe area, copy overlapping copy. */
@@ -91,17 +93,22 @@ async function domLint(url: string, meta: CompositionMeta, props: Record<string,
   const issues: LintIssue[] = [];
   let copyBoxes = 0;
   const frames = new Set<number>();
-  for (const s of scenes) {
-    const d = s.end - s.start;
-    for (const f of [s.start + Math.min(12, d - 1), s.start + Math.floor(d / 2), s.end - 6]) if (f >= 0 && f < meta.durationInFrames) frames.add(f);
-  }
+  // Sample only where one scene is on screen alone (outside transition overlaps): start+12, middle, end-6.
+  const sorted = [...scenes].sort((a, b) => a.start - b.start);
+  sorted.forEach((s, i) => {
+    const solo0 = Math.max(s.start, sorted[i - 1]?.end ?? 0);
+    const solo1 = Math.min(s.end, sorted[i + 1]?.start ?? meta.durationInFrames);
+    const d = solo1 - solo0;
+    if (d <= 0) return;
+    for (const f of [solo0 + Math.min(12, d - 1), solo0 + Math.floor(d / 2), solo1 - 6]) if (f >= solo0 && f < solo1 && f < meta.durationInFrames - 3) frames.add(f);
+  });
   const browser = await chromium.launch({ args: CHROME_ARGS });
   try {
     const page = await openHarnessPage(browser, url, { width: meta.width, height: meta.height }, 1, log);
     await page.evaluate(([id, p]) => window.__agenticvids!.select(id as string, p as Record<string, unknown>), [meta.id, props ?? {}] as const);
-    for (const f of [...frames].sort((a, b) => a - b)) {
-      await page.evaluate((n) => window.__agenticvids!.setFrame(n), f);
-      const boxes: Box[] = await page.evaluate(() => {
+    const measure = async (n: number): Promise<Box[]> => {
+      await page.evaluate((k) => window.__agenticvids!.setFrame(k), n);
+      return page.evaluate(() => {
         const out: Box[] = [];
         const visibleOpacity = (el: Element | null) => {
           let o = 1;
@@ -113,39 +120,70 @@ async function domLint(url: string, meta: CompositionMeta, props: Record<string,
           }
           return o;
         };
-        for (const el of Array.from(document.querySelectorAll("[data-copy],[data-eyebrow]"))) {
+        const all = Array.from(document.querySelectorAll("[data-copy],[data-eyebrow]"));
+        all.forEach((el, i) => el.setAttribute("data-lint-i", String(i)));
+        for (const el of all) {
           const text = (el.textContent ?? "").trim();
           if (!text) continue;
           if (visibleOpacity(el) < 0.08) continue;
+          // nested copy (a Reveal wrapping an Eyebrow, letters inside a line): keep the innermost only
+          if (el.querySelector("[data-copy],[data-eyebrow]")) continue;
+          const ancestor = el.parentElement?.closest("[data-copy],[data-eyebrow]");
+          const group = ancestor ? Number(ancestor.getAttribute("data-lint-i")) : -1;
           // Measure the glyphs (a Range), not the block box: a full-width <h1> is not "outside the safe area".
-          const outer = el.getBoundingClientRect();
           const range = document.createRange();
           range.selectNodeContents(el.firstElementChild ?? el);
           const inner = range.getBoundingClientRect();
-          const x1 = Math.max(outer.left, inner.left), y1 = Math.max(outer.top, inner.top);
-          const x2 = Math.min(outer.right, inner.right), y2 = Math.min(outer.bottom, inner.bottom);
+          // Clip by every overflow-hidden ancestor and by the canvas: masked or exited copy is not on screen.
+          let x1 = inner.left, y1 = inner.top, x2 = inner.right, y2 = inner.bottom;
+          const clipTo = (r: DOMRect) => {
+            x1 = Math.max(x1, r.left);
+            y1 = Math.max(y1, r.top);
+            x2 = Math.min(x2, r.right);
+            y2 = Math.min(y2, r.bottom);
+          };
+          for (let a = el.parentElement; a && a !== document.body; a = a.parentElement) {
+            const cs = getComputedStyle(a);
+            if (cs.overflowX !== "visible" || cs.overflowY !== "visible" || cs.clipPath !== "none") clipTo(a.getBoundingClientRect());
+          }
+          clipTo(new DOMRect(0, 0, window.innerWidth, window.innerHeight));
           const w = x2 - x1, h = y2 - y1;
           if (w <= 0 || h <= 0) continue;
-          if (w * h < 0.2 * inner.width * inner.height) continue; // masked away (mid-reveal or exited)
-          out.push({ x: x1, y: y1, w, h, text: text.slice(0, 40), kind: el.hasAttribute("data-eyebrow") ? "eyebrow" : "copy" });
+          if (w * h < 0.2 * inner.width * inner.height) continue; // mostly masked away (mid-reveal or exited)
+          out.push({ x: x1, y: y1, w, h, text: text.slice(0, 40), kind: el.hasAttribute("data-eyebrow") ? "eyebrow" : "copy", group });
         }
         return out;
+      });
+    };
+    for (const f of [...frames].sort((a, b) => a - b)) {
+      const now = await measure(f);
+      const later = await measure(f + 3);
+      // settled boxes only: copy in flight (entering, exiting, wiping) is not a layout defect
+      const key = (b: Box) => `${b.kind}|${b.text}|${b.group}`;
+      const laterBy = new Map(later.map((b) => [key(b), b]));
+      const boxes = now.filter((b) => {
+        const l = laterBy.get(key(b));
+        return l && Math.abs(l.x - b.x) < 2 && Math.abs(l.y - b.y) < 2 && Math.abs(l.w - b.w) < 2;
       });
       copyBoxes += boxes.length;
       const scene = scenes.find((s) => f >= s.start && f < s.end)?.name;
       const mx = meta.width * 0.05, my = meta.height * 0.05;
       for (const b of boxes) {
+        if (b.x + b.w <= 0 || b.y + b.h <= 0 || b.x >= meta.width || b.y >= meta.height) continue;
         if (b.x < mx || b.y < my || b.x + b.w > meta.width - mx || b.y + b.h > meta.height - my) {
           issues.push({ level: "warn", rule: "safe-area", frame: f, scene, message: `"${b.text}" crosses the 5% safe margin (${Math.round(b.x)},${Math.round(b.y)} ${Math.round(b.w)}×${Math.round(b.h)})` });
         }
       }
+      // Line boxes carry the font's internal leading; shrink 15% top/bottom and 3% left/right to approximate ink
+      // before testing, so tightly leaded stacked lines do not count as collisions.
+      const ink = (b: Box) => ({ x: b.x + b.w * 0.03, y: b.y + b.h * 0.15, w: b.w * 0.94, h: b.h * 0.7 });
       for (let i = 0; i < boxes.length; i++) {
         for (let j = i + 1; j < boxes.length; j++) {
-          const a = boxes[i], b = boxes[j];
+          const a = ink(boxes[i]), b = ink(boxes[j]);
           const ox = Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x);
           const oy = Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y);
-          if (ox > 4 && oy > 4 && !(a.text.includes(b.text) || b.text.includes(a.text))) {
-            issues.push({ level: "error", rule: "overlap", frame: f, scene, message: `"${a.text}" overlaps "${b.text}" by ${Math.round(ox)}×${Math.round(oy)}px` });
+          if (ox > 6 && oy > 6 && boxes[i].group === boxes[j].group && !(boxes[i].text.includes(boxes[j].text) || boxes[j].text.includes(boxes[i].text))) {
+            issues.push({ level: "error", rule: "overlap", frame: f, scene, message: `"${boxes[i].text}" overlaps "${boxes[j].text}" by ${Math.round(ox)}×${Math.round(oy)}px` });
           }
         }
       }
@@ -156,14 +194,22 @@ async function domLint(url: string, meta: CompositionMeta, props: Record<string,
   return { issues, frames: frames.size, copyBoxes };
 }
 
-/** Average luma of specific frames in the MP4, in the order requested. */
-function lumaOf(video: string, frames: number[]): Map<number, number> {
+interface Luma {
+  avg: number;
+  /** YMAX − YMIN: small for a flat background (codec noise only), large once type or shapes are on screen. */
+  range: number;
+}
+
+/** Luma statistics of specific frames in the MP4. */
+function lumaOf(video: string, frames: number[]): Map<number, Luma> {
   const sorted = [...new Set(frames)].sort((a, b) => a - b);
   const sel = sorted.map((n) => `eq(n\\,${n})`).join("+");
   const r = ff(["-i", video, "-vf", `select='${sel}',signalstats,metadata=print:file=-`, "-f", "null", "-"], { capture: true });
-  const vals = [...(r.stdout ?? "").matchAll(/lavfi\.signalstats\.YAVG=([\d.]+)/g)].map((m) => Number(m[1]));
-  const out = new Map<number, number>();
-  sorted.forEach((n, i) => out.set(n, vals[i] ?? NaN));
+  const avg = [...(r.stdout ?? "").matchAll(/lavfi\.signalstats\.YAVG=([\d.]+)/g)].map((m) => Number(m[1]));
+  const low = [...(r.stdout ?? "").matchAll(/lavfi\.signalstats\.YMIN=([\d.]+)/g)].map((m) => Number(m[1]));
+  const high = [...(r.stdout ?? "").matchAll(/lavfi\.signalstats\.YMAX=([\d.]+)/g)].map((m) => Number(m[1]));
+  const out = new Map<number, Luma>();
+  sorted.forEach((n, i) => out.set(n, { avg: avg[i] ?? NaN, range: (high[i] ?? 0) - (low[i] ?? 0) }));
   return out;
 }
 
@@ -175,10 +221,12 @@ function blankLint(video: string, cuts: number[], scenes: SceneMeta[], total: nu
   const luma = lumaOf(video, want);
   const issues: LintIssue[] = [];
   for (const c of cuts) {
-    const ref = luma.get(Math.min(c + 15, total - 1)) ?? 0;
+    const ref = luma.get(Math.min(c + 15, total - 1)) ?? { avg: 0, range: 0 };
+    const scene = scenes.find((s) => c >= s.start && c < s.end)?.name;
     for (const f of [c, c + 1, c + 2]) {
-      const y = luma.get(f) ?? 0;
-      if (y < 24 && ref > y + 20) issues.push({ level: "error", rule: "blank-after-cut", frame: f, scene: scenes.find((s) => f >= s.start && f < s.end)?.name, message: `frame ${f} is near-black (Y=${y.toFixed(1)}) right after the cut at ${c}; the scene settles at Y=${ref.toFixed(1)}` });
+      const y = luma.get(f) ?? { avg: 0, range: 0 };
+      if (y.avg < 24 && ref.avg > y.avg + 20) issues.push({ level: "error", rule: "blank-after-cut", frame: f, scene, message: `frame ${f} is near-black (Y=${y.avg.toFixed(1)}) right after the cut at ${c}; the scene settles at Y=${ref.avg.toFixed(1)}` });
+      else if (y.range < 20 && ref.range > 80) issues.push({ level: "error", rule: "flat-after-cut", frame: f, scene, message: `frame ${f} is a flat background (luma spread ${y.range.toFixed(0)}) right after the cut at ${c}; the scene has content by +15 (spread ${ref.range.toFixed(0)}). Give the scene an instant anchor at local frame 0.` });
     }
   }
   return issues;

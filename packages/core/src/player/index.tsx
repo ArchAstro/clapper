@@ -41,6 +41,7 @@ body{margin:0;background:#111;color:#e8e6df;font:13px/1.4 -apple-system,system-u
 .track .bar{position:absolute;top:0;height:16px;border-radius:3px;background:#2a3a47;border:1px solid #3a5266;color:#cfe3f2;font-size:10px;line-height:14px;padding:0 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .track .bar.audio{background:#4a3a24;border-color:#6d5532;color:#f2dfc0}
 .track .bar.tone{background:#3f3357;border-color:#5b4b7a;color:#e3d7f7}
+.track .bar.bus{background:#5a3d2b;color:#e3d7f7}
 .playhead{position:absolute;top:0;bottom:0;width:1px;background:#7fb894;pointer-events:none;opacity:.8}
 .err{position:absolute;left:12px;top:12px;background:#4a1d1d;color:#ffd7d7;padding:8px 10px;border-radius:6px;max-width:60%;white-space:pre-wrap;font-family:ui-monospace,monospace;font-size:11px}
 .empty{color:#8a8776;text-align:center;padding:40px}
@@ -293,7 +294,12 @@ function Tracks({ tracks, cues, frame, total, onSeek }: { tracks: TrackInfo[]; c
     row.items.push({ start, end, label, cls });
   };
   for (const t of tracks) place(t.startFrame, t.endFrame, t.name, "seq");
-  for (const c of cues) place(c.startFrame, c.endFrame, c.kind === "file" ? `♪ ${c.src?.split("/").pop()}` : `∿ ${c.tone?.wave} ${Math.round(c.tone?.freq ?? 0)}Hz`, c.kind === "file" ? "audio" : "tone");
+  for (const c of cues) {
+    if (c.kind === "bus") {
+      const depth = Math.min(...(c.automation?.volume ?? [[0, 1]]).map(([, g]) => g));
+      place(c.startFrame, c.endFrame, `⤓ duck ×${depth.toFixed(2)}`, "bus");
+    } else place(c.startFrame, c.endFrame, c.kind === "file" ? `♪ ${c.src?.split("/").pop()}` : `∿ ${c.tone?.wave} ${Math.round(c.tone?.freq ?? 0)}Hz`, c.kind === "file" ? "audio" : "tone");
+  }
   return (
     <div className="tracks">
       {rows.map((r, i) => (

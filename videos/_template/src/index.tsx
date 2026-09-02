@@ -52,6 +52,10 @@ function Proof() {
 function End() {
   return (
     <AbsoluteFill className="spot" style={{ alignItems: "center", justifyContent: "center", display: "flex", flexDirection: "column" }}>
+      {/* instant anchor: something is on screen at local frame 0 so the hard cut never lands on an empty frame */}
+      <Eyebrow color="var(--muted)" style={{ position: "absolute", top: 120, left: 120 }}>
+        {DATA.url}
+      </Eyebrow>
       <Reveal at={0} as="h1" className="display" style={{ fontSize: 96, margin: 0 }}>
         {DATA.product}
       </Reveal>

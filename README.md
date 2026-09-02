@@ -138,9 +138,12 @@ registerRoot(Root);
 scene), `scenes.json`, `lint.json` and `brief.md` (scene table + a reviewer prompt you can hand to a subagent). Scene cuts come
 from the composition's `scenes` plan, or from the top-level named sequences when there is no plan.
 
-Lint rules (exit code 1 on errors): `blank-after-cut` (near-black frame right after a cut while the scene is not), `overlap`
-(two `data-copy` boxes intersect), `safe-area` (copy crosses the 5 % margin), `determinism` (`Math.random`, `Date.now`,
+Lint rules (exit code 1 on errors): `blank-after-cut` (near-black frame right after a cut while the scene is not), `flat-after-cut`
+(only the background is on screen right after a cut: the scene has no instant anchor at local frame 0), `overlap`
+(two `data-copy` ink boxes intersect), `safe-area` (copy crosses the 5 % margin), `determinism` (`Math.random`, `Date.now`,
 `performance.now`, timers or rAF in the video's sources; append `// agenticvids-ok` to a line to allow it).
+The DOM rules sample three frames per scene where that scene is on screen alone, measure glyph ranges of the innermost
+copy elements, and only judge boxes that hold still for three frames, so entrances, exits and wipes are not "collisions".
 
 ## Studio
 
