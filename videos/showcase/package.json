@@ -7,8 +7,8 @@
     "preview": "agenticvids preview src/index.tsx",
     "render": "agenticvids render src/index.tsx",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "render:all": "agenticvids render src/index.tsx -c ledger --out out/ledger.mp4 && agenticvids render src/index.tsx -c orbit --out out/orbit.mp4 && agenticvids render src/index.tsx -c nimbus --out out/nimbus.mp4 --crf 21 && agenticvids render src/index.tsx -c archdev --out out/archdev.mp4 --crf 20 && agenticvids render src/index.tsx -c archdev2 --out out/archdev2.mp4 --crf 20",
-    "review": "for id in ledger orbit nimbus archdev archdev2; do agenticvids review src/index.tsx -c $id --video out/$id.mp4 || true; done"
+    "render:all": "agenticvids render src/index.tsx -c ledger --out out/ledger.mp4 && agenticvids render src/index.tsx -c orbit --out out/orbit.mp4 && agenticvids render src/index.tsx -c nimbus --out out/nimbus.mp4 --crf 21 && agenticvids render src/index.tsx -c archdev --out out/archdev.mp4 --crf 20 && agenticvids render src/index.tsx -c archdev2 --out out/archdev2.mp4 --crf 20 && agenticvids render src/index.tsx -c archdev3 --out out/archdev3.mp4 --crf 20",
+    "review": "for id in ledger orbit nimbus archdev archdev2 archdev3; do agenticvids review src/index.tsx -c $id --video out/$id.mp4 || true; done"
   },
   "dependencies": {
     "@agenticvids/cli": "workspace:*",

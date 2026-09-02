@@ -67,10 +67,10 @@ const HEAD_R = 80;
 const HEAD_Y = -246;
 
 /** The figure, keyboard and desk. `typing` bobs the hands; `fury` adds ghost arms, motion strokes and a rattling keyboard. */
-export function Scribble({ pose, x = 0, y = 0, scale = 1, typing = 0, fury = 0, desk = true, ink = INK, paper = PAPER, style }: { pose: SPose; x?: number; y?: number; scale?: number; typing?: number; fury?: number; desk?: boolean; ink?: string; paper?: string; style?: CSSProperties }) {
+export function Scribble({ pose, x = 0, y = 0, scale = 1, typing = 0, fury = 0, desk = true, ink = INK, paper = PAPER, blinkPeriod = 97, style }: { pose: SPose; x?: number; y?: number; scale?: number; typing?: number; fury?: number; desk?: boolean; ink?: string; paper?: string; /** frames between blinks */ blinkPeriod?: number; style?: CSSProperties }) {
   const frame = useFrame();
   const seed = useBoil(4);
-  const blink = useEyeBlink({ period: 97, length: 6, offset: 41 });
+  const blink = useEyeBlink({ period: blinkPeriod, length: 6, offset: 41 });
   const breath = Math.sin(frame / 13) * 1.4;
   const bobL = typing ? Math.sin(frame * 1.7) * 7 * typing : 0;
   const bobR = typing ? Math.sin(frame * 1.7 + Math.PI) * 7 * typing : 0;

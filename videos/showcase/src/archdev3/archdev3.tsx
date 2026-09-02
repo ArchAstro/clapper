@@ -163,7 +163,7 @@ function Open() {
     <Panel seed={seed}>
       <Scribble pose={pose} x={FIG.x} y={FIG.y} typing={frame > 40 ? 0.55 : 0} />
       {/* poster frame: the caption is already drawn at frame 0, the terminal starts sketching at once */}
-      <Caption at={-8} textDelay={8} w={260}>{D.time0}</Caption>
+      <Caption at={-8} textDelay={2} w={260}>{D.time0}</Caption>
       <Win x={70} y={150} w={560} h={230} title="terminal" at={0} lines={3} seedOff={1}>
         <div className="hand" style={{ position: "absolute", left: 26, top: 164, fontSize: 32 }}>
           <span style={{ color: "var(--muted)" }}>› </span>
@@ -234,23 +234,20 @@ function Agents() {
     { at: 208, pose: "rage" },
   ]);
   return (
-    <Camera keyframes={[{ frame: 0, zoom: 1 }, { frame: FURY - 2, zoom: 1 }, { frame: FURY + 12, zoom: 1.24, x: 960, y: 620, easing: Easing.outBack }]}>
+    <Camera keyframes={[{ frame: 0, zoom: 1 }, { frame: FURY - 2, zoom: 1 }, { frame: FURY + 12, zoom: 1.24, x: 960, y: 620, easing: Easing.outBack }, { frame: FURY + 46, zoom: 1.27, x: 960, y: 616 }, { frame: FURY + 52, zoom: 1.34, x: 960, y: 612, easing: Easing.outBack }, { frame: 209, zoom: 1.3, x: 960, y: 618, easing: Easing.inOutCubic }]}>
       <Panel seed={seed}>
         {WINS.map((w, i) => (
-          <Win key={i} {...w} title={D.agents[i]} at={i * 12} lines={3} seedOff={10 + i} shake={fury * 0.8} dx={i < 2 ? -scatter * 150 : i < 4 ? scatter * 150 : 0} dy={i >= 4 ? -scatter * 260 : 0} />
+          <Win key={i} {...w} title={D.agents[i]} at={i * 12} lines={3} seedOff={10 + i} shake={fury * 0.8} dx={i < 2 ? -scatter * 560 : i < 4 ? scatter * 560 : 0} dy={i >= 4 ? -scatter * 260 : 0} />
         ))}
         {WINS.map((w, i) => (
           <Sfx key={`p${i}`} at={2 + i * 12} x={w.x + w.w - 150} y={w.y - 26} rot={i % 2 ? 8 : -8} size={54} color={RED} exitAt={2 + i * 12 + 26}>
             PING!
           </Sfx>
         ))}
-        {PINGS.map((f, i) => {
-          // after the scatter only the side columns remain on screen; the nags ride along with them
-          const wi = f >= FURY ? i % 4 : i % 6;
-          const w = WINS[wi];
-          const dx = f >= FURY ? (wi < 2 ? -150 : 150) : 0;
+        {PINGS.filter((f) => f < FURY).map((f, i) => {
+          const w = WINS[i % 6];
           return (
-            <Sfx key={`q${i}`} at={f} x={w.x + dx + (f >= FURY ? (wi < 2 ? 330 : -90) : wi < 2 ? 170 : 60) + (i % 3) * 30} y={w.y + 60 + (i % 2) * 40} rot={(i % 5) * 4 - 8} size={40 + (i % 3) * 8} color={RED} exitAt={f + 22}>
+            <Sfx key={`q${i}`} at={f} x={w.x + (i % 6 < 2 ? 170 : 60) + (i % 3) * 30} y={w.y + 60 + (i % 2) * 40} rot={(i % 5) * 4 - 8} size={40 + (i % 3) * 8} color={RED} exitAt={f + 22}>
               {i % 3 === 0 ? "needs input" : i % 3 === 1 ? "PING!" : "?"}
             </Sfx>
           );
@@ -265,15 +262,16 @@ function Agents() {
         <Caption at={FURY + 8} x={210} y={175} w={660}>{D.agentsCaption2}</Caption>
         {/* sound: six pings on arrival, nags, then the hammering */}
         {WINS.map((_, i) => (
-          <Alert key={`a${i}`} at={2 + i * 12} volume={0.16} name="ping" />
+          <Alert key={`a${i}`} at={2 + i * 12} volume={0.12} name="ping" />
         ))}
         {WINS.map((_, i) => (
           <Scratch key={`s${i}`} at={i * 12} volume={0.08} pan={i < 2 ? -0.5 : i < 4 ? 0.5 : 0} />
         ))}
-        {PINGS.map((f, i) => (
+        {PINGS.filter((f) => f < FURY).map((f, i) => (
           <Alert key={`n${i}`} at={f} volume={0.11 + (i % 3) * 0.02} name="nag" />
         ))}
         <Thump at={FURY} volume={0.4} from={140} to={50} name="fury-hit" />
+        <Thump at={FURY + 46} volume={0.28} from={120} to={48} name="fury-hit-2" />
         {Array.from({ length: 40 }).map((_, i) => (
           <Keystroke key={`k${i}`} at={FURY + 2 + i * 2 + (i % 3 === 0 ? 1 : 0)} volume={0.3 + (i % 4) * 0.05} seed={i} pan={i % 2 ? 0.25 : -0.25} />
         ))}
@@ -359,8 +357,9 @@ function Blank() {
       <Caption at={0} textDelay={3} w={260}>{D.night}</Caption>
       <Thought at={22} x={990} y={410} w={200} h={90} size={64} exitAt={66}>{D.thought1}</Thought>
       <Thought at={72} x={990} y={410} w={420} h={110} size={40}>{D.thought2}</Thought>
+      {/* the last tick lands after the duck has released, so it is pre-attenuated to match the ducked ones */}
       {[0, 1, 2, 3, 4].map((i) => (
-        <Click key={i} at={8 + i * 30} volume={0.16} freq={1700} name="tick" />
+        <Click key={i} at={8 + i * 30} volume={i === 4 ? 0.04 : 0.16} freq={1700} name="tick" />
       ))}
     </Panel>
   );
@@ -376,7 +375,7 @@ function Tease() {
   const MARK = 22;
   return (
     <Panel seed={seed}>
-      <Scribble pose={pose} x={FIG.x} y={FIG.y} />
+      <Scribble pose={pose} x={FIG.x} y={FIG.y} blinkPeriod={52} />
       <svg width={1760} height={920} style={{ position: "absolute", inset: 0, overflow: "visible" }}>
         <g transform="translate(880 240) scale(1.05)">
           <Draw at={MARK} duration={40} each={4} easing={Easing.inOutCubic}>

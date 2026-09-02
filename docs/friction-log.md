@@ -126,6 +126,19 @@ Each entry: what happened → root cause → workaround → durable fix (DONE or
 | cue inventory | 8 Thump, 6 Pad, 4 Arp, 3 Pop, 3 Chime, 3 Alert, 2 Whoosh, 2 Riser, 2 TypeClicks, 1 Tone, 1 Click | raw sine/triangle/square/noise only |
 | keystrokes | 2-frame noise burst through a one-pole lowpass at 1.3–2.4 kHz | reads as "tick", not a key |
 
+### 2.19 Pencil draw-ins only animate strokes (ArchDev v3)
+- `<Draw>` animates stroke-dashoffset; a shape's **fill** appears the moment the element mounts. Two captions sharing a position hid each other's text because the second caption's paper fill was on screen from frame 0 while its stroke waited for its cue.
+- Fix: components that own a filled shape return `null` before their cue (`Win`, `Caption` in `archdev3.tsx`). Lesson for core: `<Draw>` should hide fills until each shape's stroke starts (proposed: `fill="draw"` option or `hideFillUntilDrawn`).
+- How it was found: `packages/cli/test/dom-probe.mjs <entry> <id> <frame>` prints every `data-copy` box with rect/opacity/font at a frame. The text was in the DOM at full opacity, so something above it was painting: that narrowed it to fills in two minutes.
+
+### 2.20 Scene arithmetic, this time
+- `defineScenes` paid off immediately: trimming plan (195→175) and agents (255→210) and lengthening review (180→210) between rounds touched one object; captions, the score's per-scene `<Sequence>` wrappers, the review kit's cuts and the reviewers' frame maps all followed.
+- Still manual: the stills I asked for after the trim were computed by hand once (1060 > 975). `agenticvids still --scene tease --every 30` avoids that; use it.
+
+### 2.21 Reviewer subagents, round 2
+- Three fresh reviewers (creative director, audio director, X strategist) converged on the same three defects independently (empty first half-second, dead air at one cut, an over-ducked scene), which is the signal to fix rather than debate. The audio director found a real timing bug (duck attack swallowing a paper flip) by measuring peaks per cut, not by listening.
+- Give reviewers the scene map and the exact still command; they render 10–60 frames each and cite them. Fresh agents for round 2 avoid anchoring on their own round-1 notes.
+
 ## 3. DSL / API improvement backlog
 
 Priorities: P0 = removes a class of bugs or a recurring hour; P1 = makes the next video faster; P2 = nice.
