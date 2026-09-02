@@ -188,8 +188,9 @@ function Reconcile() {
       <div style={{ position: "absolute", left: 120, top: 110, width: 1680, transform: `scale(${punch})` }}>
         <Rule at={0} duration={16} color="var(--accent)" thickness={3} style={{ marginBottom: 26 }} />
         <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <Animate from={{ opacity: 0 }} at={0} duration={6}><Eyebrow color="var(--muted)">September close · 1,284 transactions</Eyebrow></Animate>
-          <Animate from={{ opacity: 0 }} at={0} duration={6}><Eyebrow color="var(--muted)">Matched automatically · 99.2%</Eyebrow></Animate>
+          {/* instant anchor: the eyebrows are half-on at local frame 0 so the hard cut never lands on a flat frame */}
+          <Animate from={{ opacity: 0.45 }} at={0} duration={6}><Eyebrow color="var(--muted)">September close · 1,284 transactions</Eyebrow></Animate>
+          <Animate from={{ opacity: 0.45 }} at={0} duration={6}><Eyebrow color="var(--muted)">Matched automatically · 99.2%</Eyebrow></Animate>
         </div>
         <div className="mono" style={{ marginTop: 34, fontSize: 30 }}>
           {ROWS.map(([a, b, c], i) => (
@@ -280,6 +281,8 @@ function End() {
       <Pad notes={["A1", "E2", "C#3"]} wave="sine" volume={0.1} fadeIn={8} fadeOut={30} />
       <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 36 }}>
         <svg width={170} height={170} viewBox="0 0 100 100" style={{ transform: `scale(${0.7 + 0.3 * pop})` }}>
+          {/* instant anchor: a ghost of the mark is on screen at local frame 0; Draw inks over it */}
+          <path d="M22 14 V86 H84" fill="none" stroke="var(--accent)" strokeWidth={12} strokeLinecap="square" opacity={0.22} />
           <Draw at={0} duration={26} each={6}>
             <path d="M22 14 V86 H84" fill="none" stroke="var(--accent)" strokeWidth={12} strokeLinecap="square" />
             <circle cx={78} cy={22} r={8} fill="none" stroke="var(--bone)" strokeWidth={6} />
