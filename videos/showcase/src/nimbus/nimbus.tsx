@@ -1,4 +1,4 @@
-import { AbsoluteFill, Alert, Animate, Arp, Camera, Chime, Counter, Draw, Easing, Pad, Pop, Riser, Sequence, SplitText, Stagger, Thump, TransitionSeries, Typewriter, Whoosh, interpolate, progress, useFrame, useSpring } from "@agenticvids/core";
+import { AbsoluteFill, Alert, Animate, Arp, Camera, Chime, Counter, Draw, Easing, Pad, Pop, Riser, Sequence, SplitText, Stagger, Thump, TransitionSeries, Typewriter, Whoosh, interpolate, progress, useFrame, useSpring } from "@clapper/core";
 import { Eyebrow, Grain, Reveal, Vignette, EXPO, INOUT, QUINT, type Pt } from "../kit";
 import { TypeClicks } from "./typeclicks";
 

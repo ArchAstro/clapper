@@ -1,4 +1,4 @@
-import { AbsoluteFill, Breath, Composition, Copy, Drone, Duck, Eyebrow, Pattern, Reveal, Rule, Scenes, Thump, defineScenes, registerRoot, useFormat, useFrame, useProgress } from "@agenticvids/core";
+import { AbsoluteFill, Breath, Composition, Copy, Drone, Duck, Eyebrow, Pattern, Reveal, Rule, Scenes, Thump, defineScenes, registerRoot, useFormat, useFrame, useProgress } from "@clapper/core";
 import { DATA } from "./data";
 import "./theme.css";
 

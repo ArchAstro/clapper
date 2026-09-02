@@ -1,4 +1,4 @@
-import { Animate, Click, Easing, Img, staticFile, typedLength, useBlink, useFps, useFrame, type StyleValue } from "@agenticvids/core";
+import { Animate, Click, Easing, Img, staticFile, typedLength, useBlink, useFps, useFrame, type StyleValue } from "@clapper/core";
 import { useMemo, type CSSProperties, type ReactNode } from "react";
 
 /* Shared visual vocabulary for the Intern promo, mirroring the landing page's

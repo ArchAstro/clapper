@@ -1,4 +1,4 @@
-import { Animate, Chime, Img, Pad, SplitText, interpolate, staticFile, useFrame } from "@agenticvids/core";
+import { Animate, Chime, Img, Pad, SplitText, interpolate, staticFile, useFrame } from "@clapper/core";
 import { Paper, Rise, Wordmark } from "../ui";
 
 export const TAGLINE_LEN = 140;

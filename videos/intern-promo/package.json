@@ -4,13 +4,13 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "preview": "agenticvids preview src/index.tsx",
-    "render": "agenticvids render src/index.tsx --composition intern-promo --out out/intern-promo.mp4",
+    "preview": "clapper preview src/index.tsx",
+    "render": "clapper render src/index.tsx --composition intern-promo --out out/intern-promo.mp4",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@agenticvids/cli": "workspace:*",
-    "@agenticvids/core": "workspace:*",
+    "@clapper/cli": "workspace:*",
+    "@clapper/core": "workspace:*",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },

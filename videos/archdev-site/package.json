@@ -1,13 +1,13 @@
 {
-  "name": "video-template",
+  "name": "archdev-site",
   "private": true,
   "version": "0.1.0",
   "type": "module",
   "scripts": {
     "preview": "clapper preview src/index.tsx",
-    "render": "clapper render src/index.tsx -c spot --crf 20",
-    "still": "clapper still src/index.tsx -c spot",
-    "review": "clapper review src/index.tsx -c spot",
+    "compositions": "clapper compositions src/index.tsx",
+    "still": "clapper still src/index.tsx",
+    "render": "clapper render src/index.tsx",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {

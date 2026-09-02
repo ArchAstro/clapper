@@ -3,11 +3,11 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import * as AV from "../index";
 import { registerComposition } from "../composition";
 
-const STORAGE_KEY = "agenticvids.scratch";
+const STORAGE_KEY = "clapper.scratch";
 
 export const SCRATCH_ID = "scratch";
 
-const STARTER = `import { AbsoluteFill, Eyebrow, Reveal, Rule, Pluck, Thump, useProgress } from "@agenticvids/core";
+const STARTER = `import { AbsoluteFill, Eyebrow, Reveal, Rule, Pluck, Thump, useProgress } from "@clapper/core";
 
 // Edit, then ⌘/Ctrl + Enter. Exports: Scratch (the component) and meta.
 export const meta = { width: 1920, height: 1080, fps: 30, durationInFrames: 120 };
@@ -48,10 +48,10 @@ export async function compileScratch(source: string): Promise<{ id: string }> {
   const exportsObj: Record<string, unknown> = {};
   const moduleObj = { exports: exportsObj };
   const require = (name: string) => {
-    if (name === "@agenticvids/core") return AV;
+    if (name === "@clapper/core") return AV;
     if (name === "react") return React;
     if (name === "react/jsx-runtime") return { jsx: React.createElement, jsxs: React.createElement, Fragment: React.Fragment };
-    throw new Error(`scratch can only import "@agenticvids/core" and "react" (tried "${name}")`);
+    throw new Error(`scratch can only import "@clapper/core" and "react" (tried "${name}")`);
   };
   const fn = new Function("require", "exports", "module", "React", out.code);
   fn(require, exportsObj, moduleObj, React);
@@ -119,7 +119,7 @@ export function Scratch({ onCompiled }: { onCompiled: (id: string) => void }) {
           {busy ? "compiling…" : "run  ⌘↵"}
         </button>
         <button className="btn" onClick={() => setCode(STARTER)}>reset</button>
-        <span className="hint">imports: @agenticvids/core, react</span>
+        <span className="hint">imports: @clapper/core, react</span>
       </div>
       <textarea ref={ref} value={code} spellCheck={false} onChange={(e) => setCode(e.target.value)} onKeyDown={onKey} />
       <div className={`status ${status.ok ? "" : "bad"}`}>{status.text}</div>

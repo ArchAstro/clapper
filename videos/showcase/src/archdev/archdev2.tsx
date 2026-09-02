@@ -1,4 +1,4 @@
-import { AbsoluteFill, Animate, Chord, Draw, Drone, EPiano, Easing, Pattern, Riser, RoomTone, Scenes, Sequence, Thump, Tone, Typewriter, Typing, Whoosh, defineScenes, interpolate, progress, spring, useFrame } from "@agenticvids/core";
+import { AbsoluteFill, Animate, Chord, Draw, Drone, EPiano, Easing, Pattern, Riser, RoomTone, Scenes, Sequence, Thump, Tone, Typewriter, Typing, Whoosh, defineScenes, interpolate, progress, spring, useFrame } from "@clapper/core";
 import { Eyebrow, Reveal, EXPO, INOUT, QUINT } from "../kit";
 import { Agents, Blank, Clock, Copy, DESK, Open, Plan, Room, Workstation } from "./archdev";
 import { POSES, usePose } from "./person";

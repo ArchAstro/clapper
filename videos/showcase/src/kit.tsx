@@ -1,9 +1,9 @@
-import { Easing, interpolate, noise1d, progress, useFrame, useVideoConfig, type EasingFn } from "@agenticvids/core";
+import { Easing, interpolate, noise1d, progress, useFrame, useVideoConfig, type EasingFn } from "@clapper/core";
 import type { CSSProperties, ReactNode } from "react";
 
 /* ---------- shared motion vocabulary for the showcase videos ---------- */
 
-export { Reveal, Rule, Eyebrow } from "@agenticvids/core";
+export { Reveal, Rule, Eyebrow } from "@clapper/core";
 export const EXPO = Easing.outExpo;
 export const QUINT = Easing.outQuint;
 export const INOUT = Easing.inOutQuint;

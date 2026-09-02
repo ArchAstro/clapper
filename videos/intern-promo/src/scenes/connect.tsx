@@ -1,4 +1,4 @@
-import { Animate, Chime, Click, Pad, Sequence, SplitText, Stagger, Typewriter } from "@agenticvids/core";
+import { Animate, Chime, Click, Pad, Sequence, SplitText, Stagger, Typewriter } from "@clapper/core";
 import { Chip, Kicker, Paper, Rise, TypeClicks } from "../ui";
 
 export const CONNECT_LEN = 240;

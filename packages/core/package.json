@@ -1,5 +1,5 @@
 {
-  "name": "@agenticvids/core",
+  "name": "@clapper/core",
   "version": "0.1.0",
   "description": "React runtime for frame-deterministic animated video: timeline, sequences, tweens, springs, camera, audio, LaTeX.",
   "type": "module",

@@ -1,7 +1,7 @@
 # ArchDev soundtrack audit (2026-09-02)
 
 Measured with ffmpeg (`ebur128`, `astats`, band-limited RMS) on the audio extracted from `out/archdev.mp4`.
-Spectrograms: `out/audio-audit/before-spectrogram.png`, `after-spectrogram.png`. Cue inventory: `agenticvids cues src/index.tsx -c archdev`.
+Spectrograms: `out/audio-audit/before-spectrogram.png`, `after-spectrogram.png`. Cue inventory: `clapper cues src/index.tsx -c archdev`.
 
 ## Findings (before)
 
@@ -25,7 +25,7 @@ Spectrograms: `out/audio-audit/before-spectrogram.png`, `after-spectrogram.png`.
    - instruments: `<Pluck>`, `<EPiano>`, `<Chord strum>`, `<Pattern steps bpm step humanize swing>` (a step sequencer clamped to its scene), `<Drone>` (filtered saw with tremolo and width), `<RoomTone>`;
    - keyboard: `<Keystroke>` = click transient (noise 3.6–5.4 kHz, 12 ms) + body "thock" (200 Hz gliding down, 35 ms, partials) + faint key-up tick, with per-key variation; space bar lower and longer. `<Typing>` syncs keystrokes to `<Typewriter>`;
    - loudness normalisation keeps more range (`loudnorm` LRA 16 instead of 11);
-   - `agenticvids cues` lists a composition's cue inventory for audits.
+   - `clapper cues` lists a composition's cue inventory for audits.
 2. Score (D dorian → D major, 84 bpm), all synthesized, no assets:
    - open: felt pluck motif over a low drone and room tone; the "claimed" ding is an electric-piano A4;
    - plan: descending pluck line, paper ticks, noise riser, a low D2 string "boom" on the slump;

@@ -1,6 +1,6 @@
 /**
  * The render harness: mounted in headless Chromium by the CLI. It exposes
- * `window.__agenticvids` so the renderer can select a composition, seek to a
+ * `window.__clapper` so the renderer can select a composition, seek to a
  * frame, wait until the frame is stable, and then take a screenshot.
  *
  * Determinism tools installed here:
@@ -31,7 +31,7 @@ export interface HarnessApi {
 
 declare global {
   interface Window {
-    __agenticvids?: HarnessApi;
+    __clapper?: HarnessApi;
   }
 }
 
@@ -216,6 +216,6 @@ export function mountHarness(options: { virtualClock?: boolean; syncAnimations?:
     getTracks: () => [...getRegistry().tracks.values()],
     pendingDelays,
   };
-  window.__agenticvids = api;
+  window.__clapper = api;
   return api;
 }

@@ -33,7 +33,7 @@ export function doctor(projectDir?: string): DoctorCheck[] {
   } catch {
     ffPath = "";
   }
-  if (!ffPath) out.push({ name: "ffmpeg", ok: false, detail: "not found", fix: "pnpm install (ffmpeg-static must be allowed to build; see pnpm-workspace.yaml allowBuilds) or set AGENTICVIDS_FFMPEG" });
+  if (!ffPath) out.push({ name: "ffmpeg", ok: false, detail: "not found", fix: "pnpm install (ffmpeg-static must be allowed to build; see pnpm-workspace.yaml allowBuilds) or set CLAPPER_FFMPEG" });
   else {
     const r = spawnSync(ffPath, ["-hide_banner", "-encoders"], { encoding: "utf8" });
     const enc = r.stdout ?? "";
@@ -50,13 +50,13 @@ export function doctor(projectDir?: string): DoctorCheck[] {
 
   const dir = projectDir ?? process.cwd();
   const req = createRequire(path.join(dir, "package.json"));
-  for (const mod of ["react", "react-dom", "@agenticvids/core"]) {
+  for (const mod of ["react", "react-dom", "@clapper/core"]) {
     try {
       const p = req.resolve(`${mod}/package.json`);
       const v = JSON.parse(fs.readFileSync(p, "utf8")).version;
       out.push({ name: mod, ok: true, detail: `${v} from ${path.relative(dir, path.dirname(p)) || "."}` });
     } catch {
-      const soft = mod !== "@agenticvids/core";
+      const soft = mod !== "@clapper/core";
       out.push({ name: mod, ok: soft, detail: soft ? "not a project dependency (core's copy will be used)" : "not resolvable", fix: soft ? undefined : `pnpm add ${mod}` });
     }
   }

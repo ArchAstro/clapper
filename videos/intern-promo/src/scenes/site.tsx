@@ -1,4 +1,4 @@
-import { Animate, Click, Pad, SplitText, Stagger, interpolate, useFrame } from "@agenticvids/core";
+import { Animate, Click, Pad, SplitText, Stagger, interpolate, useFrame } from "@clapper/core";
 import { Chip, Dot, Kicker, Paper, Rise, SiteFrame } from "../ui";
 
 export const SITE_LEN = 280;

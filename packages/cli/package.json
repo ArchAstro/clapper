@@ -1,16 +1,16 @@
 {
-  "name": "@agenticvids/cli",
+  "name": "@clapper/cli",
   "version": "0.1.0",
-  "description": "Render @agenticvids compositions to MP4 in headless Chromium, and preview them in a studio.",
+  "description": "Render @clapper compositions to MP4 in headless Chromium, and preview them in a studio.",
   "type": "module",
-  "bin": { "agenticvids": "./bin/agenticvids.mjs" },
+  "bin": { "clapper": "./bin/clapper.mjs" },
   "main": "./src/index.ts",
   "scripts": {
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
-    "@agenticvids/core": "workspace:*",
+    "@clapper/core": "workspace:*",
     "@vitejs/plugin-react": "^5.0.0",
     "ffmpeg-static": "^5.3.0",
     "playwright": "1.62.1",

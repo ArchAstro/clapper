@@ -17,7 +17,7 @@ importers:
 
   packages/cli:
     dependencies:
-      '@agenticvids/core':
+      '@clapper/core':
         specifier: workspace:*
         version: link:../core
       '@vitejs/plugin-react':
@@ -76,10 +76,32 @@ importers:
 
   videos/_template:
     dependencies:
-      '@agenticvids/cli':
+      '@clapper/cli':
         specifier: workspace:*
         version: link:../../packages/cli
-      '@agenticvids/core':
+      '@clapper/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      react:
+        specifier: ^19.2.0
+        version: 19.2.8
+      react-dom:
+        specifier: ^19.2.0
+        version: 19.2.8(react@19.2.8)
+    devDependencies:
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.2.18
+      '@types/react-dom':
+        specifier: ^19.0.0
+        version: 19.2.5(@types/react@19.2.18)
+
+  videos/archdev-site:
+    dependencies:
+      '@clapper/cli':
+        specifier: workspace:*
+        version: link:../../packages/cli
+      '@clapper/core':
         specifier: workspace:*
         version: link:../../packages/core
       react:
@@ -98,10 +120,10 @@ importers:
 
   videos/intern-promo:
     dependencies:
-      '@agenticvids/cli':
+      '@clapper/cli':
         specifier: workspace:*
         version: link:../../packages/cli
-      '@agenticvids/core':
+      '@clapper/core':
         specifier: workspace:*
         version: link:../../packages/core
       react:
@@ -120,10 +142,10 @@ importers:
 
   videos/showcase:
     dependencies:
-      '@agenticvids/cli':
+      '@clapper/cli':
         specifier: workspace:*
         version: link:../../packages/cli
-      '@agenticvids/core':
+      '@clapper/core':
         specifier: workspace:*
         version: link:../../packages/core
       react:

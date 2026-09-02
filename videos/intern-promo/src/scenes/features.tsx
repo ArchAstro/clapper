@@ -1,4 +1,4 @@
-import { Animate, Camera, Chime, Counter, Easing, Pad, Sequence, Whoosh, interpolate, useFrame, useKeyframes, useSpring } from "@agenticvids/core";
+import { Animate, Camera, Chime, Counter, Easing, Pad, Sequence, Whoosh, interpolate, useFrame, useKeyframes, useSpring } from "@clapper/core";
 import type { ReactNode } from "react";
 import { Kicker, LockGlyph, Paper, Rise } from "../ui";
 

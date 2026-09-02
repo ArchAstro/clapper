@@ -7,7 +7,7 @@ const require = createRequire(import.meta.url);
 
 /** System ffmpeg if present, otherwise the ffmpeg-static binary. */
 export function resolveFfmpeg(): string {
-  if (process.env.AGENTICVIDS_FFMPEG) return process.env.AGENTICVIDS_FFMPEG;
+  if (process.env.CLAPPER_FFMPEG) return process.env.CLAPPER_FFMPEG;
   const sys = spawnSync("ffmpeg", ["-version"], { encoding: "utf8" });
   if (sys.status === 0 && /libx264/.test(sys.stdout + sys.stderr)) return "ffmpeg";
   try {
@@ -67,7 +67,7 @@ export function startFrameEncoder(o: VideoEncodeOptions) {
 
 /* ------------------------------ audio mixing ------------------------------- */
 
-import type { AudioCue, ToneSpec } from "@agenticvids/core";
+import type { AudioCue, ToneSpec } from "@clapper/core";
 
 export interface MixOptions {
   cues: AudioCue[];
@@ -109,7 +109,7 @@ export async function mixAudio(o: MixOptions): Promise<string | null> {
     if (lenSec <= 0 || startSec >= total) continue;
     const src = resolveSrc(cue.src, o.publicDir);
     if (!/^https?:/.test(src) && !fs.existsSync(src)) {
-      console.warn(`[agenticvids] audio file not found, skipping: ${src}`);
+      console.warn(`[clapper] audio file not found, skipping: ${src}`);
       continue;
     }
     const i = idx++;

@@ -1,4 +1,4 @@
-import { Animate, Pad, Sequence, SplitText, Whoosh, interpolate, useFrame } from "@agenticvids/core";
+import { Animate, Pad, Sequence, SplitText, Whoosh, interpolate, useFrame } from "@clapper/core";
 import { Dark, Kicker } from "../ui";
 
 export const DECK_LEN = 130;

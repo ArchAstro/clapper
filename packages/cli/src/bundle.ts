@@ -11,31 +11,31 @@ export type HarnessMode = "harness" | "studio";
 export interface BundleTarget {
   /** Absolute path to the user's entry file (calls registerRoot). */
   entry: string;
-  /** Project root: where public/ lives and where .agenticvids/ is written. */
+  /** Project root: where public/ lives and where .clapper/ is written. */
   projectDir: string;
   mode: HarnessMode;
 }
 
 function corePackageDir(): string {
-  return path.dirname(require.resolve("@agenticvids/core/package.json"));
+  return path.dirname(require.resolve("@clapper/core/package.json"));
 }
 
-/** Writes .agenticvids/<mode>/{index.html,entry.tsx} and returns that directory. */
+/** Writes .clapper/<mode>/{index.html,entry.tsx} and returns that directory. */
 export function writeHarnessDir({ entry, projectDir, mode }: BundleTarget): string {
-  const dir = path.join(projectDir, ".agenticvids", mode);
+  const dir = path.join(projectDir, ".clapper", mode);
   fs.mkdirSync(dir, { recursive: true });
   let rel = path.relative(dir, entry).split(path.sep).join("/");
   if (!rel.startsWith(".")) rel = "./" + rel;
-  const mount = mode === "harness" ? `import { mountHarness } from "@agenticvids/core/harness";\nmountHarness();` : `import { mountStudio } from "@agenticvids/core/player";\nmountStudio();`;
+  const mount = mode === "harness" ? `import { mountHarness } from "@clapper/core/harness";\nmountHarness();` : `import { mountStudio } from "@clapper/core/player";\nmountStudio();`;
   fs.writeFileSync(path.join(dir, "entry.tsx"), `import ${JSON.stringify(rel)};\n${mount}\n`);
   fs.writeFileSync(
     path.join(dir, "index.html"),
-    `<!doctype html>\n<html><head><meta charset="utf-8"><title>agenticvids ${mode}</title>\n<style>html,body{margin:0;padding:0}${mode === "harness" ? "html,body{background:transparent;overflow:hidden}" : ""}</style>\n</head><body><div id="root"></div><script type="module" src="./entry.tsx"></script></body></html>\n`,
+    `<!doctype html>\n<html><head><meta charset="utf-8"><title>clapper ${mode}</title>\n<style>html,body{margin:0;padding:0}${mode === "harness" ? "html,body{background:transparent;overflow:hidden}" : ""}</style>\n</head><body><div id="root"></div><script type="module" src="./entry.tsx"></script></body></html>\n`,
   );
   return dir;
 }
 
-/** Projects that do not depend on React themselves get the copy @agenticvids/core was built against. */
+/** Projects that do not depend on React themselves get the copy @clapper/core was built against. */
 function reactAliases(projectDir: string): { find: RegExp; replacement: string }[] {
   try {
     createRequire(path.join(projectDir, "package.json")).resolve("react");
@@ -62,9 +62,9 @@ function baseConfig(t: BundleTarget, dir: string): InlineConfig {
     configFile: false,
     envFile: false,
     logLevel: "warn",
-    cacheDir: path.join(t.projectDir, "node_modules", ".vite-agenticvids"),
+    cacheDir: path.join(t.projectDir, "node_modules", ".vite-clapper"),
     plugins: [react()],
-    resolve: { dedupe: ["react", "react-dom", "react/jsx-runtime", "@agenticvids/core"], alias: reactAliases(t.projectDir) },
+    resolve: { dedupe: ["react", "react-dom", "react/jsx-runtime", "@clapper/core"], alias: reactAliases(t.projectDir) },
     server: { fs: { allow: [workspaceRoot, t.projectDir, corePackageDir(), dir] } },
     optimizeDeps: { include: ["react", "react-dom", "react-dom/client", "react/jsx-runtime"] },
     define: { "process.env.NODE_ENV": JSON.stringify(t.mode === "harness" ? "production" : "development") },
@@ -74,7 +74,7 @@ function baseConfig(t: BundleTarget, dir: string): InlineConfig {
 /** Production-build the render harness. Returns the outDir. */
 export async function buildHarness(t: BundleTarget): Promise<string> {
   const dir = writeHarnessDir(t);
-  const outDir = path.join(t.projectDir, ".agenticvids", `${t.mode}-build`);
+  const outDir = path.join(t.projectDir, ".clapper", `${t.mode}-build`);
   await build({
     ...baseConfig(t, dir),
     base: "./",
@@ -93,7 +93,7 @@ export async function buildHarness(t: BundleTarget): Promise<string> {
 
 /** Serve a built harness directory. */
 export async function serveBuilt(t: BundleTarget, outDir: string): Promise<{ url: string; close: () => Promise<void> }> {
-  const dir = path.join(t.projectDir, ".agenticvids", t.mode);
+  const dir = path.join(t.projectDir, ".clapper", t.mode);
   const server: PreviewServer = await preview({
     ...baseConfig(t, dir),
     build: { outDir },

@@ -1,0 +1,22 @@
+/* Only the three hand fonts the ArchDev site loops use (copied from showcase). */
+@font-face {
+  font-family: 'Patrick Hand';
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url(./LDI1apSQOAYtSuYWp8ZhfYe8XsLLubg58w.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Gochi Hand';
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url(./hES06XlsOjtJsgCkx1Pkfon_-18kTWE.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Caveat';
+  font-style: normal;
+  font-weight: 500 700;
+  font-display: block;
+  src: url(./Wnz6HAc5bAfYB2Q7ZjYYiAzcPA.woff2) format('woff2');
+}

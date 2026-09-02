@@ -1,5 +1,5 @@
-import { AbsoluteFill, Animate, Camera, Chime, Counter, Draw, Easing, Img, Sequence, SplitText, Stagger, Tone, Typewriter, interpolate, staticFile, useFrame, useSpring, useVideoConfig } from "@agenticvids/core";
-import { Latex } from "@agenticvids/core/latex";
+import { AbsoluteFill, Animate, Camera, Chime, Counter, Draw, Easing, Img, Sequence, SplitText, Stagger, Tone, Typewriter, interpolate, staticFile, useFrame, useSpring, useVideoConfig } from "@clapper/core";
+import { Latex } from "@clapper/core/latex";
 
 /** A 3s kitchen-sink composition used to validate the pipeline end-to-end. */
 export function Smoke() {

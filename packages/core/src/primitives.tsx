@@ -5,7 +5,7 @@ import { resolveFrames, type Frames } from "./frames";
 
 /**
  * Text and layout primitives every spot needs. They carry `data-copy` /
- * `data-eyebrow` attributes so `agenticvids review --lint` can check safe
+ * `data-eyebrow` attributes so `clapper review --lint` can check safe
  * margins and overlaps on the real DOM.
  */
 

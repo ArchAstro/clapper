@@ -1,4 +1,4 @@
-import { Animate, Camera, Chime, Easing, Pad, Sequence, Typewriter, Whoosh, useFrame } from "@agenticvids/core";
+import { Animate, Camera, Chime, Easing, Pad, Sequence, Typewriter, Whoosh, useFrame } from "@clapper/core";
 import { Dot, Paper, Rise, TypeClicks } from "../ui";
 
 export const PROMPT_LEN = 280;

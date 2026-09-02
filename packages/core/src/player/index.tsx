@@ -1,6 +1,6 @@
 /**
  * The studio: a browser editor to scrub, play and inspect compositions.
- * Mounted by `agenticvids preview`. Left: project (live thumbnails, scenes).
+ * Mounted by `clapper preview`. Left: project (live thumbnails, scenes).
  * Centre: viewport with overlays. Right: inspector / cues / scratch (TSX
  * compiled in the browser). Bottom: transport and an NLE-style timeline.
  */
@@ -243,7 +243,7 @@ function Studio() {
   return (
     <div className="studio">
       <div className="top">
-        <span className="brand">agenticvids studio</span>
+        <span className="brand">clapper studio</span>
         <span className="name">{comp.id}</span>
         <span className="meta">
           {comp.width}×{comp.height} · {comp.fps} fps · {timecode(comp.durationInFrames, comp.fps)} · {comp.durationInFrames} f

@@ -82,7 +82,7 @@ export function ensureRootMounted() {
   const r = getRegistry();
   if (r.rootMounted || !r.root || typeof document === "undefined") return;
   const host = document.createElement("div");
-  host.setAttribute("data-agenticvids-root", "");
+  host.setAttribute("data-clapper-root", "");
   host.style.display = "none";
   document.body.appendChild(host);
   const root = createRoot(host);

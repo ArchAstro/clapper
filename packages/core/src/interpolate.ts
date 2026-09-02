@@ -1,5 +1,5 @@
 /**
- * Pure numeric helpers. All animation in agenticvids is a function of frame,
+ * Pure numeric helpers. All animation in clapper is a function of frame,
  * so these are the atoms every tween is built from.
  */
 export type EasingFn = (t: number) => number;

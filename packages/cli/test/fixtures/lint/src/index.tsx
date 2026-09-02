@@ -1,4 +1,4 @@
-import { AbsoluteFill, Composition, Copy, Scenes, defineScenes, registerRoot, useFrame } from "@agenticvids/core";
+import { AbsoluteFill, Composition, Copy, Scenes, defineScenes, registerRoot, useFrame } from "@clapper/core";
 
 /** Deliberately broken: overlapping copy, copy off the safe area, a blank frame after the cut, Math.random in a frame. */
 const SCENES = defineScenes({ a: { seconds: 1 }, b: { seconds: 1 } }, { fps: 30 });
@@ -14,7 +14,7 @@ function A() {
 }
 function B() {
   const frame = useFrame();
-  const jitter = Math.random() * 0; // agenticvids-lint should flag this
+  const jitter = Math.random() * 0; // clapper-lint should flag this
   return <AbsoluteFill style={{ background: frame < 2 ? "#000" : "#cccccc", opacity: 1 + jitter }} />;
 }
 function Root() {

@@ -15,8 +15,8 @@ try {
   const comps = await probeCompositions(server.url);
   const meta = comps.find((c) => c.id === id);
   const page = await openHarnessPage(browser, server.url, { width: meta.width, height: meta.height }, 1, (m) => console.error(m));
-  await page.evaluate((i) => window.__agenticvids.select(i, {}), id);
-  await page.evaluate((n) => window.__agenticvids.setFrame(n), Number(frameArg));
+  await page.evaluate((i) => window.__clapper.select(i, {}), id);
+  await page.evaluate((n) => window.__clapper.setFrame(n), Number(frameArg));
   const rows = await page.evaluate((sel) => {
     const eff = (el) => { let o = 1; for (let a = el; a && a !== document.body; a = a.parentElement) { const cs = getComputedStyle(a); o *= parseFloat(cs.opacity || "1"); if (cs.visibility === "hidden" || cs.display === "none") return 0; } return o; };
     return Array.from(document.querySelectorAll(sel)).map((el) => {

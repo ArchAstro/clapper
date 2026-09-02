@@ -117,7 +117,7 @@ export interface Registry {
   listeners: Set<() => void>;
 }
 
-const KEY = "__agenticvidsRegistry" as const;
+const KEY = "__clapperRegistry" as const;
 
 export function getRegistry(): Registry {
   const g = globalThis as unknown as Record<string, Registry | undefined>;

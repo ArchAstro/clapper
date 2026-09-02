@@ -1,4 +1,4 @@
-import { AbsoluteFill, Animate, Camera, Chord, Counter, Draw, Drone, EPiano, Easing, Img, Pattern, Pluck, Riser, RoomTone, Sequence, SpringPresets, Thump, Tone, TransitionSeries, Typewriter, Typing, Whoosh, interpolate, noise1d, progress, spring, staticFile, transitionSeriesLength, useFps, useFrame } from "@agenticvids/core";
+import { AbsoluteFill, Animate, Camera, Chord, Counter, Draw, Drone, EPiano, Easing, Img, Pattern, Pluck, Riser, RoomTone, Sequence, SpringPresets, Thump, Tone, TransitionSeries, Typewriter, Typing, Whoosh, interpolate, noise1d, progress, spring, staticFile, transitionSeriesLength, useFps, useFrame } from "@clapper/core";
 import type { CSSProperties, ReactNode } from "react";
 import { Eyebrow, Grain, Reveal, Vignette, EXPO, INOUT, QUINT } from "../kit";
 import { Archie, Desk, Person, POSES, usePose, type ArchieState, type Pose } from "./person";

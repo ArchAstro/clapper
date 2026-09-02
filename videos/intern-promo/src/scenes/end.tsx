@@ -1,4 +1,4 @@
-import { Animate, Chime, Img, Pad, Sequence, staticFile, useSpring } from "@agenticvids/core";
+import { Animate, Chime, Img, Pad, Sequence, staticFile, useSpring } from "@clapper/core";
 import { Dark, Rise } from "../ui";
 
 export const END_LEN = 170;

@@ -1,12 +1,12 @@
-# agenticvids — friction log and improvement backlog
+# clapper — friction log and improvement backlog
 
 Written 2026-09-02 at the end of the session that built the framework, the tryintern.dev promo, and four showcase spots.
 Frank, terse, for whoever picks this up next. Goal: make building the next video markedly easier than building the last one.
 
 ## 1. What was built
 
-1. `packages/core` (`@agenticvids/core`): frame-deterministic React runtime. Timeline (`useFrame`, `Sequence`, `Series`, `Loop`, `TransitionSeries`), tweens (`interpolate`, `spring`, `Animate`, keyframes, `Stagger`), `Camera`, synthesized sound as React elements (`Tone`, `Chime`, `Whoosh`, `Click`, `Pad`, `Thump`, `Riser`, `Pop`, `Arp`, `Alert`, `Audio`), text/SVG effects (`Typewriter`, `SplitText`, `Counter`, `Draw`), `Latex`, media readiness (`Img`, `Video`, `delayRender`), a render harness (virtual clock, animation sync) and a studio.
-2. `packages/cli` (`agenticvids render | still | preview | compositions`): Vite bundle, Playwright frame capture (JPEG q96), ffmpeg-static encode, offline tone synthesis, mix, loudnorm mux.
+1. `packages/core` (`@clapper/core`): frame-deterministic React runtime. Timeline (`useFrame`, `Sequence`, `Series`, `Loop`, `TransitionSeries`), tweens (`interpolate`, `spring`, `Animate`, keyframes, `Stagger`), `Camera`, synthesized sound as React elements (`Tone`, `Chime`, `Whoosh`, `Click`, `Pad`, `Thump`, `Riser`, `Pop`, `Arp`, `Alert`, `Audio`), text/SVG effects (`Typewriter`, `SplitText`, `Counter`, `Draw`), `Latex`, media readiness (`Img`, `Video`, `delayRender`), a render harness (virtual clock, animation sync) and a studio.
+2. `packages/cli` (`clapper render | still | preview | compositions`): Vite bundle, Playwright frame capture (JPEG q96), ffmpeg-static encode, offline tone synthesis, mix, loudnorm mux.
 3. Videos: `videos/intern-promo` (57 s tryintern.dev promo) and `videos/showcase` (Ledger, Orbit, Nimbus, ArchDev; 22–36 s each; ArchDev is a character film on a monoline rig).
 4. Review loop: `videos/showcase/scripts/review-kit.mjs` (contact sheet, cut strips, spectrogram, waveform) + a reviewer subagent briefed as a studio creative director. 2–3 rounds per spot; all five spots ended at SHIP 8–9/10.
 5. Numbers: 1080p render at 15–30 fps of output (4 tabs, JPEG capture); a 36 s film renders in ~35 s; 25 unit tests; ~10k lines including videos.
@@ -60,13 +60,13 @@ Each entry: what happened → root cause → workaround → durable fix (DONE or
 
 ### 2.8 review-kit could not resolve ffmpeg from a workspace package
 - What: `node scripts/review-kit.mjs` threw `ERR_MODULE_NOT_FOUND` for `ffmpeg-static` (it is a dependency of `packages/cli`, not of the video project).
-- Fix DONE: resolve via `createRequire(require.resolve("@agenticvids/cli/package.json"))("ffmpeg-static")`.
-- Fix PROPOSED: make the kit a CLI command (`agenticvids review-kit`), which owns ffmpeg (see §3, P0-4).
+- Fix DONE: resolve via `createRequire(require.resolve("@clapper/cli/package.json"))("ffmpeg-static")`.
+- Fix PROPOSED: make the kit a CLI command (`clapper review-kit`), which owns ffmpeg (see §3, P0-4).
 
 ### 2.9 `still` took one frame per bundle
 - What: reviewing a scene meant a rebundle + browser launch per frame (~2 s each).
 - Fix DONE: `--frame 10,20,30 --out dir` renders many frames in one session; `--image-format jpeg`.
-- PROPOSED: `agenticvids still --every 12` and `--scene <name>` (needs scene registry, §3 P0-1).
+- PROPOSED: `clapper still --every 12` and `--scene <name>` (needs scene registry, §3 P0-1).
 
 ### 2.10 Camera evaluator TDZ bug
 - What: `Cannot access 'filled' before initialization` on every frame that used `<Camera>`; the render "succeeded" with blank frames.
@@ -76,12 +76,12 @@ Each entry: what happened → root cause → workaround → durable fix (DONE or
 ### 2.11 Scene start arithmetic was wrong in every brief
 - What: I told reviewers scene 4 started at 420 when it started at 404; the review-kit cut strips were built at the wrong frames until corrected by hand (three times across four videos).
 - Cause: starts are implicit (durations minus overlaps); nothing exports them.
-- Fix PROPOSED: `useScenes()` / `scenes.json` emitted by the harness (`window.__agenticvids.getTracks()` already has named `Sequence` ranges; expose them via `agenticvids compositions --json`). The review kit should read cuts from there, not from a hard-coded map.
+- Fix PROPOSED: `useScenes()` / `scenes.json` emitted by the harness (`window.__clapper.getTracks()` already has named `Sequence` ranges; expose them via `clapper compositions --json`). The review kit should read cuts from there, not from a hard-coded map.
 
 ### 2.12 Reviewers found collisions that my stills did not
 - What: examples: a relocating calendar block sliding *through* another; a graph edge bisecting a headline for 4 s; a camera push cropping the log panel, then (after the fix) the headline; the "days→hours" roll clipping glyphs; the 12-vs-20-windows inconsistency; the character hidden behind agent windows during the key beat.
 - Cause: I looked at 6–12 settled frames per video; the reviewers looked at contact sheets (every 12 frames), 9-tile strips around cuts, and mid-motion frames they chose themselves.
-- Fix DONE (workflow): the review kit + reviewer brief. PROPOSED: automate the geometric checks (bounding-box overlap between text elements and other elements; elements crossing the safe margin) in the harness as `agenticvids lint`.
+- Fix DONE (workflow): the review kit + reviewer brief. PROPOSED: automate the geometric checks (bounding-box overlap between text elements and other elements; elements crossing the safe margin) in the harness as `clapper lint`.
 
 ### 2.13 Audio: mono, synthetic, flat
 - Measured on ArchDev before the audio pass: integrated −15.9 LUFS, LRA 4.5 LU, side channel −64 dB (effectively mono), the "blank" scene only 1.5 LU quieter than the chaos scene, all timbres are raw sine/triangle/square/noise with ADSR.
@@ -109,11 +109,11 @@ Each entry: what happened → root cause → workaround → durable fix (DONE or
 - Page errors are captured per worker and thrown on the next `setFrame`, so a throw in scene 5 surfaces only when a worker reaches it. Fine for correctness; confusing for progress output.
 
 ### 2.16 CLI runs TypeScript natively
-- Node 24+ type stripping runs `packages/cli/src/*.ts` directly (no build). Constraints: relative imports need `.ts` extensions, no enums/namespaces/parameter properties, and `import type` only from `@agenticvids/core` (browser code). This saved a build step but will surprise anyone who adds an enum.
+- Node 24+ type stripping runs `packages/cli/src/*.ts` directly (no build). Constraints: relative imports need `.ts` extensions, no enums/namespaces/parameter properties, and `import type` only from `@clapper/core` (browser code). This saved a build step but will surprise anyone who adds an enum.
 
 ### 2.17 Brand sourcing was manual
 - For tryintern.dev and ArchDev I grepped the monorepo for tokens (`--ink`, Everforest hexes), fonts (`next/font` names), logo SVG/PNG, and copy strings, then downloaded Google Fonts CSS and localized the woff2 files with a one-off script.
-- PROPOSED: `agenticvids brand <url-or-dir>` that emits `theme.css` (tokens), `fonts/` (localized), `public/` (logo, OG image), and `copy.json`; even a half-automated version removes 20 minutes per video.
+- PROPOSED: `clapper brand <url-or-dir>` that emits `theme.css` (tokens), `fonts/` (localized), `public/` (logo, OG image), and `copy.json`; even a half-automated version removes 20 minutes per video.
 
 ### 2.18 Audio measurements (ArchDev, before the audio pass)
 | metric | value | comment |
@@ -133,7 +133,7 @@ Each entry: what happened → root cause → workaround → durable fix (DONE or
 
 ### 2.20 Scene arithmetic, this time
 - `defineScenes` paid off immediately: trimming plan (195→175) and agents (255→210) and lengthening review (180→210) between rounds touched one object; captions, the score's per-scene `<Sequence>` wrappers, the review kit's cuts and the reviewers' frame maps all followed.
-- Still manual: the stills I asked for after the trim were computed by hand once (1060 > 975). `agenticvids still --scene tease --every 30` avoids that; use it.
+- Still manual: the stills I asked for after the trim were computed by hand once (1060 > 975). `clapper still --scene tease --every 30` avoids that; use it.
 
 ### 2.21 Reviewer subagents, round 2
 - Three fresh reviewers (creative director, audio director, X strategist) converged on the same three defects independently (empty first half-second, dead air at one cut, an over-ducked scene), which is the signal to fix rather than debate. The audio director found a real timing bug (duck attack swallowing a paper flip) by measuring peaks per cut, not by listening.
@@ -161,7 +161,7 @@ const scenes = defineScenes({
   …
 </Scenes>
 ```
-- `agenticvids compositions --json` prints `{ id, scenes: [{name, start, end}] }`; the review kit reads cuts from it.
+- `clapper compositions --json` prints `{ id, scenes: [{name, start, end}] }`; the review kit reads cuts from it.
 - `render --scene agents` and `still --scene agents --every 6`.
 
 ### P0-2 Seconds everywhere, frames underneath — DONE (`Frames` type + `resolveFrames`; Sequence/Series/Loop/Animate/Stagger/keyframes/Camera/Transition/audio/Reveal/Copy)
@@ -179,7 +179,7 @@ Implementation: `resolveFrames(value, fps)` in one place; keep frames as the can
 - `<Duck>`: scene-level gain automation so a "silence" scene is actually 8–10 LU quieter.
 - Targets to check in the kit: integrated −16 LUFS, LRA ≥ 8 LU, side channel ≥ −30 dB.
 
-### P0-4 `agenticvids review` — DONE (kit + brief + lint; `packages/cli/src/review.ts`, fixture test `review-check.mjs`)
+### P0-4 `clapper review` — DONE (kit + brief + lint; `packages/cli/src/review.ts`, fixture test `review-check.mjs`)
 One command that renders, builds the kit (contact sheet every N frames, 9-tile strips at every scene cut from P0-1, spectrogram, waveform, loudness table), and writes `review/brief.md` with the scene map so the reviewer prompt is generated, not hand-typed. Optional `--lint`: text-vs-element overlap, safe-margin violations, blank frames after cuts.
 
 ### P0-5 Fail loud, name the scene — DONE for render errors (scene + local frame, deepest sequence); delayRender labels still open
@@ -188,16 +188,16 @@ Harness errors already fail the render; add the scene name and local frame from 
 ### P1-1 Core text primitives — DONE (`Reveal`, `Copy`, `Eyebrow`, `Rule` in core with `data-copy` tags; showcase kit re-exports)
 `Reveal` (masked line reveal with `from`, `skew`, `exitAt`), `Copy` (positioned display copy with optional plate), `Eyebrow`, `Rule`. All three projects re-implemented them; the plate-before-text bug came from a project copy.
 
-### P1-2 Character toolkit in core — DONE (`definePoses`, `usePose`/`evalPose` with `arc`, `ik2`, `useEyeBlink`, `useBreath`, `<Bubble>`; two shipped rigs in `@agenticvids/core/rigs`: `Person` and `Scribble`; comic kit in core)
+### P1-2 Character toolkit in core — DONE (`definePoses`, `usePose`/`evalPose` with `arc`, `ik2`, `useEyeBlink`, `useBreath`, `<Bubble>`; two shipped rigs in `@clapper/core/rigs`: `Person` and `Scribble`; comic kit in core)
 Move `person.tsx` ideas into a generic rig: `definePose()`, typed `Pose` with named poses, `usePose(keys)` with arc-biased midpoints (`arc: 20`), two-bone `ik()`, blink/breath/idle generators, `<Bubble>` (thought/speech). Ship the monoline developer as the first rig.
 
 ### P1-3 Studio upgrades — DONE as an editor (project thumbnails, viewport overlays incl. copy boxes, NLE timeline with lanes per depth and per audio kind, gain envelopes, loop range, snapping, inspector with cue preview, cues table, Babel scratch compositions); pose scrubber still open
 Cue colors by kind (file/tone/keystroke/music); click a cue to see its spec; markers from P0-1 as a ruler; `M` to jump to the next marker; a pose scrubber (channel sliders) for rig scenes; a "blank frame" indicator on the scrubber.
 
 ### P1-4 Render ergonomics — DONE (`--scene`, `--every`, `--draft`); frame cache not done
-`--scenes a,b`, `--every N` for stills, `--crf auto`, `--preview-quality` (half-res draft at CRF 28 for iteration), a `.agenticvids/cache` for unchanged frames (hash of frame DOM is hard; skip until needed).
+`--scenes a,b`, `--every N` for stills, `--crf auto`, `--preview-quality` (half-res draft at CRF 28 for iteration), a `.clapper/cache` for unchanged frames (hash of frame DOM is hard; skip until needed).
 
-### P1-5 Determinism docs — DONE (lint rule `determinism` in `agenticvids review`; README)
+### P1-5 Determinism docs — DONE (lint rule `determinism` in `clapper review`; README)
 Document `useRandom(seed)`/`noise1d` and the virtual clock; add a lint that flags `Math.random`, `Date.now`, `performance.now` in video sources.
 
 ### P1-6 Typed poses and named keys — DONE (`PoseKey.at` takes "0.8s", `pose` takes a name, `arc` lifts hand targets)
@@ -213,10 +213,10 @@ usePose([{ at: 0, pose: "typing" }, { at: "0.8s", pose: "lookUp", ease: "outBack
 ### P1-8 Review-kit lint (geometry) — DONE (`overlap`, `safe-area` on `data-copy` boxes at three frames per scene)
 The harness can expose `document.elementsFromPoint` sampling or bounding boxes for elements tagged `data-copy` / `data-hero`. Report: text overlapping another element's box, text outside the 120 px safe area, and elements whose box straddles the canvas edge. This catches 4 of the 12 round-1 findings mechanically.
 
-### P2 Others — format variants (`<Composition formats>` + `useFormat()`), `agenticvids doctor` and `videos/_template` DONE; `<Video>` audio extraction open
+### P2 Others — format variants (`<Composition formats>` + `useFormat()`), `clapper doctor` and `videos/_template` DONE; `<Video>` audio extraction open
 - `<Video>` audio extraction into the mix (today `<Video>` is silent unless paired with `<Audio>`).
 - Vertical/square variants: `<Composition formats={["16:9","9:16"]}>` with `useFormat()`; the intern promo would need it first.
-- `agenticvids doctor`: checks Chromium, ffmpeg (libx264/aac), fonts, node version.
+- `clapper doctor`: checks Chromium, ffmpeg (libx264/aac), fonts, node version.
 - A `videos/_template` project with fonts, theme, kit, review script wired.
 
 ## 4. Workflow lessons (driving agents)
@@ -240,7 +240,7 @@ The harness can expose `document.elementsFromPoint` sampling or bounding boxes f
 1. Commit rendered MP4s (≈30 MB) or keep `out/` ignored and attach renders elsewhere?
 2. Is music from real audio files acceptable (licensed loops), or must everything stay synthesized and asset-free?
 3. Should the intern promo get a 9:16 variant (needs P2 formats)?
-4. Which of P0-1..P0-5 first? Recommendation: P0-1 (scenes) then P0-3 (audio v2), since both feed `agenticvids review`.
+4. Which of P0-1..P0-5 first? Recommendation: P0-1 (scenes) then P0-3 (audio v2), since both feed `clapper review`.
 
 ## 6. Checklists (copy into the next video's README)
 
@@ -253,7 +253,7 @@ The harness can expose `document.elementsFromPoint` sampling or bounding boxes f
 6. Text never crosses the 120 px safe area; check the widest string, not the average.
 
 ### 6.2 Before calling it done
-1. `agenticvids still --frame <every 12>` and look at the contact sheet yourself first.
+1. `clapper still --frame <every 12>` and look at the contact sheet yourself first.
 2. Review kit + reviewer brief with the corrected scene map; batch fixes between rounds.
 3. Measure audio: `ebur128` integrated (−16 ± 1 LUFS), LRA (≥ 8 LU if the story has a quiet beat), side channel (≥ −30 dB), no cue louder than −1.5 dBTP.
 4. Encode: CRF 17 for flat art, 20–22 with grain; confirm bitrate < 8 Mbps.

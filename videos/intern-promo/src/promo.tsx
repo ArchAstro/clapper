@@ -1,4 +1,4 @@
-import { AbsoluteFill, Sequence, TransitionSeries } from "@agenticvids/core";
+import { AbsoluteFill, Sequence, TransitionSeries } from "@clapper/core";
 import { DeckScene, DECK_LEN } from "./scenes/deck";
 import { TaglineScene, TAGLINE_LEN } from "./scenes/tagline";
 import { PromptScene, PROMPT_LEN } from "./scenes/prompt";

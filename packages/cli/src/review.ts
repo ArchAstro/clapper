@@ -2,12 +2,12 @@ import fs from "node:fs";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { chromium } from "playwright";
-import type { CompositionMeta, SceneMeta } from "@agenticvids/core";
+import type { CompositionMeta, SceneMeta } from "@clapper/core";
 import { resolveFfmpeg } from "./ffmpeg.ts";
 import { CHROME_ARGS, openHarnessPage, renderComposition } from "./render.ts";
 
 /**
- * `agenticvids review`: one command that turns a composition into a critique kit
+ * `clapper review`: one command that turns a composition into a critique kit
  * a reviewer (human or subagent) can judge without scrubbing the video:
  * contact sheet, motion strips around every cut, opening strip, spectrogram,
  * waveform, loudness around cuts and per scene, a lint report, and a brief.
@@ -61,10 +61,10 @@ export async function probeScenes(url: string, meta: CompositionMeta, props?: Re
   const browser = await chromium.launch({ args: CHROME_ARGS });
   try {
     const page = await openHarnessPage(browser, url, { width: meta.width, height: meta.height }, 1, log);
-    await page.evaluate(([id, p]) => window.__agenticvids!.select(id as string, p as Record<string, unknown>), [meta.id, props ?? {}] as const);
+    await page.evaluate(([id, p]) => window.__clapper!.select(id as string, p as Record<string, unknown>), [meta.id, props ?? {}] as const);
     const step = Math.max(1, Math.floor(meta.fps / 2));
-    for (let f = 0; f < meta.durationInFrames; f += step) await page.evaluate((n) => window.__agenticvids!.setFrame(n), f);
-    const tracks = await page.evaluate(() => window.__agenticvids!.getTracks());
+    for (let f = 0; f < meta.durationInFrames; f += step) await page.evaluate((n) => window.__clapper!.setFrame(n), f);
+    const tracks = await page.evaluate(() => window.__clapper!.getTracks());
     const named = tracks.filter((t) => t.name);
     if (named.length === 0) return [{ name: meta.id, start: 0, end: meta.durationInFrames }];
     const top = Math.min(...named.map((t) => t.depth));
@@ -105,9 +105,9 @@ async function domLint(url: string, meta: CompositionMeta, props: Record<string,
   const browser = await chromium.launch({ args: CHROME_ARGS });
   try {
     const page = await openHarnessPage(browser, url, { width: meta.width, height: meta.height }, 1, log);
-    await page.evaluate(([id, p]) => window.__agenticvids!.select(id as string, p as Record<string, unknown>), [meta.id, props ?? {}] as const);
+    await page.evaluate(([id, p]) => window.__clapper!.select(id as string, p as Record<string, unknown>), [meta.id, props ?? {}] as const);
     const measure = async (n: number): Promise<Box[]> => {
-      await page.evaluate((k) => window.__agenticvids!.setFrame(k), n);
+      await page.evaluate((k) => window.__clapper!.setFrame(k), n);
       return page.evaluate(() => {
         const out: Box[] = [];
         const visibleOpacity = (el: Element | null) => {
@@ -250,7 +250,7 @@ export function sourceLint(projectDir: string): LintIssue[] {
       if (ent.isDirectory()) walk(p);
       else if (/\.(tsx?|jsx?)$/.test(ent.name)) {
         fs.readFileSync(p, "utf8").split("\n").forEach((line, i) => {
-          for (const [re, msg] of rules) if (re.test(line) && !/agenticvids-ok/.test(line)) issues.push({ level: "warn", rule: "determinism", message: `${path.relative(projectDir, p)}:${i + 1}: ${msg}` });
+          for (const [re, msg] of rules) if (re.test(line) && !/clapper-ok/.test(line)) issues.push({ level: "warn", rule: "determinism", message: `${path.relative(projectDir, p)}:${i + 1}: ${msg}` });
         });
       }
     }
@@ -354,7 +354,7 @@ export async function reviewComposition(o: ReviewOptions): Promise<ReviewResult>
 
 - video: \`${path.relative(o.projectDir, video)}\` · ${meta.width}×${meta.height} · ${fps} fps · ${total} frames (${(total / fps).toFixed(1)} s)${audio ? "" : " · **no audio track**"}
 - entry: \`${path.relative(o.projectDir, o.entry)}\`
-- stills: \`agenticvids still ${path.relative(o.projectDir, o.entry)} -c ${meta.id} --frame <a,b,c>\` (or \`--scene <name>\`)
+- stills: \`clapper still ${path.relative(o.projectDir, o.entry)} -c ${meta.id} --frame <a,b,c>\` (or \`--scene <name>\`)
 
 ## Scenes
 

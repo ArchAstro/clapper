@@ -2,7 +2,7 @@ import { createContext, useContext, useMemo, type ReactNode } from "react";
 import { resolveFrames, type Frames } from "./frames";
 
 /**
- * Everything in agenticvids is a pure function of `frame`.
+ * Everything in clapper is a pure function of `frame`.
  * The timeline context carries the composition's frame clock; sequences shift it.
  */
 export interface VideoConfig {

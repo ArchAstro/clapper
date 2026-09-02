@@ -1,4 +1,4 @@
-import { Composition, registerRoot } from "@agenticvids/core";
+import { Composition, registerRoot } from "@clapper/core";
 import "./fonts/fonts.css";
 import "./theme.css";
 import { InternPromo, PROMO_FPS, PROMO_DURATION } from "./promo";

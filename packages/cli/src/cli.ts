@@ -6,17 +6,17 @@ import { collectCues, probeCompositions, renderComposition, renderStill, renderS
 import { reviewComposition } from "./review.ts";
 import { doctor } from "./doctor.ts";
 
-const HELP = `agenticvids — React → MP4
+const HELP = `clapper — React → MP4
 
 Usage:
-  agenticvids render <entry> [options]      Render a composition to video
-  agenticvids still <entry> [options]       Render one frame to PNG
-  agenticvids preview <entry> [--port N]    Open the studio (scrub, play, inspect)
-  agenticvids compositions <entry> [--json] List registered compositions (+ scene maps)
-  agenticvids cues <entry> -c <id>          List the audio cues of a composition (audit)
-  agenticvids review <entry> [-c <id>]      Render + build a critique kit (contact sheet, cut strips,
+  clapper render <entry> [options]      Render a composition to video
+  clapper still <entry> [options]       Render one frame to PNG
+  clapper preview <entry> [--port N]    Open the studio (scrub, play, inspect)
+  clapper compositions <entry> [--json] List registered compositions (+ scene maps)
+  clapper cues <entry> -c <id>          List the audio cues of a composition (audit)
+  clapper review <entry> [-c <id>]      Render + build a critique kit (contact sheet, cut strips,
                                             spectrogram, loudness at cuts, lint, brief.md)
-  agenticvids doctor [<entry|dir>]          Check Node, Chromium, ffmpeg (libx264/aac/filters), React/core resolution
+  clapper doctor [<entry|dir>]          Check Node, Chromium, ffmpeg (libx264/aac/filters), React/core resolution
 
 Render options:
   -c, --composition <id>   Composition id (default: the only/first one)
@@ -35,7 +35,7 @@ Render options:
       --image-format <f>   jpeg (default, q96, ~5x faster) | png (lossless intermediate)
       --mute               Skip audio mixing
       --loudnorm <lufs|off> Loudness target (default -16 LUFS)
-      --keep-build         Keep .agenticvids/harness-build after rendering
+      --keep-build         Keep .clapper/harness-build after rendering
 
 Review options:
       --video <file>       Build the kit from an existing MP4 instead of rendering
@@ -97,7 +97,7 @@ export async function main(argv: string[]) {
   switch (command) {
     case "preview": {
       const { url } = await startStudio({ entry, projectDir, mode: "studio" }, { port: values.port ? parseInt(values.port, 10) : undefined, open: values.open });
-      console.log(`agenticvids studio → ${url}`);
+      console.log(`clapper studio → ${url}`);
       await new Promise(() => {});
       return;
     }

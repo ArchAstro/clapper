@@ -3,13 +3,13 @@ import os from "node:os";
 import path from "node:path";
 import { once } from "node:events";
 import { chromium, type Browser, type Page } from "playwright";
-import type { AudioCue, CompositionMeta } from "@agenticvids/core";
-import type { HarnessApi } from "@agenticvids/core/harness";
+import type { AudioCue, CompositionMeta } from "@clapper/core";
+import type { HarnessApi } from "@clapper/core/harness";
 import { mixAudio, muxAudio, startFrameEncoder } from "./ffmpeg.ts";
 
 declare global {
   interface Window {
-    __agenticvids?: HarnessApi;
+    __clapper?: HarnessApi;
   }
 }
 
@@ -55,7 +55,7 @@ export async function openHarnessPage(browser: Browser, url: string, viewport: {
     if (m.type() === "error" || m.type() === "warning") log(`[console.${m.type()}] ${m.text()}`);
   });
   await page.goto(url, { waitUntil: "load" });
-  await page.waitForFunction(() => window.__agenticvids?.ready === true, undefined, { timeout: 60_000 });
+  await page.waitForFunction(() => window.__clapper?.ready === true, undefined, { timeout: 60_000 });
   return page;
 }
 
@@ -63,7 +63,7 @@ export async function probeCompositions(url: string): Promise<CompositionMeta[]>
   const browser = await chromium.launch({ args: CHROME_ARGS });
   try {
     const page = await openHarnessPage(browser, url, { width: 800, height: 600 }, 1, () => {});
-    return await page.evaluate(() => window.__agenticvids!.listCompositions());
+    return await page.evaluate(() => window.__clapper!.listCompositions());
   } finally {
     await browser.close();
   }
@@ -74,13 +74,13 @@ export async function collectCues(url: string, compositionId: string, props?: Re
   const browser = await chromium.launch({ args: CHROME_ARGS });
   try {
     const page = await openHarnessPage(browser, url, { width: 320, height: 180 }, 0.25, () => {});
-    const meta: CompositionMeta = await page.evaluate(({ id, p }) => window.__agenticvids!.select(id, p), { id: compositionId, p: props ?? {} });
+    const meta: CompositionMeta = await page.evaluate(({ id, p }) => window.__clapper!.select(id, p), { id: compositionId, p: props ?? {} });
     // Cues register when their sequence is mounted; stepping every 4th frame is enough
     // because no cue is shorter than a sequence's mount window at that stride... except
     // one-frame sequences, so step every frame when the composition is short.
     const stride = meta.durationInFrames > 2400 ? 4 : 1;
-    for (let f = 0; f < meta.durationInFrames; f += stride) await page.evaluate((fr) => window.__agenticvids!.setFrame(fr), f);
-    const cues: AudioCue[] = await page.evaluate(() => window.__agenticvids!.collectAudio());
+    for (let f = 0; f < meta.durationInFrames; f += stride) await page.evaluate((fr) => window.__clapper!.setFrame(fr), f);
+    const cues: AudioCue[] = await page.evaluate(() => window.__clapper!.collectAudio());
     return cues.sort((a, b) => a.startFrame - b.startFrame);
   } finally {
     await browser.close();
@@ -100,11 +100,11 @@ export async function renderComposition(o: RenderOptions): Promise<RenderResult>
   const concurrency = Math.max(1, o.concurrency ?? Math.min(4, Math.max(1, os.cpus().length - 1)));
   const t0 = Date.now();
   const browser = await chromium.launch({ args: CHROME_ARGS });
-  const workDir = fs.mkdtempSync(path.join(os.tmpdir(), "agenticvids-"));
+  const workDir = fs.mkdtempSync(path.join(os.tmpdir(), "clapper-"));
   try {
     // Probe to learn the composition's size.
     const probe = await openHarnessPage(browser, o.url, { width: 800, height: 600 }, 1, log);
-    const meta: CompositionMeta = await probe.evaluate(({ id, props }) => window.__agenticvids!.select(id, props), { id: o.compositionId, props: o.props ?? {} });
+    const meta: CompositionMeta = await probe.evaluate(({ id, props }) => window.__clapper!.select(id, props), { id: o.compositionId, props: o.props ?? {} });
     await probe.context().close();
 
     const [start, end] = o.range ? [Math.max(0, o.range[0]), Math.min(meta.durationInFrames, o.range[1])] : [0, meta.durationInFrames];
@@ -150,21 +150,21 @@ export async function renderComposition(o: RenderOptions): Promise<RenderResult>
         const to = Math.min(end, from + chunk);
         if (from >= to) return;
         const page = await openHarnessPage(browser, o.url, { width: meta.width, height: meta.height }, scale, log);
-        await page.evaluate(({ id, props }) => window.__agenticvids!.select(id, props), { id: o.compositionId, props: o.props ?? {} });
+        await page.evaluate(({ id, props }) => window.__clapper!.select(id, props), { id: o.compositionId, props: o.props ?? {} });
         for (let f = from; f < to; f++) {
           if (encoderFailed) throw encoderFailed;
           // back-pressure: don't run far ahead of the writer
           while (f - next > workers * 6) await new Promise((r) => setTimeout(r, 5));
-          await page.evaluate((frame) => window.__agenticvids!.setFrame(frame), f);
+          await page.evaluate((frame) => window.__clapper!.setFrame(frame), f);
           const buf = await page.screenshot({ type: fmt, quality: fmt === "jpeg" ? 96 : undefined, animations: "allow", caret: "hide", scale: "device", timeout: 60_000 });
           pending.set(f, buf);
           done++;
           o.onProgress?.(done, total);
           void flush();
         }
-        const pageErrors: string[] = await page.evaluate(() => window.__agenticvids!.errors);
+        const pageErrors: string[] = await page.evaluate(() => window.__clapper!.errors);
         errors.push(...pageErrors);
-        const cues: AudioCue[] = await page.evaluate(() => window.__agenticvids!.collectAudio());
+        const cues: AudioCue[] = await page.evaluate(() => window.__clapper!.collectAudio());
         for (const c of cues) cuesById.set(c.id, c);
         await page.context().close();
       }),
@@ -172,7 +172,7 @@ export async function renderComposition(o: RenderOptions): Promise<RenderResult>
     await flush();
     stdin.end();
     await encoder;
-    if (errors.length) log(`[agenticvids] ${errors.length} page error(s) during render:\n  ${[...new Set(errors)].join("\n  ")}`);
+    if (errors.length) log(`[clapper] ${errors.length} page error(s) during render:\n  ${[...new Set(errors)].join("\n  ")}`);
 
     // Audio
     const cues = [...cuesById.values()].filter((c) => c.endFrame > start && c.startFrame < end).map((c) => ({ ...c, startFrame: c.startFrame - start, endFrame: c.endFrame - start }));
@@ -196,14 +196,14 @@ export async function renderStills(o: { url: string; compositionId: string; fram
   const browser = await chromium.launch({ args: CHROME_ARGS });
   try {
     const probe = await openHarnessPage(browser, o.url, { width: 800, height: 600 }, 1, log);
-    const meta: CompositionMeta = await probe.evaluate(({ id, props }) => window.__agenticvids!.select(id, props), { id: o.compositionId, props: o.props ?? {} });
+    const meta: CompositionMeta = await probe.evaluate(({ id, props }) => window.__clapper!.select(id, props), { id: o.compositionId, props: o.props ?? {} });
     await probe.context().close();
     const page = await openHarnessPage(browser, o.url, { width: meta.width, height: meta.height }, o.scale ?? 1, log);
-    await page.evaluate(({ id, props }) => window.__agenticvids!.select(id, props), { id: o.compositionId, props: o.props ?? {} });
+    await page.evaluate(({ id, props }) => window.__clapper!.select(id, props), { id: o.compositionId, props: o.props ?? {} });
     fs.mkdirSync(o.outDir, { recursive: true });
     const files: string[] = [];
     for (const f of o.frames) {
-      await page.evaluate((frame) => window.__agenticvids!.setFrame(frame), f);
+      await page.evaluate((frame) => window.__clapper!.setFrame(frame), f);
       const file = path.join(o.outDir, `${o.compositionId}-${String(f).padStart(5, "0")}.${o.format === "jpeg" ? "jpg" : "png"}`);
       await page.screenshot({ path: file, type: o.format ?? "png", animations: "allow", caret: "hide", scale: "device" });
       files.push(file);

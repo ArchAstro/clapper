@@ -1,4 +1,4 @@
-import { AbsoluteFill, Animate, Chime, Click, Counter, Draw, Easing, Pad, Riser, Sequence, SplitText, Stagger, Thump, TransitionSeries, Whoosh, interpolate, progress, useFrame, useSpring } from "@agenticvids/core";
+import { AbsoluteFill, Animate, Chime, Click, Counter, Draw, Easing, Pad, Riser, Sequence, SplitText, Stagger, Thump, TransitionSeries, Whoosh, interpolate, progress, useFrame, useSpring } from "@clapper/core";
 import { Eyebrow, Grain, Reveal, Rule, EXPO, INOUT, QUINT, fmtMoney, pointAt, series, smoothPath, useImpact, type Pt } from "../kit";
 
 /**

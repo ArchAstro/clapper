@@ -1,6 +1,6 @@
-import { AbsoluteFill, Alert, Camera, Chord, Click, Counter, Draw, Duck, Easing, Keystroke, Panel, Pattern, Pluck, Reveal, RoomTone, Rough, RoughRect, Scenes, Sequence, Thump, Tone, Typewriter, Typing, Whoosh, defineScenes, hatchLines, interpolate, progress, roughEllipse, roughPath, roughRect, scribble, sketchHash, useBoil, useFrame, type Frames } from "@agenticvids/core";
+import { AbsoluteFill, Alert, Camera, Chord, Click, Counter, Draw, Duck, Easing, Keystroke, Panel, Pattern, Pluck, Reveal, RoomTone, Rough, RoughRect, Scenes, Sequence, Thump, Tone, Typewriter, Typing, Whoosh, defineScenes, hatchLines, interpolate, progress, roughEllipse, roughPath, roughRect, scribble, sketchHash, useBoil, useFrame, type Frames } from "@clapper/core";
 import type { CSSProperties, ReactNode } from "react";
-import { Caption, PaperScroll as Scroll, PencilScratch as Scratch, SfxWord as Sfx, SketchStamp as Stamp, SketchThought as Thought, SketchWindow as Win } from "@agenticvids/core";
+import { Caption, PaperScroll as Scroll, PencilScratch as Scratch, SfxWord as Sfx, SketchStamp as Stamp, SketchThought as Thought, SketchWindow as Win } from "@clapper/core";
 import { Grain } from "../kit";
 import { D } from "./data";
 import { POSES, Scribble, usePose } from "./scribble";

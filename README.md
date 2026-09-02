@@ -1,4 +1,4 @@
-# agenticvids
+# clapper
 
 Write videos in React. Render them to MP4.
 
@@ -17,15 +17,15 @@ videos/intern-promo/src/index.tsx     packages/cli (Node)                    out
 │   <Tone>/<Audio> cues    │   │  cues ─► offline synth + amix ─► mux  │   │          │
 └──────────────────────────┘   └───────────────────────────────────────┘   └──────────┘
           ▲
-   `agenticvids preview` mounts the same entry in the studio: scrub, play, tracks, live audio
+   `clapper preview` mounts the same entry in the studio: scrub, play, tracks, live audio
 ```
 
 ## Layout
 
 | Path | What |
 | --- | --- |
-| `packages/core` | `@agenticvids/core` — the React runtime (timeline, sequences, tweens, springs, camera, audio, text effects, transitions, LaTeX, media). Browser code only. |
-| `packages/cli` | `@agenticvids/cli` — `agenticvids render / still / preview / compositions`. Vite bundling, Playwright frame capture, ffmpeg encoding, audio synthesis and mixing. |
+| `packages/core` | `@clapper/core` — the React runtime (timeline, sequences, tweens, springs, camera, audio, text effects, transitions, LaTeX, media). Browser code only. |
+| `packages/cli` | `@clapper/cli` — `clapper render / still / preview / compositions`. Vite bundling, Playwright frame capture, ffmpeg encoding, audio synthesis and mixing. |
 | `videos/intern-promo` | The tryintern.dev promo built with it (`pnpm render`, `pnpm preview`). |
 | `videos/showcase` | Three agency-style spots for made-up SaaS products (Ledger, Orbit, Nimbus) with synthesized sound, each iterated against a creative-director review loop. `src/kit.tsx` is the reusable motion vocabulary. |
 
@@ -38,15 +38,15 @@ cd packages/cli && pnpm exec playwright install chromium
 cd videos/intern-promo
 pnpm preview                       # studio at http://127.0.0.1:4321 — space play, ←/→ frame, shift ×10, l loop, m mute
 pnpm render                        # → out/intern-promo.mp4 (~57s, 1080p30, AAC)
-pnpm exec agenticvids still src/index.tsx -c intern-promo --frame 100,226,392 --out out/stills
-pnpm exec agenticvids compositions src/index.tsx
+pnpm exec clapper still src/index.tsx -c intern-promo --frame 100,226,392 --out out/stills
+pnpm exec clapper compositions src/index.tsx
 ```
 
 A video project is any folder with a `package.json`, a `public/` for assets
 (`staticFile("x.png")`) and an entry that calls `registerRoot`:
 
 ```tsx
-import { Composition, registerRoot } from "@agenticvids/core";
+import { Composition, registerRoot } from "@clapper/core";
 import { Promo } from "./promo";
 
 function Root() {
@@ -74,7 +74,7 @@ registerRoot(Root);
    `<TransitionSeries transition={{type:"fade"|"slide"|"wipe"|"zoom"|"blur"|"none", duration}}>` build on it. Named
    sequences show up as tracks in the studio. On a hard cut, make sure the incoming scene has something on screen at its
    local frame 0 (a rule, an eyebrow, a static frame); masked reveals that start at 0 leave the first 4–8 frames empty
-   (`agenticvids review` flags near-black frames after a cut).
+   (`clapper review` flags near-black frames after a cut).
 3. **Everything is a tween of the frame.**
    - `interpolate(frame, [0,30], [0,1], { easing: Easing.outExpo })`, `progress()`, `spring({frame,fps,config})`,
      `Easing.*` (CSS-equivalent beziers + elastic/bounce/steps), `SpringPresets`.
@@ -90,12 +90,12 @@ registerRoot(Root);
    the offline mixer is stereo with a reverb bus. `automation={{ volume: [[frame, gain]…], cutoff: [[frame, hz]…] }}` automates a
    long cue across scene cuts (put beds in a root-level `<Score/>` so they never restart at a cut). `<Duck at depth attack release>` is a
    bus cue: it multiplies the whole mix (tones and files) so a quiet scene is actually quiet; several ducks multiply. `<Breath cutoff rate>`
-   is a filtered-noise pad that swells like breathing (wave `"breath"`). `agenticvids cues <entry> -c <id>`
-   prints the cue inventory; `agenticvids review` writes short-term loudness around every cut. A cue starts at the enclosing
+   is a filtered-noise pad that swells like breathing (wave `"breath"`). `clapper cues <entry> -c <id>`
+   prints the cue inventory; `clapper review` writes short-term loudness around every cut. A cue starts at the enclosing
    sequence's start + `at`. The studio plays cues live (Web Audio); the renderer synthesizes tones offline in Node,
    sums them into one track, and mixes file cues with ffmpeg (`adelay`/`afade`/`amix`).
 6. **Text & SVG.** `<Typewriter/>` (+ `typedLength()` to sync clicks), `<SplitText by="word|char|line"/>`, `<Counter/>`,
-   `<Draw>` (stroke-dashoffset reveal of every shape inside), `useBlink()`. `<Latex>` from `@agenticvids/core/latex` (KaTeX).
+   `<Draw>` (stroke-dashoffset reveal of every shape inside), `useBlink()`. `<Latex>` from `@clapper/core/latex` (KaTeX).
    Display-copy primitives: `<Reveal at from skew exitAt>` (masked line reveal), `<Copy x y align size plate>` (positioned
    line with an optional backing plate), `<Eyebrow>`, `<Rule>`. They tag the DOM with `data-copy`, which is what the review
    lint measures for safe-area and overlap.
@@ -104,7 +104,7 @@ registerRoot(Root);
    per frame and, when a key sets `arc`, lifts the hand targets through a midpoint so travel curves instead of sliding.
    `ik2()` is two-bone inverse kinematics with an outward elbow; `useEyeBlink()` / `useBreath()` are deterministic idle motion.
    `<Bubble x y kind="speech"|"thought" tail at exitAt>` pops a bubble from its tail tip. `evalPose()` is the pure blend behind `usePose()`.
-   Two characters ship in `@agenticvids/core/rigs`: `<Person pose>` (the monoline developer, with `PERSON_POSES`, `usePersonPose`,
+   Two characters ship in `@clapper/core/rigs`: `<Person pose>` (the monoline developer, with `PERSON_POSES`, `usePersonPose`,
    `<Archie>` and `<Desk>`) and `<Scribble pose typing fury>` (the rage-comic developer, `SCRIBBLE_POSES`, `useScribblePose`).
    Both are pure functions of a pose record, the frame and, for Scribble, the boil seed; ArchDev v1–v3 use them as-is.
 7. **Media & readiness.** `<Img/>`, `<Video/>` (currentTime driven by the frame; its soundtrack is mixed into the render unless
@@ -126,25 +126,25 @@ registerRoot(Root);
 
 ## Renderer
 
-`agenticvids render <entry> -c <id> -o out.mp4 [--scene plan] [--draft] [--concurrency 4] [--scale 2] [--range 0-90] [--codec h264|h265|vp9|prores] [--crf 17] [--image-format png|jpeg] [--mute] [--props '{"title":"x"}']`
+`clapper render <entry> -c <id> -o out.mp4 [--scene plan] [--draft] [--concurrency 4] [--scale 2] [--range 0-90] [--codec h264|h265|vp9|prores] [--crf 17] [--image-format png|jpeg] [--mute] [--props '{"title":"x"}']`
 
 - `--scene <name>` renders one scene of a `defineScenes` plan; `--draft` is half resolution, CRF 28, veryfast, for iteration.
-- `agenticvids still <entry> -c <id> --scene review` writes the first, middle and last frame of the scene; `--frame 12,40` is
+- `clapper still <entry> -c <id> --scene review` writes the first, middle and last frame of the scene; `--frame 12,40` is
   scene-local when `--scene` is given; `--every 30` samples across the scene or `--range`.
-- `agenticvids compositions <entry> [--json]` lists compositions with their scene maps.
-- `agenticvids doctor [<entry|dir>]` checks Node, Chromium, ffmpeg (libx264, aac, the filters the review kit needs) and React/core resolution.
+- `clapper compositions <entry> [--json]` lists compositions with their scene maps.
+- `clapper doctor [<entry|dir>]` checks Node, Chromium, ffmpeg (libx264, aac, the filters the review kit needs) and React/core resolution.
 - A composition that throws names the scene and local frame: `Composition threw while rendering frame 406 in scene "review" (local frame 2)`.
 
-- Bundles `.agenticvids/harness/` with Vite (React plugin, `public/` served, KaTeX/CSS/fonts handled), serves it, opens N
-  Chromium tabs, each takes a contiguous frame chunk, calls `window.__agenticvids.setFrame(n)`, screenshots, and an ordered
+- Bundles `.clapper/harness/` with Vite (React plugin, `public/` served, KaTeX/CSS/fonts handled), serves it, opens N
+  Chromium tabs, each takes a contiguous frame chunk, calls `window.__clapper.setFrame(n)`, screenshots, and an ordered
   writer streams PNGs into `ffmpeg -f image2pipe … libx264 -pix_fmt yuv420p`. Audio is mixed after, then muxed (AAC).
 - A composition that throws makes the render fail with the error, not produce blank frames.
-- Uses system `ffmpeg` if it has libx264, otherwise the `ffmpeg-static` binary. `AGENTICVIDS_FFMPEG` overrides.
+- Uses system `ffmpeg` if it has libx264, otherwise the `ffmpeg-static` binary. `CLAPPER_FFMPEG` overrides.
 - Speed: 15–25 fps at 1080p with 4 workers on an M-series laptop. Frames are captured as JPEG q96 by default; `--image-format png` is lossless but PNG-encoding grainy frames is ~5x slower (the screenshot encode, not the page, is the bottleneck).
 
 ## Review
 
-`agenticvids review <entry> -c <id> [--video existing.mp4] [--draft] [--no-lint] [-o dir]` renders (or takes an existing MP4) and writes
+`clapper review <entry> -c <id> [--video existing.mp4] [--draft] [--no-lint] [-o dir]` renders (or takes an existing MP4) and writes
 `out/review/<id>/`: `contact-sheet.png` (every Nth frame, reading order = time), `cut-NNNN.png` (9 tiles around every scene cut),
 `opening-2s.png`, `spectrogram.png`, `waveform.png`, `audio-cuts.txt` (short-term RMS ±1.2 s around each cut, integrated LUFS per
 scene), `scenes.json`, `lint.json` and `brief.md` (scene table + a reviewer prompt you can hand to a subagent). Scene cuts come
@@ -153,7 +153,7 @@ from the composition's `scenes` plan, or from the top-level named sequences when
 Lint rules (exit code 1 on errors): `blank-after-cut` (near-black frame right after a cut while the scene is not), `flat-after-cut`
 (only the background is on screen right after a cut: the scene has no instant anchor at local frame 0), `overlap`
 (two `data-copy` ink boxes intersect), `safe-area` (copy crosses the 5 % margin), `determinism` (`Math.random`, `Date.now`,
-`performance.now`, timers or rAF in the video's sources; append `// agenticvids-ok` to a line to allow it).
+`performance.now`, timers or rAF in the video's sources; append `// clapper-ok` to a line to allow it).
 The DOM rules sample three frames per scene where that scene is on screen alone, measure glyph ranges of the innermost
 copy elements, and only judge boxes that hold still for three frames, so entrances, exits and wipes are not "collisions".
 They only see elements tagged `data-copy` (the core `Copy`, `Reveal`, `Eyebrow` and `Bubble` set it); add `data-copy=""` to your
@@ -161,7 +161,7 @@ own headline elements to opt in. The brief says so when a composition has none.
 
 ## Studio
 
-`agenticvids preview <entry>` runs a Vite dev server with HMR and opens an editor:
+`clapper preview <entry>` runs a Vite dev server with HMR and opens an editor:
 
 - **Project** (left): every composition with a live thumbnail, plus the scenes of the selected one (click to jump, double-click to loop).
 - **Viewport** (centre): the composition at fit / 25–200 %, with a HUD (timecode, frame, scene + local frame) and overlays:
@@ -180,7 +180,7 @@ own headline elements to opt in. The brief says so when a composition has none.
   Cue previews and playback use the studio's Web Audio approximation of the offline synth; ducks apply in the render only.
 
 `packages/cli/test/studio-check.mjs` drives the studio headlessly (screenshots, playback, overlays, a scratch compile) against
-`agenticvids preview … --port 4399`.
+`clapper preview … --port 4399`.
 
 ## Starting a video
 
@@ -190,7 +190,7 @@ a theme class with tokens, and scripts for preview / still / review / render. It
 ## Extending
 
 It is all React: publish a package of components/hooks that use `useFrame()`/`useTimeline()` and it works in any video.
-`@agenticvids/core/latex` is the reference "extension" (kept as a subpath so KaTeX loads only when imported).
+`@clapper/core/latex` is the reference "extension" (kept as a subpath so KaTeX loads only when imported).
 Things that need to block a frame until ready use `delayRender()`. Things that make sound register through
 `getRegistry().audio` (see `audio.tsx`).
 
@@ -199,4 +199,4 @@ Things that need to block a frame until ready use `delayRender()`. Things that m
 `pnpm test` — unit tests for interpolation, springs, keyframes, camera, typewriter timing, PRNG, frames/scenes/IK, and the offline synth.
 `node packages/cli/test/review-check.mjs` renders `packages/cli/test/fixtures/lint` (four planted defects) and asserts the review lint reports all of them.
 `videos/intern-promo`'s `smoke` composition exercises the whole pipeline (fonts, KaTeX, SVG draw, camera, springs, audio):
-`pnpm exec agenticvids render src/index.tsx -c smoke`.
+`pnpm exec clapper render src/index.tsx -c smoke`.

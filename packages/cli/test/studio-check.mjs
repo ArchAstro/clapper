@@ -1,4 +1,4 @@
-// Manual e2e for the studio. Start `agenticvids preview <entry> --port 4399` first, then: node test/studio-check.mjs [compositionId]
+// Manual e2e for the studio. Start `clapper preview <entry> --port 4399` first, then: node test/studio-check.mjs [compositionId]
 import { chromium } from "playwright";
 import path from "node:path";
 import { fileURLToPath } from "node:url";

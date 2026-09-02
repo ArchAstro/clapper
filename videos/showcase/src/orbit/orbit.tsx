@@ -1,6 +1,6 @@
-import { AbsoluteFill, Animate, Chime, Draw, Easing, Pad, Pop, Sequence, Stagger, Thump, TransitionSeries, Whoosh, interpolate, progress, spring, transitionSeriesLength, useFps, useFrame, useSpring } from "@agenticvids/core";
+import { AbsoluteFill, Animate, Chime, Draw, Easing, Pad, Pop, Sequence, Stagger, Thump, TransitionSeries, Whoosh, interpolate, progress, spring, transitionSeriesLength, useFps, useFrame, useSpring } from "@clapper/core";
 import { Grain, Reveal, EXPO, INOUT, QUINT } from "../kit";
-import { noise1d } from "@agenticvids/core";
+import { noise1d } from "@clapper/core";
 
 /**
  * ORBIT — meetings that find their own time.

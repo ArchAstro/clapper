@@ -1,4 +1,4 @@
-import { AbsoluteFill, Panel, useBoil, useFrame } from "@agenticvids/core";
+import { AbsoluteFill, Panel, useBoil, useFrame } from "@clapper/core";
 import { POSES, Scribble, usePose } from "./scribble";
 
 /** Pose sheet for eyeballing the rig: three figures, three moods, boiling lines. */

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { renderToneSamples, renderToneStereo, renderToneTrack } from "../src/ffmpeg.ts";
-import type { AudioCue } from "@agenticvids/core";
+import type { AudioCue } from "@clapper/core";
 
 const tone = (over: Partial<AudioCue> = {}): AudioCue => ({
   id: "t",
