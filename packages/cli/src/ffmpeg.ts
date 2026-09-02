@@ -91,8 +91,10 @@ export async function mixAudio(o: MixOptions): Promise<string | null> {
   // All synthesized tones are summed offline into a single track first, so a
   // composition with hundreds of clicks still costs ffmpeg exactly one input.
   const toneCues = o.cues.filter((c) => c.kind === "tone" && c.tone);
+  const busCues = o.cues.filter((c) => c.kind === "bus" && c.automation?.volume);
+  const busExpr = busCues.length ? busGainExpr(busCues, o.fps) : null;
   if (toneCues.length) {
-    const [tl, tr] = renderToneTrack(toneCues, o.fps, o.durationInFrames, sr);
+    const [tl, tr] = renderToneTrack(toneCues, o.fps, o.durationInFrames, sr, busCues);
     const src = path.join(o.workDir, "tones.wav");
     fs.writeFileSync(src, encodeWav(tl, sr, tr));
     inputs.push("-i", src);
@@ -124,6 +126,7 @@ export async function mixAudio(o: MixOptions): Promise<string | null> {
     if (cue.fadeOutFrames > 0) chain.push(`afade=t=out:st=${Math.max(0, lenSec - cue.fadeOutFrames / o.fps).toFixed(4)}:d=${(cue.fadeOutFrames / o.fps).toFixed(4)}`);
     const delayMs = Math.round(startSec * 1000);
     chain.push(`adelay=${delayMs}|${delayMs}`);
+    if (busExpr) chain.push(`volume='${busExpr}':eval=frame`);
     filters.push(`[${i}:a]${chain.join(",")}[a${i}]`);
   }
   if (idx === 0) return null;
@@ -133,6 +136,33 @@ export async function mixAudio(o: MixOptions): Promise<string | null> {
   const args = [...inputs, "-filter_complex", filters.join(";"), "-map", "[out]", "-ar", String(sr), "-y", o.out];
   await runFfmpeg(args);
   return o.out;
+}
+
+/** Combined gain of every bus (duck) cue at an absolute frame. */
+export function busGainAt(bus: AudioCue[], frame: number): number {
+  let g = 1;
+  for (const c of bus) {
+    if (frame < c.startFrame || frame >= c.endFrame || !c.automation?.volume) continue;
+    g *= envelopeAt(c.automation.volume, frame - c.startFrame);
+  }
+  return g;
+}
+
+/** ffmpeg `volume` expression (in seconds `t`) equal to the combined bus gain: piecewise linear between every breakpoint. */
+export function busGainExpr(bus: AudioCue[], fps: number): string {
+  const frames = new Set<number>();
+  for (const c of bus) for (const [f] of c.automation?.volume ?? []) frames.add(c.startFrame + f);
+  const pts = [...frames].sort((a, b) => a - b).map((f) => [f / fps, busGainAt(bus, f)] as const);
+  if (pts.length === 0) return "1";
+  // Sample just inside each breakpoint too, so a hard step (two points at one frame) survives.
+  let expr = pts[pts.length - 1][1].toFixed(4);
+  for (let i = pts.length - 2; i >= 0; i--) {
+    const [t0, g0] = pts[i];
+    const [t1, g1] = pts[i + 1];
+    const seg = t1 > t0 ? `${g0.toFixed(4)}+(${(g1 - g0).toFixed(4)})*(t-${t0.toFixed(4)})/${(t1 - t0).toFixed(4)}` : g0.toFixed(4);
+    expr = `if(lt(t,${t1.toFixed(4)}),${seg},${expr})`;
+  }
+  return `if(lt(t,${pts[0][0].toFixed(4)}),${pts[0][1].toFixed(4)},${expr})`;
 }
 
 function clampTempo(rate: number): number {
@@ -164,7 +194,7 @@ export async function muxAudio(video: string, audio: string, out: string, opts: 
  * Sum every tone cue into one STEREO track of the full duration (volume, fades,
  * pan and reverb send applied), then run the reverb bus and soft-limit.
  */
-export function renderToneTrack(cues: AudioCue[], fps: number, durationInFrames: number, sr: number): [Float32Array, Float32Array] {
+export function renderToneTrack(cues: AudioCue[], fps: number, durationInFrames: number, sr: number, bus: AudioCue[] = []): [Float32Array, Float32Array] {
   const n = Math.ceil((durationInFrames / fps) * sr);
   const L = new Float32Array(n);
   const R = new Float32Array(n);
@@ -202,6 +232,19 @@ export function renderToneTrack(cues: AudioCue[], fps: number, durationInFrames:
     for (let i = 0; i < n; i++) {
       L[i] += rl[i];
       R[i] += rr[i];
+    }
+  }
+  if (bus.length) {
+    // bus gain is smooth at frame resolution: evaluate per 1 ms block
+    const block = Math.max(1, Math.round(sr / 1000));
+    for (let i = 0; i < n; i += block) {
+      const g = busGainAt(bus, (i / sr) * fps);
+      if (g === 1) continue;
+      const end = Math.min(n, i + block);
+      for (let j = i; j < end; j++) {
+        L[j] *= g;
+        R[j] *= g;
+      }
     }
   }
   let peak = 0;
@@ -279,7 +322,7 @@ export function renderToneStereo(cue: AudioCue, lenSec: number, sr: number, fps 
       L[i] = (mono[i] + v2[i] * w) / (1 + w);
       R[i] = (mono[i] + v3[i] * w) / (1 + w);
     }
-  } else if (spec.wave === "noise" && (spec.spread ?? 0) > 0) {
+  } else if ((spec.wave === "noise" || spec.wave === "breath") && (spec.spread ?? 0) > 0) {
     R = renderVoice(spec, n, sr, det, 4242, fps);
   }
   // constant-power pan
@@ -368,6 +411,26 @@ function renderVoice(spec: ToneSpec, n: number, sr: number, detune: number, seed
       const v = Math.sin(ph + bell * Math.sin(phm)) * 0.7 + Math.sin(phb * 1.0 + body * Math.sin(phb * 1.0)) * 0.4 + Math.sin(ph * 2) * 0.06;
       out[i] = v * amp * adsr(spec, t, lenSec);
     }
+  } else if (spec.wave === "breath") {
+    // Filtered noise whose 2-pole lowpass and level swell with a slow breathing LFO.
+    let seed = (seed0 >>> 0) || 1;
+    const rate = spec.lfo?.rate ?? 0.14;
+    const depth = spec.lfo?.depth ?? 0.4;
+    const base = spec.cutoff ?? 700;
+    let lp1 = 0, lp2 = 0, hp = 0;
+    const hpk = 1 - Math.exp((-2 * Math.PI * 120) / sr);
+    for (let i = 0; i < n; i++) {
+      seed = (seed * 1664525 + 1013904223) >>> 0;
+      const x = seed / 2147483648 - 1;
+      const t = i / sr;
+      const sw = 0.5 - 0.5 * Math.cos(2 * Math.PI * rate * t);
+      const hz = base * (1 - depth + 1.4 * depth * sw);
+      const k = 1 - Math.exp((-2 * Math.PI * hz) / sr);
+      lp1 += k * (x - lp1);
+      lp2 += k * (lp1 - lp2);
+      hp += hpk * (lp2 - hp);
+      out[i] = (lp2 - hp) * (1 - depth + depth * sw) * 4;
+    }
   } else if (spec.wave === "noise") {
     let lp = 0;
     let lp2 = 0;
@@ -413,7 +476,7 @@ function renderVoice(spec: ToneSpec, n: number, sr: number, detune: number, seed
   }
   // post: lowpass (optionally automated) and tremolo
   const cutEnv = spec.automation?.cutoff;
-  if (spec.cutoff || cutEnv) {
+  if ((spec.cutoff || cutEnv) && spec.wave !== "breath") {
     let lp = 0;
     let a = 0;
     let lastHz = -1;

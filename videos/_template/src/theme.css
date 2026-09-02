@@ -1,0 +1,15 @@
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap");
+
+.spot {
+  --bg: #1e2326;
+  --fg: #d3c6aa;
+  --muted: #859289;
+  --accent: #a7c080;
+  --display: "Bricolage Grotesque", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, monospace;
+  font-family: var(--display);
+  color: var(--fg);
+  background: var(--bg);
+}
+.spot .display { font-family: var(--display); font-weight: 600; letter-spacing: -0.02em; line-height: 1.05; }
+.spot .mono { font-family: var(--mono); }

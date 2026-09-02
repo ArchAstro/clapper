@@ -34,6 +34,8 @@ body{margin:0;background:#111;color:#e8e6df;font:13px/1.4 -apple-system,system-u
 .scrub .fill{position:absolute;left:0;top:0;bottom:0;background:#2b3d33;border-radius:4px}
 .scrub .head{position:absolute;top:-4px;bottom:-4px;width:2px;background:#7fb894;transform:translateX(-1px)}
 .scrub .tick{position:absolute;top:0;bottom:0;width:1px;background:#2b2b2b}
+.scrub .marker{position:absolute;top:0;bottom:0;border-left:1px solid #7fb894;overflow:hidden;pointer-events:none}
+.scrub .marker span{font-size:10px;color:#9fd3b3;padding-left:4px;line-height:18px;white-space:nowrap;opacity:.85}
 .tracks{position:relative;max-height:150px;overflow:auto;display:flex;flex-direction:column;gap:3px}
 .track{position:relative;height:16px}
 .track .bar{position:absolute;top:0;height:16px;border-radius:3px;background:#2a3a47;border:1px solid #3a5266;color:#cfe3f2;font-size:10px;line-height:14px;padding:0 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -170,6 +172,16 @@ function Studio() {
         case "m":
           setMuted((m) => !m);
           break;
+        case "]": {
+          const next = (comp.scenes ?? []).map((s) => s.start).find((f) => f > frameRef.current);
+          if (next !== undefined) seek(next);
+          break;
+        }
+        case "[": {
+          const prev = [...(comp.scenes ?? [])].map((s) => s.start).reverse().find((f) => f < frameRef.current - 1);
+          seek(prev ?? 0);
+          break;
+        }
       }
     };
     window.addEventListener("keydown", onKey);
@@ -227,14 +239,14 @@ function Studio() {
           <span className="spacer" />
           <span className="kbd">space play · ←/→ frame · shift ×10 · home/end · l loop · m mute</span>
         </div>
-        <Scrubber frame={frame} total={comp.durationInFrames} fps={comp.fps} onSeek={seek} />
+        <Scrubber scenes={comp.scenes} frame={frame} total={comp.durationInFrames} fps={comp.fps} onSeek={seek} />
         <Tracks tracks={tracks} cues={cues} frame={frame} total={comp.durationInFrames} onSeek={seek} />
       </div>
     </div>
   );
 }
 
-function Scrubber({ frame, total, fps, onSeek }: { frame: number; total: number; fps: number; onSeek: (f: number) => void }) {
+function Scrubber({ frame, total, fps, scenes = [], onSeek }: { frame: number; total: number; fps: number; scenes?: { name: string; start: number; end: number }[]; onSeek: (f: number) => void }) {
   const ref = useRef<HTMLDivElement>(null);
   const toFrame = (e: React.MouseEvent | MouseEvent) => {
     const el = ref.current!;
@@ -258,6 +270,11 @@ function Scrubber({ frame, total, fps, onSeek }: { frame: number; total: number;
       <div className="fill" style={{ width: `${(frame / total) * 100}%` }} />
       {ticks.map((t) => (
         <div key={t} className="tick" style={{ left: `${(t / total) * 100}%` }} />
+      ))}
+      {scenes.map((s) => (
+        <div key={s.name} className="marker" title={`${s.name} · ${s.start}–${s.end}`} style={{ left: `${(s.start / total) * 100}%`, width: `${((s.end - s.start) / total) * 100}%` }}>
+          <span>{s.name}</span>
+        </div>
       ))}
       <div className="head" style={{ left: `${(frame / total) * 100}%` }} />
     </div>

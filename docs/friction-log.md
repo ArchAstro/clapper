@@ -158,7 +158,7 @@ Every `at`, `duration`, `from` accepts `number` (frames) or `"1.2s"`; `useSecond
 ```
 Implementation: `resolveFrames(value, fps)` in one place; keep frames as the canonical unit.
 
-### P0-3 Music and sound bus (audio v2) — MOSTLY DONE (engine v2 shipped; `<Duck>` and a `breath` wave still open)
+### P0-3 Music and sound bus (audio v2) — DONE (engine v2; `<Duck>` bus gain applied to tones and files; `breath` wave + `<Breath>`)
 - Stereo tone track with `pan`, a reverb send (`space: 0..1`), per-cue `lowpass`, `lfo`.
 - New waves: `pluck` (Karplus–Strong), `epiano` (2-op FM), `breath` (filtered noise pad). Retire raw `square` for UI sounds.
 - `<Keystroke>` = three layers (click 3–6 kHz, thock 150–400 Hz, tail) with deterministic variation; `<Typing text at cps>` emits them from `typedLength`.
@@ -175,10 +175,10 @@ Harness errors already fail the render; add the scene name and local frame from 
 ### P1-1 Core text primitives — DONE (`Reveal`, `Copy`, `Eyebrow`, `Rule` in core with `data-copy` tags; showcase kit re-exports)
 `Reveal` (masked line reveal with `from`, `skew`, `exitAt`), `Copy` (positioned display copy with optional plate), `Eyebrow`, `Rule`. All three projects re-implemented them; the plate-before-text bug came from a project copy.
 
-### P1-2 Character toolkit in core — PARTLY DONE (`definePoses`, `usePose` with `arc`, `ik2`, `useEyeBlink`, `useBreath`; `<Bubble>` and a shipped generic rig still open)
+### P1-2 Character toolkit in core — DONE except a shipped generic rig (`definePoses`, `usePose` with `arc`, `ik2`, `useEyeBlink`, `useBreath`, `<Bubble>`)
 Move `person.tsx` ideas into a generic rig: `definePose()`, typed `Pose` with named poses, `usePose(keys)` with arc-biased midpoints (`arc: 20`), two-bone `ik()`, blink/breath/idle generators, `<Bubble>` (thought/speech). Ship the monoline developer as the first rig.
 
-### P1-3 Studio upgrades
+### P1-3 Studio upgrades — PARTLY DONE (scene markers on the scrubber, `[`/`]` jump); cue colours by kind, cue inspector, pose scrubber still open
 Cue colors by kind (file/tone/keystroke/music); click a cue to see its spec; markers from P0-1 as a ruler; `M` to jump to the next marker; a pose scrubber (channel sliders) for rig scenes; a "blank frame" indicator on the scrubber.
 
 ### P1-4 Render ergonomics — DONE (`--scene`, `--every`, `--draft`); frame cache not done
@@ -194,13 +194,13 @@ usePose([{ at: 0, pose: "typing" }, { at: "0.8s", pose: "lookUp", ease: "outBack
 ```
 `arc` inserts a biased midpoint for hand targets automatically (the round-2 Orbit and ArchDev notes were both "straight-line travel reads mechanical").
 
-### P1-7 Data files per video
+### P1-7 Data files per video — DONE as a convention in `videos/_template/src/data.ts`
 `data.ts` with every number and string used in copy and UI (prices, latencies, agent counts). The Nimbus "38 ms vs 88 ms" and Ledger "31 months" reuse came from literals scattered across scenes.
 
 ### P1-8 Review-kit lint (geometry) — DONE (`overlap`, `safe-area` on `data-copy` boxes at three frames per scene)
 The harness can expose `document.elementsFromPoint` sampling or bounding boxes for elements tagged `data-copy` / `data-hero`. Report: text overlapping another element's box, text outside the 120 px safe area, and elements whose box straddles the canvas edge. This catches 4 of the 12 round-1 findings mechanically.
 
-### P2 Others
+### P2 Others — format variants (`<Composition formats>` + `useFormat()`), `agenticvids doctor` and `videos/_template` DONE; `<Video>` audio extraction open
 - `<Video>` audio extraction into the mix (today `<Video>` is silent unless paired with `<Audio>`).
 - Vertical/square variants: `<Composition formats={["16:9","9:16"]}>` with `useFormat()`; the intern promo would need it first.
 - `agenticvids doctor`: checks Chromium, ffmpeg (libx264/aac), fonts, node version.

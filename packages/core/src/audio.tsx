@@ -22,8 +22,8 @@ interface CommonAudioProps {
   duration?: Frames;
   /** 0..1 (values above 1 boost). Default 1. */
   volume?: number;
-  fadeIn?: number;
-  fadeOut?: number;
+  fadeIn?: Frames;
+  fadeOut?: Frames;
   /** Extra id salt if you place two identical cues at one spot. */
   name?: string;
 }
@@ -35,7 +35,7 @@ function useCueRange({ at = 0, durationInFrames, duration }: CommonAudioProps) {
   const durF = resolveFrames(durationInFrames ?? duration, fps);
   const startFrame = tl.offset + atF;
   const endFrame = durF !== undefined ? startFrame + durF : tl.offset + tl.durationInFrames;
-  return { startFrame, endFrame, path: tl.path, atF };
+  return { startFrame, endFrame, path: tl.path, atF, fps };
 }
 
 function useRegisterCue(cue: AudioCue) {
@@ -60,7 +60,7 @@ export interface AudioProps extends CommonAudioProps {
 /** A sound file on the timeline. */
 export function Audio(props: AudioProps) {
   const { src, startFrom = 0, playbackRate = 1, loop = false, volume = 1, fadeIn = 0, fadeOut = 0, name, at = 0 } = props;
-  const { startFrame, endFrame, path, atF } = useCueRange(props);
+  const { startFrame, endFrame, path, atF, fps } = useCueRange(props);
   useRegisterCue({
     id: `${path.join("/")}|audio|${src}|${atF}|${name ?? ""}`,
     kind: "file",
@@ -68,8 +68,8 @@ export function Audio(props: AudioProps) {
     startFrame,
     endFrame,
     volume,
-    fadeInFrames: fadeIn,
-    fadeOutFrames: fadeOut,
+    fadeInFrames: resolveFrames(fadeIn, fps),
+    fadeOutFrames: resolveFrames(fadeOut, fps),
     trimStart: startFrom,
     playbackRate,
     loop,
@@ -103,7 +103,7 @@ export interface ToneProps extends CommonAudioProps {
 /** A synthesized tone: no asset files needed. */
 export function Tone(props: ToneProps) {
   const { freq, glide, wave = "sine", attack = 0.005, decay = 0.08, sustain = 0.6, release = 0.2, partials, ring, brightness, cutoff, pan, spread, reverb, lfo, detune, automation, volume = 0.5, fadeIn = 0, fadeOut = 0, name, at = 0 } = props;
-  const { startFrame, endFrame, path, atF } = useCueRange(props);
+  const { startFrame, endFrame, path, atF, fps } = useCueRange(props);
   const f = noteToHz(freq);
   const g = glide === undefined ? undefined : noteToHz(glide);
   useRegisterCue({
@@ -112,8 +112,8 @@ export function Tone(props: ToneProps) {
     startFrame,
     endFrame,
     volume,
-    fadeInFrames: fadeIn,
-    fadeOutFrames: fadeOut,
+    fadeInFrames: resolveFrames(fadeIn, fps),
+    fadeOutFrames: resolveFrames(fadeOut, fps),
     tone: { wave, freq: f, freqEnd: g, attack, decay, sustain, release, partials, ring, brightness, cutoff, pan, spread, reverb, lfo, detune, automation },
   });
   return null;
@@ -194,7 +194,7 @@ export function Pattern({ steps, bpm = 90, step = 0.5, at = 0, repeat = 1, wave 
 }
 
 /** A slowly breathing drone: filtered saw/triangle with tremolo and width. Less "synthy" than a bare sine pad. */
-export function Drone({ notes = ["D2", "A2"], at = 0, durationInFrames, volume = 0.05, fadeIn = 30, fadeOut = 30, cutoff = 420, lfo = { rate: 0.18, depth: 0.35 }, spread = 0.6, reverb = 0.35, wave = "sawtooth", automation, name }: { notes?: (number | string)[]; at?: number; durationInFrames?: number; volume?: number; fadeIn?: number; fadeOut?: number; cutoff?: number; lfo?: { rate: number; depth: number }; spread?: number; reverb?: number; wave?: Wave; automation?: ToneSpec["automation"]; name?: string }) {
+export function Drone({ notes = ["D2", "A2"], at = 0, durationInFrames, volume = 0.05, fadeIn = 30, fadeOut = 30, cutoff = 420, lfo = { rate: 0.18, depth: 0.35 }, spread = 0.6, reverb = 0.35, wave = "sawtooth", automation, name }: { notes?: (number | string)[]; at?: Frames; durationInFrames?: Frames; volume?: number; fadeIn?: Frames; fadeOut?: Frames; cutoff?: number; lfo?: { rate: number; depth: number }; spread?: number; reverb?: number; wave?: Wave; automation?: ToneSpec["automation"]; name?: string }) {
   return (
     <>
       {notes.map((n, i) => (
@@ -205,7 +205,7 @@ export function Drone({ notes = ["D2", "A2"], at = 0, durationInFrames, volume =
 }
 
 /** Very quiet air / room tone. Cinematic beds start here, not with silence. */
-export function RoomTone({ at = 0, durationInFrames, volume = 0.02, cutoff = 600, fadeIn = 20, fadeOut = 20, name }: { at?: number; durationInFrames?: number; volume?: number; cutoff?: number; fadeIn?: number; fadeOut?: number; name?: string }) {
+export function RoomTone({ at = 0, durationInFrames, volume = 0.02, cutoff = 600, fadeIn = 20, fadeOut = 20, name }: { at?: Frames; durationInFrames?: Frames; volume?: number; cutoff?: number; fadeIn?: Frames; fadeOut?: Frames; name?: string }) {
   return <Tone at={at} durationInFrames={durationInFrames} freq={cutoff} wave="noise" attack={0.5} decay={0.1} sustain={1} release={0.5} volume={volume} fadeIn={fadeIn} fadeOut={fadeOut} lfo={{ rate: 0.07, depth: 0.3 }} spread={0.8} name={name ?? "room"} />;
 }
 
@@ -286,7 +286,7 @@ export function Click({ at = 0, volume = 0.18, freq = 2400, name }: { at?: numbe
 }
 
 /** A sustained low pad chord (bed music without assets). */
-export function Pad({ notes = ["C3", "G3", "E4"], at = 0, durationInFrames, volume = 0.08, fadeIn = 30, fadeOut = 30, wave = "triangle", name }: { notes?: (number | string)[]; at?: number; durationInFrames?: number; volume?: number; fadeIn?: number; fadeOut?: number; wave?: ToneSpec["wave"]; name?: string }) {
+export function Pad({ notes = ["C3", "G3", "E4"], at = 0, durationInFrames, volume = 0.08, fadeIn = 30, fadeOut = 30, wave = "triangle", name }: { notes?: (number | string)[]; at?: Frames; durationInFrames?: Frames; volume?: number; fadeIn?: Frames; fadeOut?: Frames; wave?: ToneSpec["wave"]; name?: string }) {
   return (
     <>
       {notes.map((n, i) => (
@@ -366,4 +366,34 @@ export function noteToHz(n: number | string): number {
 
 export function collectAudioCues(): AudioCue[] {
   return [...getRegistry().audio.values()].sort((a, b) => a.startFrame - b.startFrame);
+}
+
+/**
+ * Scene-level ducking: multiplies the whole mix (tones and files) by `depth`
+ * between `at` and the end, with linear attack/release ramps outside that
+ * window. Several <Duck>s multiply. Use it to make a "silence" scene actually
+ * quiet or to pull the bed under a voice-over.
+ */
+export function Duck({ at = 0, durationInFrames, duration, depth = 0.35, attack = 6, release = 24, name }: { at?: Frames; durationInFrames?: Frames; duration?: Frames; depth?: number; attack?: Frames; release?: Frames; name?: string }) {
+  const { startFrame, endFrame, path, atF } = useCueRange({ at, durationInFrames, duration });
+  const { fps } = useVideoConfig();
+  const a = resolveFrames(attack, fps);
+  const r = resolveFrames(release, fps);
+  const hold = endFrame - startFrame;
+  useRegisterCue({
+    id: `${path.join("/")}|duck|${atF}|${name ?? ""}`,
+    kind: "bus",
+    startFrame: startFrame - a,
+    endFrame: endFrame + r,
+    volume: 1,
+    fadeInFrames: 0,
+    fadeOutFrames: 0,
+    automation: { volume: [[0, 1], [a, depth], [a + hold, depth], [a + hold + r, 1]] },
+  });
+  return null;
+}
+
+/** Filtered-noise pad that swells like breathing: a bed that is texture, not a chord. */
+export function Breath({ at = 0, durationInFrames, duration, volume = 0.05, cutoff = 700, rate = 0.14, depth = 0.4, spread = 0.8, reverb = 0.5, fadeIn = 30, fadeOut = 30, pan = 0, name }: { at?: Frames; durationInFrames?: Frames; duration?: Frames; volume?: number; /** Centre of the filter sweep in Hz. */ cutoff?: number; /** Breaths per second. */ rate?: number; depth?: number; spread?: number; reverb?: number; fadeIn?: Frames; fadeOut?: Frames; pan?: number; name?: string }) {
+  return <Tone at={at} durationInFrames={durationInFrames ?? duration} freq={cutoff} wave="breath" attack={1.5} decay={1} sustain={1} release={2} volume={volume} cutoff={cutoff} lfo={{ rate, depth }} spread={spread} reverb={reverb} fadeIn={fadeIn} fadeOut={fadeOut} pan={pan} name={name ?? "breath"} />;
 }

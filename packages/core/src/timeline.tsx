@@ -11,6 +11,8 @@ export interface VideoConfig {
   height: number;
   fps: number;
   durationInFrames: number;
+  /** Format variant name when rendering a <Composition formats> variant. */
+  format?: string;
 }
 
 export interface TimelineState {
@@ -72,6 +74,35 @@ export function useRenderMode(): RenderMode {
 export function useSeconds(): (seconds: number) => number {
   const fps = useFps();
   return useMemo(() => (seconds: number) => Math.round(seconds * fps), [fps]);
+}
+
+export interface FormatInfo {
+  /** "default" for the base composition, else the variant name ("9:16"). */
+  name: string;
+  width: number;
+  height: number;
+  aspect: number;
+  portrait: boolean;
+  square: boolean;
+  /** Pick a value per format: `pick({ "9:16": 48, default: 64 })`. */
+  pick<T>(map: Record<string, T> & { default: T }): T;
+}
+
+/** Which size variant is rendering, for restaging layouts (see <Composition formats>). */
+export function useFormat(): FormatInfo {
+  const { width, height, format } = useVideoConfig();
+  return useMemo(() => {
+    const name = format ?? "default";
+    return {
+      name,
+      width,
+      height,
+      aspect: width / height,
+      portrait: height > width,
+      square: Math.abs(width - height) < 2,
+      pick: (map) => (name in map ? map[name] : map.default),
+    };
+  }, [width, height, format]);
 }
 
 /** Resolve a frames-or-"1.2s" value against the composition fps. */

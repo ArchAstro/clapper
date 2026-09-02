@@ -117,8 +117,11 @@ async function domLint(url: string, meta: CompositionMeta, props: Record<string,
           const text = (el.textContent ?? "").trim();
           if (!text) continue;
           if (visibleOpacity(el) < 0.08) continue;
+          // Measure the glyphs (a Range), not the block box: a full-width <h1> is not "outside the safe area".
           const outer = el.getBoundingClientRect();
-          const inner = (el.firstElementChild ?? el).getBoundingClientRect();
+          const range = document.createRange();
+          range.selectNodeContents(el.firstElementChild ?? el);
+          const inner = range.getBoundingClientRect();
           const x1 = Math.max(outer.left, inner.left), y1 = Math.max(outer.top, inner.top);
           const x2 = Math.min(outer.right, inner.right), y2 = Math.min(outer.bottom, inner.bottom);
           const w = x2 - x1, h = y2 - y1;

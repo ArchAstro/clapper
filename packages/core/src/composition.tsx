@@ -16,6 +16,11 @@ export interface CompositionProps<P extends Record<string, unknown> = Record<str
   defaultProps?: P;
   /** A defineScenes() plan: supplies the duration and exposes the scene map to the CLI. */
   scenes?: ScenePlan<any>;
+  /**
+   * Extra size variants, registered as `<id>@<name>` (e.g. "promo@9:16"). The same component renders
+   * them; branch on `useFormat()` for restaging. `{ "9:16": { width: 1080, height: 1920 } }`.
+   */
+  formats?: Record<string, { width: number; height: number }>;
 }
 
 /**
@@ -47,6 +52,9 @@ export function registerComposition<P extends Record<string, unknown>>(props: Co
   const r = getRegistry();
   const prev = r.compositions.get(props.id);
   r.compositions.set(props.id, entry);
+  for (const [name, size] of Object.entries(props.formats ?? {})) {
+    r.compositions.set(`${props.id}@${name}`, { ...entry, id: `${props.id}@${name}`, width: size.width, height: size.height, format: name, baseId: props.id });
+  }
   if (!prev || prev.component !== entry.component || prev.durationInFrames !== entry.durationInFrames) notifyRegistry();
 }
 

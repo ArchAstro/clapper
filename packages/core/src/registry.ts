@@ -20,13 +20,17 @@ export interface CompositionMeta {
   defaultProps?: Record<string, unknown>;
   /** Scene map from defineScenes(), when the composition declares one. */
   scenes?: SceneMeta[];
+  /** Format variant name ("9:16") when registered through <Composition formats>; undefined for the base. */
+  format?: string;
+  /** Id of the base composition a format variant was derived from. */
+  baseId?: string;
 }
 
 export interface CompositionEntry extends CompositionMeta {
   component: ComponentType<any>;
 }
 
-export type Wave = "sine" | "triangle" | "square" | "sawtooth" | "noise" | "pluck" | "epiano";
+export type Wave = "sine" | "triangle" | "square" | "sawtooth" | "noise" | "pluck" | "epiano" | "breath";
 
 export interface ToneSpec {
   /**
@@ -71,7 +75,8 @@ export interface ToneSpec {
 export interface AudioCue {
   /** Stable id (sequence path + source + start). Used to dedupe across frames. */
   id: string;
-  kind: "file" | "tone";
+  /** file: an asset; tone: offline-synthesized; bus: a gain envelope applied to everything (ducking). */
+  kind: "file" | "tone" | "bus";
   /** Absolute start frame in the composition. */
   startFrame: number;
   /** Absolute end frame (exclusive). */
@@ -88,6 +93,8 @@ export interface AudioCue {
   loop?: boolean;
   /** Tone cues */
   tone?: ToneSpec;
+  /** Bus cues: gain breakpoints [frame relative to startFrame, gain]; all bus cues multiply. */
+  automation?: { volume: [number, number][] };
 }
 
 export interface TrackInfo {

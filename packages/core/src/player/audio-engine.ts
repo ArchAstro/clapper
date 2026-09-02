@@ -111,7 +111,7 @@ export class AudioEngine {
     }
     gain.gain.linearRampToValueAtTime(0, now + remaining);
 
-    if (spec.wave === "noise") {
+    if (spec.wave === "noise" || spec.wave === "breath") {
       const len = Math.ceil(ctx.sampleRate * remaining) + 1;
       const buf = ctx.createBuffer(1, len, ctx.sampleRate);
       const data = buf.getChannelData(0);

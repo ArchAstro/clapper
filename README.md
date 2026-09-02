@@ -88,7 +88,9 @@ registerRoot(Root);
    Music and foley: `<Pluck>` (Karplus–Strong), `<EPiano>` (FM), `<Chord strum>`, `<Pattern steps bpm>` (step sequencer), `<Drone>`, `<RoomTone>`,
    `<Keystroke>` and `<Typing text>` (layered mechanical keys synced to a Typewriter). Every tone takes `pan`, `spread`, `reverb`, `cutoff`, `lfo`, `detune`;
    the offline mixer is stereo with a reverb bus. `automation={{ volume: [[frame, gain]…], cutoff: [[frame, hz]…] }}` automates a
-   long cue across scene cuts (put beds in a root-level `<Score/>` so they never restart at a cut). `agenticvids cues <entry> -c <id>`
+   long cue across scene cuts (put beds in a root-level `<Score/>` so they never restart at a cut). `<Duck at depth attack release>` is a
+   bus cue: it multiplies the whole mix (tones and files) so a quiet scene is actually quiet; several ducks multiply. `<Breath cutoff rate>`
+   is a filtered-noise pad that swells like breathing (wave `"breath"`). `agenticvids cues <entry> -c <id>`
    prints the cue inventory; `agenticvids review` writes short-term loudness around every cut. A cue starts at the enclosing
    sequence's start + `at`. The studio plays cues live (Web Audio); the renderer synthesizes tones offline in Node,
    sums them into one track, and mixes file cues with ffmpeg (`adelay`/`afade`/`amix`).
@@ -101,10 +103,14 @@ registerRoot(Root);
    { at: "0.8s", pose: "lookUp", ease: "outBack", arc: 24 }], { arcChannels: [["lhx","lhy"],["rhx","rhy"]] })` blends channels
    per frame and, when a key sets `arc`, lifts the hand targets through a midpoint so travel curves instead of sliding.
    `ik2()` is two-bone inverse kinematics with an outward elbow; `useEyeBlink()` / `useBreath()` are deterministic idle motion.
+   `<Bubble x y kind="speech"|"thought" tail at exitAt>` pops a bubble from its tail tip.
    `videos/showcase/src/archdev/person.tsx` is the reference rig built on them.
 7. **Media & readiness.** `<Img/>`, `<Video/>` (currentTime driven by the frame), `useFont()`, and `delayRender()/continueRender()`
    for anything async: the harness waits for all handles, fonts and images before capturing a frame.
 8. **Determinism helpers.** `useRandom(seed)`, `random()`, `noise1d()`.
+9. **Formats.** `<Composition id="spot" formats={{ "9:16": { width: 1080, height: 1920 } }}>` also registers `spot@9:16` with the same
+   component and scene map. Inside, `useFormat()` gives `{ name, width, height, aspect, portrait, square, pick({ "9:16": 48, default: 64 }) }`
+   for restaging; render with `-c spot@9:16`.
 
 ## Renderer
 
@@ -114,6 +120,7 @@ registerRoot(Root);
 - `agenticvids still <entry> -c <id> --scene review` writes the first, middle and last frame of the scene; `--frame 12,40` is
   scene-local when `--scene` is given; `--every 30` samples across the scene or `--range`.
 - `agenticvids compositions <entry> [--json]` lists compositions with their scene maps.
+- `agenticvids doctor [<entry|dir>]` checks Node, Chromium, ffmpeg (libx264, aac, the filters the review kit needs) and React/core resolution.
 - A composition that throws names the scene and local frame: `Composition threw while rendering frame 406 in scene "review" (local frame 2)`.
 
 - Bundles `.agenticvids/harness/` with Vite (React plugin, `public/` served, KaTeX/CSS/fonts handled), serves it, opens N
@@ -138,8 +145,14 @@ Lint rules (exit code 1 on errors): `blank-after-cut` (near-black frame right af
 ## Studio
 
 `agenticvids preview <entry>` runs a Vite dev server with HMR. Left: compositions. Center: the composition scaled to fit.
-Bottom: scrubber with second ticks, sequence tracks (blue), audio cues (amber files, purple tones), play/loop/mute.
-URL keeps `?composition=&frame=`.
+Bottom: scrubber with second ticks and scene markers from the composition's plan (`[` / `]` jump to the previous / next scene),
+sequence tracks (blue), audio cues (amber files, purple tones), play/loop/mute. URL keeps `?composition=&frame=`.
+Bus ducking is applied by the offline mixer only; the studio preview plays cues at their own volume.
+
+## Starting a video
+
+Copy `videos/_template` to `videos/<name>`: `data.ts` for every number and string, `defineScenes()` for timing, one `<Score/>`,
+a theme class with tokens, and scripts for preview / still / review / render. It registers a `9:16` format variant as an example.
 
 ## Extending
 

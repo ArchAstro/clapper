@@ -4,6 +4,7 @@ import { parseArgs } from "node:util";
 import { buildHarness, serveBuilt, startStudio } from "./bundle.ts";
 import { collectCues, probeCompositions, renderComposition, renderStill, renderStills } from "./render.ts";
 import { reviewComposition } from "./review.ts";
+import { doctor } from "./doctor.ts";
 
 const HELP = `agenticvids — React → MP4
 
@@ -15,6 +16,7 @@ Usage:
   agenticvids cues <entry> -c <id>          List the audio cues of a composition (audit)
   agenticvids review <entry> [-c <id>]      Render + build a critique kit (contact sheet, cut strips,
                                             spectrogram, loudness at cuts, lint, brief.md)
+  agenticvids doctor [<entry|dir>]          Check Node, Chromium, ffmpeg (libx264/aac/filters), React/core resolution
 
 Render options:
   -c, --composition <id>   Composition id (default: the only/first one)
@@ -74,6 +76,15 @@ export async function main(argv: string[]) {
   const [command, entryArg] = positionals;
   if (values.help || !command) {
     console.log(HELP);
+    return;
+  }
+  if (command === "doctor") {
+    const dir = entryArg ? (fs.statSync(path.resolve(entryArg)).isDirectory() ? path.resolve(entryArg) : findProjectDir(path.resolve(entryArg))) : process.cwd();
+    const checks = doctor(dir);
+    for (const c of checks) console.log(`${c.ok ? "ok  " : "FAIL"} ${c.name.padEnd(18)} ${c.detail}${!c.ok && c.fix ? `\n     → ${c.fix}` : ""}`);
+    const bad = checks.filter((c) => !c.ok).length;
+    console.log(bad ? `${bad} problem(s)` : "all good");
+    if (bad) process.exitCode = 1;
     return;
   }
   if (!entryArg) throw new Error(`Missing <entry>. ${HELP}`);

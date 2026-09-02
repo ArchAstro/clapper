@@ -14,3 +14,4 @@ export * from "./frames";
 export * from "./scenes";
 export * from "./primitives";
 export * from "./rig";
+export * from "./bubble";

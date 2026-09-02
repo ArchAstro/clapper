@@ -171,3 +171,19 @@ it("ik2: reachable target keeps the segment lengths; elbow bends outward", () =>
   const [lx] = ik2(-46, -150, -104, -16, 82, 78, -1);
   expect(lx).toBeLessThan(-46);
 });
+
+import { registerComposition, getComposition } from "../src/composition";
+
+it("formats register size variants that share the component and scene map", () => {
+  const C = () => null;
+  registerComposition({ id: "spot", component: C, width: 1920, height: 1080, fps: 30, durationInFrames: 90, formats: { "9:16": { width: 1080, height: 1920 }, "1:1": { width: 1080, height: 1080 } } });
+  const base = getComposition("spot")!;
+  const tall = getComposition("spot@9:16")!;
+  expect(tall.width).toBe(1080);
+  expect(tall.height).toBe(1920);
+  expect(tall.format).toBe("9:16");
+  expect(tall.baseId).toBe("spot");
+  expect(tall.component).toBe(base.component);
+  expect(getComposition("spot@1:1")!.durationInFrames).toBe(90);
+  expect(base.format).toBeUndefined();
+});
