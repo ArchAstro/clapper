@@ -45,6 +45,27 @@ export class AudioEngine {
     this.active.clear();
   }
 
+  /** Play one cue from its start (capped at 4 s), e.g. from the inspector. */
+  previewCue(cue: AudioCue, fps: number) {
+    const was = this.playing;
+    const wasMuted = this.muted;
+    this.muted = false;
+    this.fps = fps;
+    this.playing = true;
+    this.ensureCtx();
+    this.tick(cue.startFrame, [cue]);
+    const ms = Math.min(4000, ((cue.endFrame - cue.startFrame) / fps) * 1000);
+    setTimeout(() => {
+      const a = this.active.get(cue.id);
+      if (a) {
+        a.stop();
+        this.active.delete(cue.id);
+      }
+      if (!was) this.playing = false;
+      this.muted = wasMuted;
+    }, ms);
+  }
+
   /** Called every playback tick with the current frame and the cue list. */
   tick(frame: number, cues: AudioCue[]) {
     if (!this.playing || this.muted) return;

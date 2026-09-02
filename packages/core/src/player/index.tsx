@@ -1,51 +1,22 @@
 /**
- * The studio: a browser UI to scrub, play and inspect compositions.
- * Mounted by `agenticvids preview`.
+ * The studio: a browser editor to scrub, play and inspect compositions.
+ * Mounted by `agenticvids preview`. Left: project (live thumbnails, scenes).
+ * Centre: viewport with overlays. Right: inspector / cues / scratch (TSX
+ * compiled in the browser). Bottom: transport and an NLE-style timeline.
  */
-import { createElement, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { createElement, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { ensureRootMounted, getComposition, listCompositions } from "../composition";
 import { collectAudioCues } from "../audio";
-import { getRegistry, subscribeRegistry, type CompositionMeta, type TrackInfo } from "../registry";
-import { TimelineProvider } from "../timeline";
+import { getRegistry, subscribeRegistry } from "../registry";
 import { AudioEngine } from "./audio-engine";
-
-const css = `
-:root{color-scheme:dark}
-*{box-sizing:border-box}
-body{margin:0;background:#111;color:#e8e6df;font:13px/1.4 -apple-system,system-ui,sans-serif;overflow:hidden}
-.studio{display:grid;grid-template-columns:220px 1fr;grid-template-rows:1fr auto;height:100vh}
-.side{grid-row:1/3;border-right:1px solid #262626;background:#151515;padding:12px;overflow:auto}
-.side h1{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#8a8776;margin:4px 0 12px}
-.comp{display:block;width:100%;text-align:left;background:none;border:1px solid transparent;color:#e8e6df;padding:8px 10px;border-radius:8px;cursor:pointer;font:inherit}
-.comp:hover{background:#1f1f1f}.comp.active{background:#23302a;border-color:#2e5c46}
-.comp small{display:block;color:#8a8776;font-size:11px;margin-top:2px}
-.stage{position:relative;display:flex;align-items:center;justify-content:center;background:#0b0b0b;overflow:hidden;
- background-image:linear-gradient(45deg,#141414 25%,transparent 25%),linear-gradient(-45deg,#141414 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#141414 75%),linear-gradient(-45deg,transparent 75%,#141414 75%);background-size:24px 24px;background-position:0 0,0 12px,12px -12px,-12px 0}
-.canvas{position:absolute;transform-origin:0 0;box-shadow:0 20px 60px rgba(0,0,0,.6);overflow:hidden;background:#000}
-.bottom{border-top:1px solid #262626;background:#151515;padding:10px 14px 12px;display:flex;flex-direction:column;gap:8px}
-.controls{display:flex;align-items:center;gap:8px}
-.btn{background:#222;border:1px solid #333;color:#e8e6df;border-radius:6px;padding:5px 10px;font:inherit;cursor:pointer;min-width:34px}
-.btn:hover{background:#2a2a2a}.btn.on{background:#2e5c46;border-color:#3e8763}
-.time{font-variant-numeric:tabular-nums;color:#c9c5b6;margin-left:6px}
-.spacer{flex:1}
-.kbd{color:#6f6c60;font-size:11px}
-.scrub{position:relative;height:18px;background:#1c1c1c;border-radius:4px;cursor:pointer;user-select:none}
-.scrub .fill{position:absolute;left:0;top:0;bottom:0;background:#2b3d33;border-radius:4px}
-.scrub .head{position:absolute;top:-4px;bottom:-4px;width:2px;background:#7fb894;transform:translateX(-1px)}
-.scrub .tick{position:absolute;top:0;bottom:0;width:1px;background:#2b2b2b}
-.scrub .marker{position:absolute;top:0;bottom:0;border-left:1px solid #7fb894;overflow:hidden;pointer-events:none}
-.scrub .marker span{font-size:10px;color:#9fd3b3;padding-left:4px;line-height:18px;white-space:nowrap;opacity:.85}
-.tracks{position:relative;max-height:150px;overflow:auto;display:flex;flex-direction:column;gap:3px}
-.track{position:relative;height:16px}
-.track .bar{position:absolute;top:0;height:16px;border-radius:3px;background:#2a3a47;border:1px solid #3a5266;color:#cfe3f2;font-size:10px;line-height:14px;padding:0 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.track .bar.audio{background:#4a3a24;border-color:#6d5532;color:#f2dfc0}
-.track .bar.tone{background:#3f3357;border-color:#5b4b7a;color:#e3d7f7}
-.track .bar.bus{background:#5a3d2b;color:#e3d7f7}
-.playhead{position:absolute;top:0;bottom:0;width:1px;background:#7fb894;pointer-events:none;opacity:.8}
-.err{position:absolute;left:12px;top:12px;background:#4a1d1d;color:#ffd7d7;padding:8px 10px;border-radius:6px;max-width:60%;white-space:pre-wrap;font-family:ui-monospace,monospace;font-size:11px}
-.empty{color:#8a8776;text-align:center;padding:40px}
-`;
+import { css } from "./styles";
+import { Thumb } from "./thumbs";
+import { Viewport, type Overlays, type Zoom } from "./viewport";
+import { Timeline } from "./timeline";
+import { CueTable, Inspector } from "./inspector";
+import { Scratch } from "./scratch";
+import { clamp, timecode, type Selection } from "./state";
 
 function useRegistryVersion() {
   const [v, setV] = useState(0);
@@ -66,6 +37,8 @@ function writeUrlState(comp: string, frame: number) {
   history.replaceState(null, "", `?${p}`);
 }
 
+const RATES = [-4, -2, -1, 0.25, 0.5, 1, 2, 4];
+
 function Studio() {
   const version = useRegistryVersion();
   const comps = useMemo(() => listCompositions(), [version]);
@@ -73,52 +46,62 @@ function Studio() {
   const comp = (selected && getComposition(selected)) || (comps[0] && getComposition(comps[0].id)) || null;
   const [frame, setFrame] = useState(() => readUrlState().frame ?? 0);
   const [playing, setPlaying] = useState(false);
+  const [rate, setRate] = useState(1);
   const [loop, setLoop] = useState(true);
+  const [range, setRange] = useState<[number, number] | null>(null);
   const [muted, setMuted] = useState(false);
+  const [selection, setSelection] = useState<Selection>(null);
+  const [overlays, setOverlays] = useState<Overlays>({ safe: false, grid: false, copy: false });
+  const [zoom, setZoom] = useState<Zoom>("fit");
+  const [tab, setTab] = useState<"inspect" | "cues" | "scratch">("inspect");
+  const [ppf, setPpf] = useState<number | null>(null);
+  const fitRef = useRef(1);
   const [error, setError] = useState<string | null>(null);
+  const [frameText, setFrameText] = useState("0");
   const engine = useMemo(() => new AudioEngine(), []);
-  const stageRef = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(1);
   const frameRef = useRef(frame);
   frameRef.current = frame;
+  const rangeRef = useRef(range);
+  rangeRef.current = range;
 
   useEffect(() => {
-    if (comp) writeUrlState(comp.id, frame);
-  }, [comp, frame]);
+    if (comp && !playing) writeUrlState(comp.id, frame);
+  }, [comp, frame, playing]);
+  useEffect(() => setFrameText(String(frame)), [frame]);
+  useEffect(() => setError(null), [comp?.id]);
 
-  // Fit canvas to the stage.
-  useEffect(() => {
-    const el = stageRef.current;
-    if (!el || !comp) return;
-    const ro = new ResizeObserver(() => {
-      const pad = 40;
-      const s = Math.min((el.clientWidth - pad) / comp.width, (el.clientHeight - pad) / comp.height);
-      setScale(Math.max(0.05, s));
-    });
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, [comp]);
+  const total = comp?.durationInFrames ?? 1;
+  const fps = comp?.fps ?? 30;
 
-  // Playback loop.
+  // Playback: rate can be negative; the loop wraps inside the in/out range when one is set.
   useEffect(() => {
     if (!playing || !comp) return;
-    engine.play(comp.fps);
+    if (rate > 0) engine.play(comp.fps);
     let raf = 0;
     const t0 = performance.now();
     const f0 = frameRef.current;
     const step = () => {
       const elapsed = (performance.now() - t0) / 1000;
-      let f = f0 + Math.floor(elapsed * comp.fps);
-      if (f >= comp.durationInFrames) {
-        if (loop) f = f % comp.durationInFrames;
-        else {
-          setFrame(comp.durationInFrames - 1);
+      let f = f0 + Math.round(elapsed * comp.fps * rate);
+      const [a, b] = rangeRef.current ?? [0, comp.durationInFrames];
+      const len = Math.max(1, b - a);
+      if (rate > 0 && f >= b) {
+        if (!loop) {
+          setFrame(b - 1);
           setPlaying(false);
           return;
         }
+        f = a + ((f - a) % len);
+      } else if (rate < 0 && f < a) {
+        if (!loop) {
+          setFrame(a);
+          setPlaying(false);
+          return;
+        }
+        f = b - 1 - ((a - f - 1) % len);
       }
       setFrame(f);
-      engine.tick(f, collectAudioCues().filter((c) => c.id.startsWith(`${comp.id}/`) || c.id.startsWith(`${comp.id}|`)));
+      if (rate > 0) engine.tick(f, collectAudioCues().filter((c) => c.id.startsWith(`${comp.id}/`) || c.id.startsWith(`${comp.id}|`)));
       raf = requestAnimationFrame(step);
     };
     raf = requestAnimationFrame(step);
@@ -126,14 +109,14 @@ function Studio() {
       cancelAnimationFrame(raf);
       engine.pause();
     };
-  }, [playing, comp, loop, engine]);
+  }, [playing, comp, loop, rate, engine]);
 
   useEffect(() => engine.setMuted(muted), [muted, engine]);
 
   const seek = useCallback(
     (f: number) => {
       if (!comp) return;
-      const clamped = Math.max(0, Math.min(comp.durationInFrames - 1, Math.round(f)));
+      const clamped = clamp(Math.round(f), 0, comp.durationInFrames - 1);
       engine.seek();
       setFrame(clamped);
       if (playing) {
@@ -144,21 +127,36 @@ function Studio() {
     [comp, engine, playing],
   );
 
+  const pick = useCallback((id: string) => {
+    setSelected(id);
+    setFrame(0);
+    setPlaying(false);
+    setSelection(null);
+    setRange(null);
+    setPpf(null);
+  }, []);
+
+  const cutStarts = useMemo(() => (comp?.scenes ?? []).map((s) => s.start), [comp?.scenes]);
+
   // Keyboard.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (!comp) return;
-      if ((e.target as HTMLElement)?.tagName === "INPUT") return;
+      const tag = (e.target as HTMLElement)?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
       const big = e.shiftKey ? 10 : 1;
       switch (e.key) {
         case " ":
           e.preventDefault();
+          if (!playing) setRate((r) => (r > 0 ? r : 1));
           setPlaying((p) => !p);
           break;
         case "ArrowLeft":
+        case ",":
           seek(frameRef.current - big);
           break;
         case "ArrowRight":
+        case ".":
           seek(frameRef.current + big);
           break;
         case "Home":
@@ -167,167 +165,208 @@ function Studio() {
         case "End":
           seek(comp.durationInFrames - 1);
           break;
+        case "j":
+          setRate((r) => (r < 0 ? Math.max(-4, r * 2) : -1));
+          setPlaying(true);
+          break;
+        case "k":
+          setPlaying(false);
+          break;
         case "l":
-          setLoop((l) => !l);
+          setLoop((v) => !v);
           break;
         case "m":
-          setMuted((m) => !m);
+          setMuted((v) => !v);
+          break;
+        case "i":
+          setRange((r) => [frameRef.current, Math.max(frameRef.current + 1, r?.[1] ?? comp.durationInFrames)]);
+          break;
+        case "o":
+          setRange((r) => [Math.min(r?.[0] ?? 0, frameRef.current), frameRef.current + 1]);
+          break;
+        case "x":
+          setRange(null);
           break;
         case "]": {
-          const next = (comp.scenes ?? []).map((s) => s.start).find((f) => f > frameRef.current);
+          const next = cutStarts.find((f) => f > frameRef.current);
           if (next !== undefined) seek(next);
           break;
         }
         case "[": {
-          const prev = [...(comp.scenes ?? [])].map((s) => s.start).reverse().find((f) => f < frameRef.current - 1);
+          const prev = [...cutStarts].reverse().find((f) => f < frameRef.current - 1);
           seek(prev ?? 0);
           break;
         }
+        case "-":
+          setPpf((p) => (p ?? fitRef.current) / 1.25);
+          break;
+        case "=":
+        case "+":
+          setPpf((p) => Math.min(80, (p ?? fitRef.current) * 1.25));
+          break;
+        case "0":
+          setPpf(null);
+          break;
+        case "s":
+          setOverlays((o) => ({ ...o, safe: !o.safe }));
+          break;
+        case "g":
+          setOverlays((o) => ({ ...o, grid: !o.grid }));
+          break;
+        case "c":
+          setOverlays((o) => ({ ...o, copy: !o.copy }));
+          break;
+        case "Escape":
+          setSelection(null);
+          break;
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [comp, seek]);
+  }, [comp, seek, playing, cutStarts]);
 
   const compId = comp?.id;
+  const trackCount = getRegistry().tracks.size;
+  const cueCount = getRegistry().audio.size;
   const tracks = useMemo(
     () => [...getRegistry().tracks.values()].filter((t) => t.path[0] === compId).sort((a, b) => a.startFrame - b.startFrame || a.depth - b.depth),
-    [version, frame, compId],
+    [version, trackCount, compId],
   );
-  const cues = useMemo(() => collectAudioCues().filter((c) => c.id.startsWith(`${compId}/`) || c.id.startsWith(`${compId}|`)), [version, frame, compId]);
+  const cues = useMemo(() => collectAudioCues().filter((c) => c.id.startsWith(`${compId}/`) || c.id.startsWith(`${compId}|`)), [version, cueCount, compId]);
+  const scene = useMemo(() => {
+    const s = (comp?.scenes ?? []).filter((x) => frame >= x.start && frame < x.end).sort((a, b) => b.start - a.start)[0];
+    return s ? { name: s.name, local: frame - s.start } : null;
+  }, [comp?.scenes, frame]);
 
   if (!comp) return <div className="empty">No compositions registered. Call registerRoot() with a component that renders &lt;Composition /&gt;.</div>;
-  const { component: Comp, ...meta } = comp;
-  const seconds = frame / comp.fps;
 
   return (
     <div className="studio">
+      <div className="top">
+        <span className="brand">agenticvids studio</span>
+        <span className="name">{comp.id}</span>
+        <span className="meta">
+          {comp.width}×{comp.height} · {comp.fps} fps · {timecode(comp.durationInFrames, comp.fps)} · {comp.durationInFrames} f
+        </span>
+        <span style={{ flex: 1 }} />
+        <button className={`btn sm ${overlays.safe ? "on" : ""}`} onClick={() => setOverlays((o) => ({ ...o, safe: !o.safe }))} title="S">safe</button>
+        <button className={`btn sm ${overlays.grid ? "on" : ""}`} onClick={() => setOverlays((o) => ({ ...o, grid: !o.grid }))} title="G">thirds</button>
+        <button className={`btn sm ${overlays.copy ? "on" : ""}`} onClick={() => setOverlays((o) => ({ ...o, copy: !o.copy }))} title="C">copy boxes</button>
+        <select className="btn sm" value={String(zoom)} onChange={(e) => setZoom(e.target.value === "fit" ? "fit" : parseFloat(e.target.value))}>
+          <option value="fit">fit</option>
+          <option value="0.25">25%</option>
+          <option value="0.5">50%</option>
+          <option value="1">100%</option>
+          <option value="2">200%</option>
+        </select>
+      </div>
       <aside className="side">
-        <h1>Compositions</h1>
-        {comps.map((c) => (
-          <button key={c.id} className={`comp ${c.id === comp.id ? "active" : ""}`} onClick={() => { setSelected(c.id); setFrame(0); setPlaying(false); }}>
-            {c.id}
-            <small>
-              {c.width}×{c.height} · {c.fps} fps · {(c.durationInFrames / c.fps).toFixed(1)}s
-            </small>
-          </button>
-        ))}
-      </aside>
-      <div className="stage" ref={stageRef}>
-        <div className="canvas" style={{ width: meta.width, height: meta.height, transform: `scale(${scale})`, left: `calc(50% - ${(meta.width * scale) / 2}px)`, top: `calc(50% - ${(meta.height * scale) / 2}px)` }}>
-          <ErrorBoundary onError={setError} key={comp.id}>
-            <TimelineProvider config={meta} frame={frame} mode="preview">
-              <div style={{ position: "absolute", inset: 0, overflow: "hidden" }}>
-                <Comp {...(meta.defaultProps ?? {})} />
-              </div>
-            </TimelineProvider>
-          </ErrorBoundary>
-        </div>
-        {error && <div className="err">{error}</div>}
-      </div>
-      <div className="bottom">
-        <div className="controls">
-          <button className="btn" onClick={() => seek(0)} title="Home">⇤</button>
-          <button className="btn" onClick={() => seek(frame - 1)} title="←">‹</button>
-          <button className={`btn ${playing ? "on" : ""}`} onClick={() => setPlaying((p) => !p)} title="Space">{playing ? "❚❚" : "▶"}</button>
-          <button className="btn" onClick={() => seek(frame + 1)} title="→">›</button>
-          <button className="btn" onClick={() => seek(comp.durationInFrames - 1)} title="End">⇥</button>
-          <button className={`btn ${loop ? "on" : ""}`} onClick={() => setLoop((l) => !l)} title="L">loop</button>
-          <button className={`btn ${muted ? "" : "on"}`} onClick={() => setMuted((m) => !m)} title="M">{muted ? "muted" : "sound"}</button>
-          <span className="time">
-            {seconds.toFixed(2)}s · f{frame} / {comp.durationInFrames}
-          </span>
-          <span className="spacer" />
-          <span className="kbd">space play · ←/→ frame · shift ×10 · home/end · l loop · m mute</span>
-        </div>
-        <Scrubber scenes={comp.scenes} frame={frame} total={comp.durationInFrames} fps={comp.fps} onSeek={seek} />
-        <Tracks tracks={tracks} cues={cues} frame={frame} total={comp.durationInFrames} onSeek={seek} />
-      </div>
-    </div>
-  );
-}
-
-function Scrubber({ frame, total, fps, scenes = [], onSeek }: { frame: number; total: number; fps: number; scenes?: { name: string; start: number; end: number }[]; onSeek: (f: number) => void }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const toFrame = (e: React.MouseEvent | MouseEvent) => {
-    const el = ref.current!;
-    const r = el.getBoundingClientRect();
-    return ((e.clientX - r.left) / r.width) * total;
-  };
-  const onDown = (e: React.MouseEvent) => {
-    onSeek(toFrame(e));
-    const move = (ev: MouseEvent) => onSeek(toFrame(ev));
-    const up = () => {
-      window.removeEventListener("mousemove", move);
-      window.removeEventListener("mouseup", up);
-    };
-    window.addEventListener("mousemove", move);
-    window.addEventListener("mouseup", up);
-  };
-  const ticks = [];
-  for (let s = 0; s * fps < total; s++) ticks.push(s * fps);
-  return (
-    <div className="scrub" ref={ref} onMouseDown={onDown}>
-      <div className="fill" style={{ width: `${(frame / total) * 100}%` }} />
-      {ticks.map((t) => (
-        <div key={t} className="tick" style={{ left: `${(t / total) * 100}%` }} />
-      ))}
-      {scenes.map((s) => (
-        <div key={s.name} className="marker" title={`${s.name} · ${s.start}–${s.end}`} style={{ left: `${(s.start / total) * 100}%`, width: `${((s.end - s.start) / total) * 100}%` }}>
-          <span>{s.name}</span>
-        </div>
-      ))}
-      <div className="head" style={{ left: `${(frame / total) * 100}%` }} />
-    </div>
-  );
-}
-
-function Tracks({ tracks, cues, frame, total, onSeek }: { tracks: TrackInfo[]; cues: ReturnType<typeof collectAudioCues>; frame: number; total: number; onSeek: (f: number) => void }) {
-  // Pack tracks into rows greedily by depth.
-  const rows: { items: { start: number; end: number; label: string; cls: string }[] }[] = [];
-  const place = (start: number, end: number, label: string, cls: string) => {
-    let row = rows.find((r) => r.items.every((i) => end <= i.start || start >= i.end));
-    if (!row) {
-      row = { items: [] };
-      rows.push(row);
-    }
-    row.items.push({ start, end, label, cls });
-  };
-  for (const t of tracks) place(t.startFrame, t.endFrame, t.name, "seq");
-  for (const c of cues) {
-    if (c.kind === "bus") {
-      const depth = Math.min(...(c.automation?.volume ?? [[0, 1]]).map(([, g]) => g));
-      place(c.startFrame, c.endFrame, `⤓ duck ×${depth.toFixed(2)}`, "bus");
-    } else place(c.startFrame, c.endFrame, c.kind === "file" ? `♪ ${c.src?.split("/").pop()}` : `∿ ${c.tone?.wave} ${Math.round(c.tone?.freq ?? 0)}Hz`, c.kind === "file" ? "audio" : "tone");
-  }
-  return (
-    <div className="tracks">
-      {rows.map((r, i) => (
-        <div key={i} className="track">
-          {r.items.map((it, j) => (
-            <div key={j} className={`bar ${it.cls}`} style={{ left: `${(it.start / total) * 100}%`, width: `${Math.max(0.3, ((it.end - it.start) / total) * 100)}%` }} title={`${it.label}: ${it.start}–${it.end}`} onClick={() => onSeek(it.start)}>
-              {it.label}
+        <h2>Compositions</h2>
+        {comps.map((c) => {
+          const entry = getComposition(c.id)!;
+          return (
+            <button key={c.id} className={`comp ${c.id === comp.id ? "active" : ""}`} onClick={() => pick(c.id)}>
+              <Thumb entry={entry} />
+              <span>
+                <span className="id">{c.id}</span>
+                <small>
+                  {c.width}×{c.height} · {c.fps} fps · {(c.durationInFrames / c.fps).toFixed(1)}s
+                </small>
+                {c.scenes?.length ? <small>{c.scenes.length} scenes</small> : null}
+              </span>
+            </button>
+          );
+        })}
+        {comp.scenes?.length ? (
+          <>
+            <h2>Scenes</h2>
+            <div className="scenes">
+              {comp.scenes.map((s, i) => (
+                <button key={s.name} className={`scene ${scene?.name === s.name ? "active" : ""}`} onClick={() => seek(s.start)} onDoubleClick={() => setRange([s.start, s.end])} title="click: go to · double-click: loop">
+                  <span className="sw" style={{ background: i % 2 ? "#3f6b56" : "#3a5266" }} />
+                  <span className="n">{s.name}</span>
+                  <span className="t">
+                    {timecode(s.start, comp.fps)} · {((s.end - s.start) / comp.fps).toFixed(1)}s
+                  </span>
+                </button>
+              ))}
             </div>
+          </>
+        ) : null}
+      </aside>
+      <Viewport entry={comp} frame={frame} overlays={overlays} zoom={zoom} error={error} onError={setError} scene={scene} />
+      <div className="panel">
+        <div className="tabs">
+          {(["inspect", "cues", "scratch"] as const).map((t) => (
+            <button key={t} className={`tab ${tab === t ? "on" : ""}`} onClick={() => setTab(t)}>
+              {t}
+            </button>
           ))}
         </div>
-      ))}
-      <div className="playhead" style={{ left: `${(frame / total) * 100}%` }} />
+        <div className="body">
+          {tab === "inspect" && <Inspector meta={comp} tracks={tracks} cues={cues} selection={selection} frame={frame} engine={engine} onSeek={seek} onRange={setRange} onSelect={setSelection} />}
+          {tab === "cues" && (
+            <CueTable
+              cues={cues}
+              fps={comp.fps}
+              selection={selection}
+              onPick={(c) => {
+                setSelection({ kind: "cue", id: c.id });
+                seek(c.startFrame);
+                setTab("inspect");
+              }}
+            />
+          )}
+          {tab === "scratch" && <Scratch onCompiled={pick} />}
+        </div>
+      </div>
+      <div className="bottom">
+        <div className="transport">
+          <button className="btn" onClick={() => seek(range?.[0] ?? 0)} title="Home">⇤</button>
+          <button className="btn" onClick={() => { const p = [...cutStarts].reverse().find((f) => f < frame - 1); seek(p ?? 0); }} title="[  previous cut">|◀</button>
+          <button className="btn" onClick={() => seek(frame - 1)} title="← / ,">‹</button>
+          <button className={`btn ${playing ? "on" : ""}`} onClick={() => { if (!playing && rate <= 0) setRate(1); setPlaying((p) => !p); }} title="Space">{playing ? "❚❚" : "▶"}</button>
+          <button className="btn" onClick={() => seek(frame + 1)} title="→ / .">›</button>
+          <button className="btn" onClick={() => { const n = cutStarts.find((f) => f > frame); if (n !== undefined) seek(n); }} title="]  next cut">▶|</button>
+          <button className="btn" onClick={() => seek((range?.[1] ?? comp.durationInFrames) - 1)} title="End">⇥</button>
+          <select className="btn" value={rate} onChange={(e) => setRate(parseFloat(e.target.value))} title="J / K / L">
+            {RATES.map((r) => (
+              <option key={r} value={r}>
+                {r > 0 ? `${r}×` : `◀ ${-r}×`}
+              </option>
+            ))}
+          </select>
+          <button className={`btn ${loop ? "on" : ""}`} onClick={() => setLoop((l) => !l)} title="L">loop</button>
+          <button className={`btn ${range ? "on" : ""}`} onClick={() => setRange((r) => [frame, Math.max(frame + 1, r?.[1] ?? total)])} title="I">in</button>
+          <button className={`btn ${range ? "on" : ""}`} onClick={() => setRange((r) => [Math.min(r?.[0] ?? 0, frame), frame + 1])} title="O">out</button>
+          {range && (
+            <button className="btn" onClick={() => setRange(null)} title="X">
+              ✕ {range[0]}–{range[1]}
+            </button>
+          )}
+          <button className={`btn ${muted ? "" : "on"}`} onClick={() => setMuted((m) => !m)} title="M">{muted ? "muted" : "sound"}</button>
+          <input
+            className="tc"
+            value={frameText}
+            onChange={(e) => setFrameText(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                const n = parseInt(frameText, 10);
+                if (!Number.isNaN(n)) seek(n);
+                (e.target as HTMLInputElement).blur();
+              }
+            }}
+            title="frame (Enter to go)"
+          />
+          <span className="tc" style={{ width: "auto" }}>
+            {timecode(frame, fps)} · {(frame / fps).toFixed(2)}s
+          </span>
+          <span className="kbd">space play · j/k shuttle · ←→ frame · ⇧×10 · [ ] cuts · i/o/x range · l loop · m mute · s/g/c overlays · ⌘wheel zoom · −/=/0</span>
+        </div>
+        <Timeline meta={comp} tracks={tracks} cues={cues} frame={frame} playing={playing} range={range} selection={selection} ppf={ppf} onPpf={setPpf} onFit={(f) => { fitRef.current = f; }} onSeek={seek} onSelect={setSelection} onRange={setRange} />
+      </div>
     </div>
   );
-}
-
-import { Component } from "react";
-class ErrorBoundary extends Component<{ onError: (m: string) => void; children: ReactNode }, { failed: boolean }> {
-  state = { failed: false };
-  static getDerivedStateFromError() {
-    return { failed: true };
-  }
-  componentDidCatch(e: Error) {
-    this.props.onError(String(e.stack ?? e));
-  }
-  render() {
-    return this.state.failed ? null : this.props.children;
-  }
 }
 
 export function mountStudio() {

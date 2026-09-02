@@ -161,10 +161,26 @@ own headline elements to opt in. The brief says so when a composition has none.
 
 ## Studio
 
-`agenticvids preview <entry>` runs a Vite dev server with HMR. Left: compositions. Center: the composition scaled to fit.
-Bottom: scrubber with second ticks and scene markers from the composition's plan (`[` / `]` jump to the previous / next scene),
-sequence tracks (blue), audio cues (amber files, purple tones), play/loop/mute. URL keeps `?composition=&frame=`.
-Bus ducking is applied by the offline mixer only; the studio preview plays cues at their own volume.
+`agenticvids preview <entry>` runs a Vite dev server with HMR and opens an editor:
+
+- **Project** (left): every composition with a live thumbnail, plus the scenes of the selected one (click to jump, double-click to loop).
+- **Viewport** (centre): the composition at fit / 25–200 %, with a HUD (timecode, frame, scene + local frame) and overlays:
+  safe area and title-safe (`s`), thirds (`g`), and the measured boxes of every `data-copy` element (`c`), the same boxes the
+  review lint judges.
+- **Timeline** (bottom): a ruler with timecode, a scenes lane from the composition's plan, sequence lanes by nesting depth, and
+  one lane per audio kind (files, bus ducks, pluck, epiano, sine, noise…) with each cue's gain envelope drawn inside its block.
+  Drag anywhere to scrub (snaps to cuts; hold ⌥ to disable), click a block to select and jump, double-click to loop it,
+  ⌘/Ctrl + wheel to zoom around the cursor, `-` `=` `0` to zoom and fit. The playhead stays in view while playing.
+- **Inspector** (right): the selected sequence or cue (timing, pitch as a note name, ADSR, space, colour, gain and cutoff charts,
+  spec JSON, a ▶ preview button that plays the cue through Web Audio); the **cues** tab lists every cue; the **scratch** tab is a
+  TSX editor compiled in the browser with Babel: `⌘/Ctrl + Enter` registers the exported `Scratch` component (and optional
+  `meta`) as a composition named `scratch`, so you can write a snippet and scrub it without touching the project.
+- **Transport**: play / pause (`space`), shuttle (`j` reverse, `k` pause, rate menu), frame step (`←` `→` or `,` `.`, `⇧` ×10),
+  cuts (`[` `]`), in / out / clear range (`i` `o` `x`), loop (`l`), mute (`m`), a frame field and timecode.
+  Cue previews and playback use the studio's Web Audio approximation of the offline synth; ducks apply in the render only.
+
+`packages/cli/test/studio-check.mjs` drives the studio headlessly (screenshots, playback, overlays, a scratch compile) against
+`agenticvids preview … --port 4399`.
 
 ## Starting a video
 

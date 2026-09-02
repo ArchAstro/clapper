@@ -191,7 +191,7 @@ Harness errors already fail the render; add the scene name and local frame from 
 ### P1-2 Character toolkit in core — DONE (`definePoses`, `usePose`/`evalPose` with `arc`, `ik2`, `useEyeBlink`, `useBreath`, `<Bubble>`; two shipped rigs in `@agenticvids/core/rigs`: `Person` and `Scribble`; comic kit in core)
 Move `person.tsx` ideas into a generic rig: `definePose()`, typed `Pose` with named poses, `usePose(keys)` with arc-biased midpoints (`arc: 20`), two-bone `ik()`, blink/breath/idle generators, `<Bubble>` (thought/speech). Ship the monoline developer as the first rig.
 
-### P1-3 Studio upgrades — PARTLY DONE (scene markers on the scrubber, `[`/`]` jump); cue colours by kind, cue inspector, pose scrubber still open
+### P1-3 Studio upgrades — DONE as an editor (project thumbnails, viewport overlays incl. copy boxes, NLE timeline with lanes per depth and per audio kind, gain envelopes, loop range, snapping, inspector with cue preview, cues table, Babel scratch compositions); pose scrubber still open
 Cue colors by kind (file/tone/keystroke/music); click a cue to see its spec; markers from P0-1 as a ruler; `M` to jump to the next marker; a pose scrubber (channel sliders) for rig scenes; a "blank frame" indicator on the scrubber.
 
 ### P1-4 Render ergonomics — DONE (`--scene`, `--every`, `--draft`); frame cache not done

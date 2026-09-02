@@ -22,9 +22,11 @@
     "react-dom": ">=18"
   },
   "dependencies": {
+    "@babel/standalone": "^7.29.8",
     "katex": "^0.16.22"
   },
   "devDependencies": {
+    "@types/babel__standalone": "^7.1.9",
     "@types/katex": "^0.16.7",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",

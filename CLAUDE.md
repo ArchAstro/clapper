@@ -6,7 +6,7 @@ React → MP4 video framework (pnpm workspace). See README.md for the model and 
 - `pnpm install` (postinstall builds allowed via `allowBuilds` in pnpm-workspace.yaml), `cd packages/cli && pnpm exec playwright install chromium` once.
 - `pnpm typecheck` · `pnpm test` (vitest: core math + offline synth) · `pnpm render` / `pnpm preview` (intern-promo).
 - `pnpm exec agenticvids still <entry> -c <id> --frame 10,20 --out out/stills --image-format jpeg` to eyeball frames fast.
-- Manual studio e2e: `cd packages/cli && node test/studio-check.mjs` against `agenticvids preview … --port 4399`.
+- Manual studio e2e: `cd packages/cli && node test/studio-check.mjs [compositionId]` against `agenticvids preview … --port 4399` (screenshots under out/studio). The studio is an editor: timeline lanes, inspector, overlays, and a Babel-compiled scratch composition.
 
 ## Rules
 - Everything on screen must be a pure function of `useFrame()`; never use wall-clock time or `setTimeout` for motion.
