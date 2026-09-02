@@ -1,12 +1,15 @@
 import { Children, isValidElement, useContext, useEffect, useMemo, type CSSProperties, type ReactElement, type ReactNode } from "react";
-import { TimelineContext, useTimeline, useVideoConfig, type TimelineState } from "./timeline";
+import { TimelineContext, useFps, useTimeline, useVideoConfig, type TimelineState } from "./timeline";
+import { resolveFrames, type Frames } from "./frames";
 import { getRegistry, notifyRegistry } from "./registry";
 
 export interface SequenceProps {
-  /** Start frame relative to the parent sequence. Default 0. */
-  from?: number;
-  /** Length in frames. Default: until the parent ends. */
-  durationInFrames?: number;
+  /** Start relative to the parent sequence: frames or "1.2s". Default 0. */
+  from?: Frames;
+  /** Length: frames or "3s". Default: until the parent ends. */
+  durationInFrames?: Frames;
+  /** Alias of durationInFrames. */
+  duration?: Frames;
   /** Name shown in the studio timeline. */
   name?: string;
   /**
@@ -26,8 +29,9 @@ export interface SequenceProps {
  * 0 at absolute frame 30. Children are unmounted outside [from, from+duration).
  */
 export function Sequence({
-  from = 0,
-  durationInFrames,
+  from: fromProp = 0,
+  durationInFrames: durProp,
+  duration: durAlias,
   name,
   keepMounted = false,
   layout = "absolute-fill",
@@ -36,7 +40,10 @@ export function Sequence({
   children,
 }: SequenceProps) {
   const parent = useTimeline();
-  const duration = durationInFrames ?? Math.max(0, parent.durationInFrames - from);
+  const fps = useFps();
+  const from = resolveFrames(fromProp, fps);
+  const explicit = resolveFrames(durProp ?? durAlias, fps);
+  const duration = explicit ?? Math.max(0, parent.durationInFrames - from);
   const localFrame = parent.frame - from;
   const absStart = parent.offset + from;
   const id = useMemo(() => `${parent.path.join("/")}/${name ?? `seq@${from}`}`, [parent.path, name, from]);
@@ -97,9 +104,9 @@ export function AbsoluteFill({ style, children, ...rest }: { style?: CSSProperti
 /* --------------------------------- Series ---------------------------------- */
 
 export interface SeriesItemProps {
-  durationInFrames: number;
+  durationInFrames: Frames;
   /** Negative to overlap with the previous item, positive to add a gap. */
-  offset?: number;
+  offset?: Frames;
   name?: string;
   children?: ReactNode;
 }
@@ -116,12 +123,15 @@ function SeriesItem(_props: SeriesItemProps): ReactElement | null {
  * </Series>
  */
 export function Series({ children }: { children: ReactNode }) {
+  const fps = useFps();
   let cursor = 0;
   const items = Children.toArray(children).filter(isValidElement) as ReactElement<SeriesItemProps>[];
   return (
     <>
       {items.map((item, i) => {
-        const { durationInFrames, offset = 0, name, children: c } = item.props;
+        const { name, children: c } = item.props;
+        const durationInFrames = resolveFrames(item.props.durationInFrames, fps);
+        const offset = resolveFrames(item.props.offset ?? 0, fps);
         const from = cursor + offset;
         cursor = from + durationInFrames;
         return (
@@ -138,8 +148,9 @@ Series.Item = SeriesItem;
 /* ---------------------------------- Loop ----------------------------------- */
 
 /** Repeats its children every `durationInFrames`, `times` times (default forever). */
-export function Loop({ durationInFrames, times = Infinity, name, children }: { durationInFrames: number; times?: number; name?: string; children?: ReactNode }) {
+export function Loop({ durationInFrames: durProp, times = Infinity, name, children }: { durationInFrames: Frames; times?: number; name?: string; children?: ReactNode }) {
   const { frame } = useTimeline();
+  const durationInFrames = resolveFrames(durProp, useFps());
   const iteration = Math.floor(frame / durationInFrames);
   if (frame < 0 || iteration >= times) return null;
   return (

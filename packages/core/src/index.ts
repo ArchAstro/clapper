@@ -10,3 +10,7 @@ export * from "./audio";
 export * from "./media";
 export * from "./text";
 export * from "./transitions";
+export * from "./frames";
+export * from "./scenes";
+export * from "./primitives";
+export * from "./rig";

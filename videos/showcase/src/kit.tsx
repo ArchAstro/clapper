@@ -3,6 +3,7 @@ import type { CSSProperties, ReactNode } from "react";
 
 /* ---------- shared motion vocabulary for the showcase videos ---------- */
 
+export { Reveal, Rule, Eyebrow } from "@agenticvids/core";
 export const EXPO = Easing.outExpo;
 export const QUINT = Easing.outQuint;
 export const INOUT = Easing.inOutQuint;
@@ -11,28 +12,8 @@ export const INOUT = Easing.inOutQuint;
  * Masked line reveal, the studio staple: the child slides up from under an
  * invisible mask. Use one per line of type.
  */
-export function Reveal({ at = 0, duration = 26, delay = 0, from = "bottom", skew = 0, easing = QUINT, exitAt, exitDuration = 16, children, style, as: Tag = "div", className }: { at?: number; duration?: number; delay?: number; from?: "bottom" | "top" | "left" | "right"; skew?: number; easing?: EasingFn; exitAt?: number; exitDuration?: number; children: ReactNode; style?: CSSProperties; as?: "div" | "span" | "h1" | "h2" | "p"; className?: string }) {
-  const frame = useFrame();
-  let p = progress(frame, at + delay, duration, easing);
-  let out = 0;
-  if (exitAt !== undefined && frame >= exitAt) out = progress(frame, exitAt, exitDuration, Easing.inCubic);
-  const axis = from === "bottom" || from === "top" ? "Y" : "X";
-  const sign = from === "bottom" || from === "right" ? 1 : -1;
-  const offset = (1 - p) * 110 * sign - out * 110 * sign;
-  const Comp = Tag as any;
-  return (
-    <Comp className={className} style={{ overflow: "hidden", display: Tag === "span" ? "inline-block" : "block", verticalAlign: "bottom", padding: "0.08em 0.06em", margin: "-0.08em -0.06em", ...style }}>
-      <span style={{ display: "block", transform: `translate${axis}(${offset}%) skewY(${skew * (1 - p)}deg)`, transformOrigin: "left bottom", willChange: "transform" }}>{children}</span>
-    </Comp>
-  );
-}
 
 /** A rule that draws itself. */
-export function Rule({ at = 0, duration = 30, length = "100%", thickness = 2, color = "currentColor", vertical = false, easing = EXPO, style }: { at?: number; duration?: number; length?: number | string; thickness?: number; color?: string; vertical?: boolean; easing?: EasingFn; style?: CSSProperties }) {
-  const frame = useFrame();
-  const p = progress(frame, at, duration, easing);
-  return <div style={{ width: vertical ? thickness : length, height: vertical ? length : thickness, background: color, transform: vertical ? `scaleY(${p})` : `scaleX(${p})`, transformOrigin: vertical ? "top" : "left", ...style }} />;
-}
 
 /**
  * Animated film grain. The noise is rasterised once per seed on a small tile
@@ -83,9 +64,6 @@ export function useImpact(at: number, amount = 0.04, length = 14): number {
 }
 
 /** Tracked-out small caps label. */
-export function Eyebrow({ children, color, style, mono = true }: { children: ReactNode; color?: string; style?: CSSProperties; mono?: boolean }) {
-  return <div className={mono ? "mono" : undefined} style={{ fontSize: 20, letterSpacing: "0.22em", textTransform: "uppercase", color, fontWeight: 500, ...style }}>{children}</div>;
-}
 
 /* ------------------------------- paths ------------------------------- */
 

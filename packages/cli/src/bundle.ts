@@ -35,6 +35,25 @@ export function writeHarnessDir({ entry, projectDir, mode }: BundleTarget): stri
   return dir;
 }
 
+/** Projects that do not depend on React themselves get the copy @agenticvids/core was built against. */
+function reactAliases(projectDir: string): { find: RegExp; replacement: string }[] {
+  try {
+    createRequire(path.join(projectDir, "package.json")).resolve("react");
+    return [];
+  } catch {
+    const coreReq = createRequire(path.join(corePackageDir(), "package.json"));
+    const out: { find: RegExp; replacement: string }[] = [];
+    for (const name of ["react/jsx-runtime", "react/jsx-dev-runtime", "react-dom/client", "react-dom", "react"]) {
+      try {
+        out.push({ find: new RegExp(`^${name.replace("/", "\\/")}$`), replacement: coreReq.resolve(name) });
+      } catch {
+        /* not installed alongside core either; let Vite report it */
+      }
+    }
+    return out;
+  }
+}
+
 function baseConfig(t: BundleTarget, dir: string): InlineConfig {
   const workspaceRoot = searchForWorkspaceRoot(t.projectDir);
   return {
@@ -45,7 +64,7 @@ function baseConfig(t: BundleTarget, dir: string): InlineConfig {
     logLevel: "warn",
     cacheDir: path.join(t.projectDir, "node_modules", ".vite-agenticvids"),
     plugins: [react()],
-    resolve: { dedupe: ["react", "react-dom", "react/jsx-runtime", "@agenticvids/core"] },
+    resolve: { dedupe: ["react", "react-dom", "react/jsx-runtime", "@agenticvids/core"], alias: reactAliases(t.projectDir) },
     server: { fs: { allow: [workspaceRoot, t.projectDir, corePackageDir(), dir] } },
     optimizeDeps: { include: ["react", "react-dom", "react-dom/client", "react/jsx-runtime"] },
     define: { "process.env.NODE_ENV": JSON.stringify(t.mode === "harness" ? "production" : "development") },

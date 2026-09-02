@@ -1,10 +1,11 @@
 import { useMemo, type CSSProperties, type ReactNode } from "react";
 import { Easing, interpolate, type EasingFn } from "./interpolate";
 import { useFrame, useVideoConfig } from "./timeline";
+import { resolveFrames, type Frames } from "./frames";
 
 export interface CameraKeyframe {
-  /** Local frame. */
-  frame: number;
+  /** Local frame, or "1.2s". */
+  frame: Frames;
   /** Point of interest in composition pixels (what the camera looks at). Default center. */
   x?: number;
   y?: number;
@@ -23,10 +24,10 @@ export interface CameraState {
   rotate: number;
 }
 
-export function evalCamera(keyframes: CameraKeyframe[], frame: number, width: number, height: number): CameraState {
+export function evalCamera(keyframes: CameraKeyframe[], frame: number, width: number, height: number, fps = 30): CameraState {
   const defaults: CameraState = { x: width / 2, y: height / 2, zoom: 1, rotate: 0 };
   if (keyframes.length === 0) return defaults;
-  const sorted = [...keyframes].sort((a, b) => a.frame - b.frame);
+  const sorted = keyframes.map((k) => ({ ...k, frame: resolveFrames(k.frame, fps) as number })).sort((a, b) => a.frame - b.frame);
   const filled: (CameraState & { frame: number; easing?: EasingFn })[] = [];
   for (let i = 0; i < sorted.length; i++) {
     const prev: CameraState = i === 0 ? defaults : filled[i - 1];
@@ -69,8 +70,8 @@ export function cameraTransform(state: CameraState, width: number, height: numbe
  */
 export function Camera({ keyframes, style, children }: { keyframes: CameraKeyframe[]; style?: CSSProperties; children?: ReactNode }) {
   const frame = useFrame();
-  const { width, height } = useVideoConfig();
-  const state = useMemo(() => evalCamera(keyframes, frame, width, height), [keyframes, frame, width, height]);
+  const { width, height, fps } = useVideoConfig();
+  const state = useMemo(() => evalCamera(keyframes, frame, width, height, fps), [keyframes, frame, width, height, fps]);
   return (
     <div style={{ position: "absolute", inset: 0, overflow: "hidden", ...style }}>
       <div style={{ position: "absolute", left: 0, top: 0, width, height, transformOrigin: "0 0", transform: cameraTransform(state, width, height), willChange: "transform" }}>
@@ -82,6 +83,6 @@ export function Camera({ keyframes, style, children }: { keyframes: CameraKeyfra
 
 export function useCamera(keyframes: CameraKeyframe[]): CameraState {
   const frame = useFrame();
-  const { width, height } = useVideoConfig();
-  return useMemo(() => evalCamera(keyframes, frame, width, height), [keyframes, frame, width, height]);
+  const { width, height, fps } = useVideoConfig();
+  return useMemo(() => evalCamera(keyframes, frame, width, height, fps), [keyframes, frame, width, height, fps]);
 }

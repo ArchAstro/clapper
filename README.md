@@ -61,12 +61,20 @@ registerRoot(Root);
    Never read wall-clock time. The render harness also virtualises `performance.now`, `Date.now` and
    `requestAnimationFrame`, and pauses+seeks every CSS/Web animation to the frame, so most rAF-driven
    libraries step exactly once per frame.
-2. **Sequences shift the clock.** `<Sequence from={30} durationInFrames={90} name="intro">` makes `useFrame()` return 0 at
-   absolute frame 30 and unmounts children outside its range (`keepMounted` to keep them). `<Series>`, `<Loop>`, `<Freeze>`,
-   and `<TransitionSeries transition={{type:"fade"|"slide"|"wipe"|"zoom"|"blur", duration}}>` build on it. Named sequences
-   show up as tracks in the studio. Transitions overlap, so size the composition with `transitionSeriesLength(items, default)`
-   or you get blank tail frames. On a hard cut (`type:"none"`), make sure the incoming scene has something on screen at its
-   local frame 0 (a rule, an eyebrow, a static frame); masked reveals that start at 0 leave the first 4–8 frames empty.
+   **Time is frames, written either way.** Every `at`, `from`, `duration`, keyframe `frame` and audio start takes a frame
+   count or a string: `at="1.2s"`, `duration="300ms"`. One `resolveFrames(value, fps)` does the conversion; `useFrames()`
+   gives you the resolver inside a component.
+2. **Scenes own the arithmetic.** `defineScenes({ open: { seconds: 3.3 }, plan: { frames: 220, transition: { type: "fade", duration: "0.5s" } } }, { fps: 30 })`
+   returns a plan with `total`, `start(name)`, `end`, `duration`, `local(name, absFrame)`, `at(absFrame)`, `cuts()`. Pass it
+   to `<Composition scenes={plan}>` (length comes from it, and the scene map reaches the CLI, studio and review kit) and
+   render with `<Scenes plan={plan}><Scenes.Scene name="open">…</Scenes.Scene></Scenes>`. A root-level score, copy timings
+   and the reviewer's brief all read the same starts, so a scene can change length without hunting for numbers.
+   Underneath: `<Sequence from={30} durationInFrames={90} name="intro">` makes `useFrame()` return 0 at absolute frame 30
+   and unmounts children outside its range (`keepMounted` to keep them). `<Series>`, `<Loop>`, `<Freeze>` and
+   `<TransitionSeries transition={{type:"fade"|"slide"|"wipe"|"zoom"|"blur"|"none", duration}}>` build on it. Named
+   sequences show up as tracks in the studio. On a hard cut, make sure the incoming scene has something on screen at its
+   local frame 0 (a rule, an eyebrow, a static frame); masked reveals that start at 0 leave the first 4–8 frames empty
+   (`agenticvids review` flags near-black frames after a cut).
 3. **Everything is a tween of the frame.**
    - `interpolate(frame, [0,30], [0,1], { easing: Easing.outExpo })`, `progress()`, `spring({frame,fps,config})`,
      `Easing.*` (CSS-equivalent beziers + elastic/bounce/steps), `SpringPresets`.
@@ -81,18 +89,32 @@ registerRoot(Root);
    `<Keystroke>` and `<Typing text>` (layered mechanical keys synced to a Typewriter). Every tone takes `pan`, `spread`, `reverb`, `cutoff`, `lfo`, `detune`;
    the offline mixer is stereo with a reverb bus. `automation={{ volume: [[frame, gain]…], cutoff: [[frame, hz]…] }}` automates a
    long cue across scene cuts (put beds in a root-level `<Score/>` so they never restart at a cut). `agenticvids cues <entry> -c <id>`
-   prints the cue inventory; `videos/showcase/scripts/audio-cuts.mjs` prints short-term loudness around cuts. A cue starts at the enclosing
+   prints the cue inventory; `agenticvids review` writes short-term loudness around every cut. A cue starts at the enclosing
    sequence's start + `at`. The studio plays cues live (Web Audio); the renderer synthesizes tones offline in Node,
    sums them into one track, and mixes file cues with ffmpeg (`adelay`/`afade`/`amix`).
 6. **Text & SVG.** `<Typewriter/>` (+ `typedLength()` to sync clicks), `<SplitText by="word|char|line"/>`, `<Counter/>`,
    `<Draw>` (stroke-dashoffset reveal of every shape inside), `useBlink()`. `<Latex>` from `@agenticvids/core/latex` (KaTeX).
+   Display-copy primitives: `<Reveal at from skew exitAt>` (masked line reveal), `<Copy x y align size plate>` (positioned
+   line with an optional backing plate), `<Eyebrow>`, `<Rule>`. They tag the DOM with `data-copy`, which is what the review
+   lint measures for safe-area and overlap.
+6b. **Characters.** `definePoses({ typing: {...}, lookUp: {...} })` for typed named poses; `usePose(POSES, [{ at: 0, pose: "typing" },
+   { at: "0.8s", pose: "lookUp", ease: "outBack", arc: 24 }], { arcChannels: [["lhx","lhy"],["rhx","rhy"]] })` blends channels
+   per frame and, when a key sets `arc`, lifts the hand targets through a midpoint so travel curves instead of sliding.
+   `ik2()` is two-bone inverse kinematics with an outward elbow; `useEyeBlink()` / `useBreath()` are deterministic idle motion.
+   `videos/showcase/src/archdev/person.tsx` is the reference rig built on them.
 7. **Media & readiness.** `<Img/>`, `<Video/>` (currentTime driven by the frame), `useFont()`, and `delayRender()/continueRender()`
    for anything async: the harness waits for all handles, fonts and images before capturing a frame.
 8. **Determinism helpers.** `useRandom(seed)`, `random()`, `noise1d()`.
 
 ## Renderer
 
-`agenticvids render <entry> -c <id> -o out.mp4 [--concurrency 4] [--scale 2] [--range 0-90] [--codec h264|h265|vp9|prores] [--crf 17] [--image-format png|jpeg] [--mute] [--props '{"title":"x"}']`
+`agenticvids render <entry> -c <id> -o out.mp4 [--scene plan] [--draft] [--concurrency 4] [--scale 2] [--range 0-90] [--codec h264|h265|vp9|prores] [--crf 17] [--image-format png|jpeg] [--mute] [--props '{"title":"x"}']`
+
+- `--scene <name>` renders one scene of a `defineScenes` plan; `--draft` is half resolution, CRF 28, veryfast, for iteration.
+- `agenticvids still <entry> -c <id> --scene review` writes the first, middle and last frame of the scene; `--frame 12,40` is
+  scene-local when `--scene` is given; `--every 30` samples across the scene or `--range`.
+- `agenticvids compositions <entry> [--json]` lists compositions with their scene maps.
+- A composition that throws names the scene and local frame: `Composition threw while rendering frame 406 in scene "review" (local frame 2)`.
 
 - Bundles `.agenticvids/harness/` with Vite (React plugin, `public/` served, KaTeX/CSS/fonts handled), serves it, opens N
   Chromium tabs, each takes a contiguous frame chunk, calls `window.__agenticvids.setFrame(n)`, screenshots, and an ordered
@@ -100,6 +122,18 @@ registerRoot(Root);
 - A composition that throws makes the render fail with the error, not produce blank frames.
 - Uses system `ffmpeg` if it has libx264, otherwise the `ffmpeg-static` binary. `AGENTICVIDS_FFMPEG` overrides.
 - Speed: 15–25 fps at 1080p with 4 workers on an M-series laptop. Frames are captured as JPEG q96 by default; `--image-format png` is lossless but PNG-encoding grainy frames is ~5x slower (the screenshot encode, not the page, is the bottleneck).
+
+## Review
+
+`agenticvids review <entry> -c <id> [--video existing.mp4] [--draft] [--no-lint] [-o dir]` renders (or takes an existing MP4) and writes
+`out/review/<id>/`: `contact-sheet.png` (every Nth frame, reading order = time), `cut-NNNN.png` (9 tiles around every scene cut),
+`opening-2s.png`, `spectrogram.png`, `waveform.png`, `audio-cuts.txt` (short-term RMS ±1.2 s around each cut, integrated LUFS per
+scene), `scenes.json`, `lint.json` and `brief.md` (scene table + a reviewer prompt you can hand to a subagent). Scene cuts come
+from the composition's `scenes` plan, or from the top-level named sequences when there is no plan.
+
+Lint rules (exit code 1 on errors): `blank-after-cut` (near-black frame right after a cut while the scene is not), `overlap`
+(two `data-copy` boxes intersect), `safe-area` (copy crosses the 5 % margin), `determinism` (`Math.random`, `Date.now`,
+`performance.now`, timers or rAF in the video's sources; append `// agenticvids-ok` to a line to allow it).
 
 ## Studio
 
@@ -116,6 +150,7 @@ Things that need to block a frame until ready use `delayRender()`. Things that m
 
 ## Tests
 
-`pnpm test` — unit tests for interpolation, springs, keyframes, camera, typewriter timing, PRNG, and the offline synth.
+`pnpm test` — unit tests for interpolation, springs, keyframes, camera, typewriter timing, PRNG, frames/scenes/IK, and the offline synth.
+`node packages/cli/test/review-check.mjs` renders `packages/cli/test/fixtures/lint` (four planted defects) and asserts the review lint reports all of them.
 `videos/intern-promo`'s `smoke` composition exercises the whole pipeline (fonts, KaTeX, SVG draw, camera, springs, audio):
 `pnpm exec agenticvids render src/index.tsx -c smoke`.

@@ -3,6 +3,7 @@ import { getRegistry, type AudioCue, type ToneSpec, type Wave } from "./registry
 import { typedLength } from "./text";
 import { useMemo } from "react";
 import { useTimeline, useVideoConfig } from "./timeline";
+import { resolveFrames, type Frames } from "./frames";
 
 /**
  * Audio is declared like everything else: as React elements positioned on the
@@ -13,10 +14,12 @@ import { useTimeline, useVideoConfig } from "./timeline";
  */
 
 interface CommonAudioProps {
-  /** Local frame at which the sound starts. Default 0. */
-  at?: number;
-  /** Length in frames. Default: until the enclosing sequence ends. */
-  durationInFrames?: number;
+  /** Local frame (or "1.2s") at which the sound starts. Default 0. */
+  at?: Frames;
+  /** Length in frames or "0.5s". Default: until the enclosing sequence ends. */
+  durationInFrames?: Frames;
+  /** Alias of durationInFrames. */
+  duration?: Frames;
   /** 0..1 (values above 1 boost). Default 1. */
   volume?: number;
   fadeIn?: number;
@@ -25,11 +28,14 @@ interface CommonAudioProps {
   name?: string;
 }
 
-function useCueRange({ at = 0, durationInFrames }: CommonAudioProps) {
+function useCueRange({ at = 0, durationInFrames, duration }: CommonAudioProps) {
   const tl = useTimeline();
-  const startFrame = tl.offset + at;
-  const endFrame = durationInFrames !== undefined ? startFrame + durationInFrames : tl.offset + tl.durationInFrames;
-  return { startFrame, endFrame, path: tl.path };
+  const { fps } = useVideoConfig();
+  const atF = resolveFrames(at, fps);
+  const durF = resolveFrames(durationInFrames ?? duration, fps);
+  const startFrame = tl.offset + atF;
+  const endFrame = durF !== undefined ? startFrame + durF : tl.offset + tl.durationInFrames;
+  return { startFrame, endFrame, path: tl.path, atF };
 }
 
 function useRegisterCue(cue: AudioCue) {
@@ -54,9 +60,9 @@ export interface AudioProps extends CommonAudioProps {
 /** A sound file on the timeline. */
 export function Audio(props: AudioProps) {
   const { src, startFrom = 0, playbackRate = 1, loop = false, volume = 1, fadeIn = 0, fadeOut = 0, name, at = 0 } = props;
-  const { startFrame, endFrame, path } = useCueRange(props);
+  const { startFrame, endFrame, path, atF } = useCueRange(props);
   useRegisterCue({
-    id: `${path.join("/")}|audio|${src}|${at}|${name ?? ""}`,
+    id: `${path.join("/")}|audio|${src}|${atF}|${name ?? ""}`,
     kind: "file",
     src,
     startFrame,
@@ -97,11 +103,11 @@ export interface ToneProps extends CommonAudioProps {
 /** A synthesized tone: no asset files needed. */
 export function Tone(props: ToneProps) {
   const { freq, glide, wave = "sine", attack = 0.005, decay = 0.08, sustain = 0.6, release = 0.2, partials, ring, brightness, cutoff, pan, spread, reverb, lfo, detune, automation, volume = 0.5, fadeIn = 0, fadeOut = 0, name, at = 0 } = props;
-  const { startFrame, endFrame, path } = useCueRange(props);
+  const { startFrame, endFrame, path, atF } = useCueRange(props);
   const f = noteToHz(freq);
   const g = glide === undefined ? undefined : noteToHz(glide);
   useRegisterCue({
-    id: `${path.join("/")}|tone|${f}|${wave}|${at}|${name ?? ""}`,
+    id: `${path.join("/")}|tone|${f}|${wave}|${atF}|${name ?? ""}`,
     kind: "tone",
     startFrame,
     endFrame,

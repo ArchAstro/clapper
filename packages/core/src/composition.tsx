@@ -2,6 +2,7 @@ import { createElement, useEffect, type ComponentType, type ReactNode } from "re
 import { flushSync } from "react-dom";
 import { createRoot } from "react-dom/client";
 import { getRegistry, notifyRegistry, type CompositionEntry, type CompositionMeta } from "./registry";
+import type { ScenePlan } from "./scenes";
 
 export interface CompositionProps<P extends Record<string, unknown> = Record<string, unknown>> {
   id: string;
@@ -13,6 +14,8 @@ export interface CompositionProps<P extends Record<string, unknown> = Record<str
   durationInFrames?: number;
   durationInSeconds?: number;
   defaultProps?: P;
+  /** A defineScenes() plan: supplies the duration and exposes the scene map to the CLI. */
+  scenes?: ScenePlan<any>;
 }
 
 /**
@@ -29,7 +32,7 @@ export function Composition<P extends Record<string, unknown>>(props: Compositio
 
 export function registerComposition<P extends Record<string, unknown>>(props: CompositionProps<P>) {
   const duration =
-    props.durationInFrames ?? (props.durationInSeconds !== undefined ? Math.round(props.durationInSeconds * props.fps) : undefined);
+    props.durationInFrames ?? (props.durationInSeconds !== undefined ? Math.round(props.durationInSeconds * props.fps) : props.scenes?.total);
   if (!duration || duration <= 0) throw new Error(`Composition "${props.id}" needs durationInFrames or durationInSeconds`);
   const entry: CompositionEntry = {
     id: props.id,
@@ -39,6 +42,7 @@ export function registerComposition<P extends Record<string, unknown>>(props: Co
     fps: props.fps,
     durationInFrames: duration,
     defaultProps: props.defaultProps as Record<string, unknown> | undefined,
+    scenes: props.scenes?.list().map((s) => ({ name: s.name, start: s.start, end: s.end })),
   };
   const r = getRegistry();
   const prev = r.compositions.get(props.id);

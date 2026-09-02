@@ -3,6 +3,7 @@ import path from "node:path";
 import { parseArgs } from "node:util";
 import { buildHarness, serveBuilt, startStudio } from "./bundle.ts";
 import { collectCues, probeCompositions, renderComposition, renderStill, renderStills } from "./render.ts";
+import { reviewComposition } from "./review.ts";
 
 const HELP = `agenticvids — React → MP4
 
@@ -10,15 +11,20 @@ Usage:
   agenticvids render <entry> [options]      Render a composition to video
   agenticvids still <entry> [options]       Render one frame to PNG
   agenticvids preview <entry> [--port N]    Open the studio (scrub, play, inspect)
-  agenticvids compositions <entry>          List registered compositions
+  agenticvids compositions <entry> [--json] List registered compositions (+ scene maps)
   agenticvids cues <entry> -c <id>          List the audio cues of a composition (audit)
+  agenticvids review <entry> [-c <id>]      Render + build a critique kit (contact sheet, cut strips,
+                                            spectrogram, loudness at cuts, lint, brief.md)
 
 Render options:
   -c, --composition <id>   Composition id (default: the only/first one)
   -o, --out <file>         Output file (default: out/<id>.mp4)
       --props <json>       Props passed to the composition
       --range <a-b>        Frame range, inclusive start, exclusive end (e.g. 0-90)
+      --scene <name>       Limit to one scene of a defineScenes() plan (render: range; still: frames are scene-local)
       --frame <n[,n…]>     (still) Frame(s) to capture; several go to an --out directory
+      --every <n>          (still) One frame every n across the range/scene
+      --draft              Half resolution, crf 28, veryfast: for iteration
       --concurrency <n>    Parallel browser tabs (default: cpus-1, max 4)
       --scale <n>          Device scale factor (2 = render at 2x pixels)
       --codec <name>       h264 (default) | h265 | vp9 | prores
@@ -28,6 +34,11 @@ Render options:
       --mute               Skip audio mixing
       --loudnorm <lufs|off> Loudness target (default -16 LUFS)
       --keep-build         Keep .agenticvids/harness-build after rendering
+
+Review options:
+      --video <file>       Build the kit from an existing MP4 instead of rendering
+      --no-lint            Skip the blank-frame / safe-area / overlap / determinism checks
+      --draft              Render the review copy at draft quality
 `;
 
 export async function main(argv: string[]) {
@@ -51,6 +62,12 @@ export async function main(argv: string[]) {
       "keep-build": { type: "boolean" },
       port: { type: "string" },
       open: { type: "boolean" },
+      scene: { type: "string" },
+      every: { type: "string" },
+      draft: { type: "boolean" },
+      json: { type: "boolean" },
+      video: { type: "string" },
+      "no-lint": { type: "boolean" },
       help: { type: "boolean", short: "h" },
     },
   });
@@ -78,9 +95,64 @@ export async function main(argv: string[]) {
       const server = await serveBuilt({ entry, projectDir, mode: "harness" }, outDir);
       try {
         const comps = await probeCompositions(server.url);
-        for (const c of comps) console.log(`${c.id}\t${c.width}x${c.height}\t${c.fps}fps\t${c.durationInFrames} frames (${(c.durationInFrames / c.fps).toFixed(2)}s)`);
+        if (values.json) {
+          console.log(JSON.stringify(comps, null, 2));
+        } else {
+          for (const c of comps) {
+            console.log(`${c.id}\t${c.width}x${c.height}\t${c.fps}fps\t${c.durationInFrames} frames (${(c.durationInFrames / c.fps).toFixed(2)}s)`);
+            for (const s of c.scenes ?? []) console.log(`  ${s.name.padEnd(12)} ${String(s.start).padStart(5)}–${String(s.end).padEnd(5)} (${(s.start / c.fps).toFixed(2)}s, ${((s.end - s.start) / c.fps).toFixed(1)}s long)`);
+          }
+        }
       } finally {
         await server.close();
+        if (!values["keep-build"]) fs.rmSync(outDir, { recursive: true, force: true });
+      }
+      return;
+    }
+    case "review": {
+      const t0 = Date.now();
+      console.error("Bundling…");
+      const outDir = await buildHarness({ entry, projectDir, mode: "harness" });
+      const server = await serveBuilt({ entry, projectDir, mode: "harness" }, outDir);
+      try {
+        const comps = await probeCompositions(server.url);
+        const meta = comps.find((c) => c.id === (values.composition ?? c.id));
+        if (!meta) throw new Error(`Unknown composition "${values.composition}" (available: ${comps.map((c) => c.id).join(", ")})`);
+        let last = -1;
+        const result = await reviewComposition({
+          url: server.url,
+          entry,
+          projectDir,
+          publicDir,
+          meta,
+          props,
+          out: values.out,
+          video: values.video ? path.resolve(values.video) : undefined,
+          draft: values.draft,
+          lint: !values["no-lint"],
+          log: (m) => {
+            const pm = /^Frames (\d+)\/(\d+)/.exec(m);
+            if (pm) {
+              const pct = Math.floor((Number(pm[1]) / Number(pm[2])) * 100);
+              if (pct !== last) {
+                last = pct;
+                process.stderr.write(`\r${m}`);
+              }
+            } else process.stderr.write(`${m}\n`);
+          },
+        });
+        console.log(`Review kit for "${meta.id}" → ${path.relative(process.cwd(), result.dir)}`);
+        console.log(`  scenes: ${result.scenes.map((s) => `${s.name}@${s.start}`).join("  ")}`);
+        console.log(`  files:  ${result.files.join(", ")}`);
+        const errors = result.issues.filter((i) => i.level === "error");
+        const warns = result.issues.filter((i) => i.level === "warn");
+        console.log(`  lint:   ${errors.length} error(s), ${warns.length} warning(s) · ${result.checked.copyBoxes} copy boxes over ${result.checked.frames} frames${result.issues.length ? " — see lint.json / brief.md" : ""}`);
+        for (const i of result.issues.slice(0, 12)) console.log(`    ${i.level.padEnd(5)} ${i.rule}${i.frame !== undefined ? ` @${i.frame}` : ""}${i.scene ? ` [${i.scene}]` : ""}: ${i.message}`);
+        console.log(`  ${((Date.now() - t0) / 1000).toFixed(1)}s total`);
+        if (errors.length) process.exitCode = 1;
+      } finally {
+        await server.close();
+        if (!values["keep-build"]) fs.rmSync(outDir, { recursive: true, force: true });
       }
       return;
     }
@@ -122,16 +194,36 @@ export async function main(argv: string[]) {
       const outDir = await buildHarness({ entry, projectDir, mode: "harness" });
       const server = await serveBuilt({ entry, projectDir, mode: "harness" }, outDir);
       try {
+        const comps = await probeCompositions(server.url);
+        if (comps.length === 0) throw new Error("No compositions registered");
         let compositionId = values.composition;
         if (!compositionId) {
-          const comps = await probeCompositions(server.url);
-          if (comps.length === 0) throw new Error("No compositions registered");
           compositionId = comps[0].id;
           if (comps.length > 1) console.error(`No --composition given; using "${compositionId}" (available: ${comps.map((c) => c.id).join(", ")})`);
         }
+        const meta = comps.find((c) => c.id === compositionId);
+        if (!meta) throw new Error(`Unknown composition "${compositionId}" (available: ${comps.map((c) => c.id).join(", ")})`);
+        // --scene narrows to one scene of the plan; --range is absolute frames
+        let range: [number, number] | undefined = values.range ? (values.range.split("-").map((n) => parseInt(n, 10)) as [number, number]) : undefined;
+        if (values.scene) {
+          const sc = meta.scenes?.find((s) => s.name === values.scene);
+          if (!sc) throw new Error(`Unknown scene "${values.scene}"${meta.scenes?.length ? ` (scenes: ${meta.scenes.map((s) => s.name).join(", ")})` : " (the composition declares no scenes; pass scenes={plan} to <Composition>)"}`);
+          range = [sc.start, sc.end];
+        }
         if (command === "still") {
-          const frames = (values.frame ?? "0").split(",").map((n) => parseInt(n.trim(), 10));
-          const scale = values.scale ? parseFloat(values.scale) : 1;
+          const base = range ? range[0] : 0;
+          let frames: number[];
+          if (values.every) {
+            const every = parseInt(values.every, 10);
+            const [a, b] = range ?? [0, meta.durationInFrames];
+            frames = [];
+            for (let f = a; f < b; f += every) frames.push(f);
+          } else if (values.frame) {
+            frames = values.frame.split(",").map((n) => base + parseInt(n.trim(), 10));
+          } else if (range) {
+            frames = [range[0], Math.floor((range[0] + range[1]) / 2), range[1] - 1];
+          } else frames = [0];
+          const scale = values.scale ? parseFloat(values.scale) : values.draft ? 0.5 : 1;
           if (frames.length === 1 && values.out && /\.(png|jpe?g)$/i.test(values.out)) {
             console.log(await renderStill({ url: server.url, compositionId, frame: frames[0], out: values.out, scale, props }));
             return;
@@ -141,7 +233,7 @@ export async function main(argv: string[]) {
           for (const f of files) console.log(f);
           return;
         }
-        const out = values.out ?? path.join(projectDir, "out", `${compositionId}.mp4`);
+        const out = values.out ?? path.join(projectDir, "out", `${compositionId}${values.scene ? `.${values.scene}` : ""}${values.draft ? ".draft" : ""}.mp4`);
         let last = -1;
         const result = await renderComposition({
           url: server.url,
@@ -150,11 +242,11 @@ export async function main(argv: string[]) {
           out,
           publicDir,
           concurrency: values.concurrency ? parseInt(values.concurrency, 10) : undefined,
-          scale: values.scale ? parseFloat(values.scale) : 1,
-          range: values.range ? (values.range.split("-").map((n) => parseInt(n, 10)) as [number, number]) : undefined,
+          scale: values.scale ? parseFloat(values.scale) : values.draft ? 0.5 : 1,
+          range,
           codec: values.codec as never,
-          crf: values.crf ? parseInt(values.crf, 10) : undefined,
-          preset: values.preset,
+          crf: values.crf ? parseInt(values.crf, 10) : values.draft ? 28 : undefined,
+          preset: values.preset ?? (values.draft ? "veryfast" : undefined),
           imageFormat: values["image-format"] as never,
           muteAudio: values.mute,
           loudnorm: values.loudnorm === undefined ? undefined : values.loudnorm === "off" ? false : parseFloat(values.loudnorm),

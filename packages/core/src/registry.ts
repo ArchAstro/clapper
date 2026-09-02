@@ -5,6 +5,12 @@
  */
 import type { ComponentType } from "react";
 
+export interface SceneMeta {
+  name: string;
+  start: number;
+  end: number;
+}
+
 export interface CompositionMeta {
   id: string;
   width: number;
@@ -12,6 +18,8 @@ export interface CompositionMeta {
   fps: number;
   durationInFrames: number;
   defaultProps?: Record<string, unknown>;
+  /** Scene map from defineScenes(), when the composition declares one. */
+  scenes?: SceneMeta[];
 }
 
 export interface CompositionEntry extends CompositionMeta {

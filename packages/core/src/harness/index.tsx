@@ -159,6 +159,20 @@ export function mountHarness(options: { virtualClock?: boolean; syncAnimations?:
     );
   }
 
+  /** " in scene X (local frame n)" for the deepest named sequence containing an absolute frame. */
+  function whereIs(n: number): string {
+    let best: { name: string; startFrame: number; depth: number } | null = null;
+    for (const t of getRegistry().tracks.values()) {
+      if (n < t.startFrame || n >= t.endFrame) continue;
+      if (!best || t.depth > best.depth) best = t;
+    }
+    const scene = current?.scenes?.find((s) => n >= s.start && n < s.end);
+    const parts: string[] = [];
+    if (scene) parts.push(`scene "${scene.name}" (local frame ${n - scene.start})`);
+    if (best && best.name !== scene?.name) parts.push(`sequence "${best.name}" (local frame ${n - best.startFrame})`);
+    return parts.length ? ` in ${parts.join(", ")}` : "";
+  }
+
   function render() {
     if (!root) root = createRoot(container);
     flushSync(() => root!.render(element()));
@@ -192,7 +206,7 @@ export function mountHarness(options: { virtualClock?: boolean; syncAnimations?:
       clock.set((n / current.fps) * 1000);
       const errorsBefore = errors.length;
       render();
-      if (errors.length > errorsBefore) throw new Error(`Composition threw while rendering frame ${n}:\n${errors.slice(errorsBefore).join("\n")}`);
+      if (errors.length > errorsBefore) throw new Error(`Composition threw while rendering frame ${n}${whereIs(n)}:\n${errors.slice(errorsBefore).join("\n")}`);
       clock.flushRaf();
       if (doSync) syncAnimations((n / current.fps) * 1000);
       await settle(clock);

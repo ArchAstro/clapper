@@ -1,4 +1,4 @@
-import { Easing, evalKeyframes, useFrame, type EasingFn } from "@agenticvids/core";
+import { Easing, ik2, useFrame, usePose as usePoseCore, type EasingFn, type Frames } from "@agenticvids/core";
 import { useMemo, type CSSProperties } from "react";
 
 /**
@@ -56,15 +56,16 @@ export const POSES = {
   exhale: { ...base, headTilt: 2, lean: -4, slump: 0, shoulders: 0.5, eyes: 0.5, pupilY: 0.2, brow: -0.2, mouth: 0.3, mouthOpen: 0.35 },
 } satisfies Record<string, Pose>;
 
-export type PoseKey = { frame: number; pose: Pose; easing?: EasingFn };
+export type PoseName = keyof typeof POSES;
+/** `frame` (or `at`, which also takes "1.2s") + a pose name or inline pose; `arc` lifts the hands on the way. */
+export type PoseKey = { frame?: number; at?: Frames; pose: Pose | PoseName; easing?: EasingFn; arc?: number };
 
-/** Blend poses over local frames (numeric keyframes, eased per target key). */
+const ARC_CHANNELS: [keyof Pose & string, keyof Pose & string][] = [["lhx", "lhy"], ["rhx", "rhy"]];
+
+/** Blend poses over local frames (core rig evaluator; hands travel on an arc when a key sets `arc`). */
 export function usePose(keys: PoseKey[], offset = 0): Pose {
-  const frame = useFrame();
-  return useMemo(() => {
-    const kf = keys.map((k) => ({ frame: k.frame, easing: k.easing ?? Easing.inOutCubic, ...k.pose }));
-    return evalKeyframes(kf, frame - offset) as unknown as Pose;
-  }, [keys, frame, offset]);
+  const mapped = useMemo(() => keys.map((k) => ({ at: k.at ?? k.frame ?? 0, pose: k.pose, ease: k.easing, arc: k.arc })), [keys]);
+  return usePoseCore(POSES, mapped, { arcChannels: ARC_CHANNELS, offset });
 }
 
 /* ------------------------------- geometry ------------------------------- */
@@ -75,29 +76,7 @@ const SH = 46; // shoulder half-width
 const SY = -150; // shoulder y
 
 /** Two-bone IK with the elbow biased outward from the body centre. */
-function ik(sx: number, sy: number, tx: number, ty: number, side: 1 | -1): [number, number] {
-  let dx = tx - sx;
-  let dy = ty - sy;
-  let d = Math.hypot(dx, dy);
-  const max = L1 + L2 - 2;
-  const min = Math.abs(L1 - L2) + 2;
-  if (d > max) {
-    dx *= max / d;
-    dy *= max / d;
-    d = max;
-  } else if (d < min) {
-    dx = dx === 0 && dy === 0 ? min * side : (dx * min) / d;
-    dy = dx === 0 && dy === 0 ? 0 : (dy * min) / d;
-    d = min;
-  }
-  const a = Math.acos(Math.max(-1, Math.min(1, (L1 * L1 + d * d - L2 * L2) / (2 * L1 * d))));
-  const baseAng = Math.atan2(dy, dx);
-  const c1 = [sx + Math.cos(baseAng + a) * L1, sy + Math.sin(baseAng + a) * L1];
-  const c2 = [sx + Math.cos(baseAng - a) * L1, sy + Math.sin(baseAng - a) * L1];
-  // outward = larger x*side, tie-break lower elbow
-  const pick = c1[0] * side > c2[0] * side + 0.01 ? c1 : c2[0] * side > c1[0] * side + 0.01 ? c2 : c1[1] > c2[1] ? c1 : c2;
-  return [pick[0], pick[1]];
-}
+const ik = (sx: number, sy: number, tx: number, ty: number, side: 1 | -1) => ik2(sx, sy, tx, ty, L1, L2, side);
 
 /* -------------------------------- Person -------------------------------- */
 

@@ -1,4 +1,5 @@
 import { createContext, useContext, useMemo, type ReactNode } from "react";
+import { resolveFrames, type Frames } from "./frames";
 
 /**
  * Everything in agenticvids is a pure function of `frame`.
@@ -71,6 +72,12 @@ export function useRenderMode(): RenderMode {
 export function useSeconds(): (seconds: number) => number {
   const fps = useFps();
   return useMemo(() => (seconds: number) => Math.round(seconds * fps), [fps]);
+}
+
+/** Resolve a frames-or-"1.2s" value against the composition fps. */
+export function useFrames(): (value: Frames) => number {
+  const fps = useFps();
+  return useMemo(() => (value: Frames) => resolveFrames(value, fps), [fps]);
 }
 
 /** Local progress 0..1 across the enclosing sequence (or composition). */

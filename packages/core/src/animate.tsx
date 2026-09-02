@@ -1,13 +1,15 @@
 import { useMemo, type CSSProperties, type ReactNode } from "react";
 import { Easing, interpolate, progress, spring, SpringPresets, type EasingFn, type SpringConfig } from "./interpolate";
 import { useFps, useFrame } from "./timeline";
+import { resolveFrames, type Frames } from "./frames";
 
 /* ------------------------------- useProgress ------------------------------- */
 
 /** Eased 0..1 progress for a window [start, start+duration) of local frames. */
-export function useProgress(start: number, duration: number, easing: EasingFn = Easing.outExpo): number {
+export function useProgress(start: Frames, duration: Frames, easing: EasingFn = Easing.outExpo): number {
   const frame = useFrame();
-  return progress(frame, start, duration, easing);
+  const fps = useFps();
+  return progress(frame, resolveFrames(start, fps), resolveFrames(duration, fps), easing);
 }
 
 /** Deterministic spring driven by the local frame. */
@@ -22,7 +24,7 @@ export function useSpring(opts: { delay?: number; from?: number; to?: number; co
 
 export type StyleValue = number | string;
 export interface Keyframe {
-  frame: number;
+  frame: Frames;
   easing?: EasingFn;
   /** Any numeric CSS-ish props: opacity, x, y, scale, rotate, blur, plus arbitrary numbers. */
   [prop: string]: StyleValue | EasingFn | undefined;
@@ -32,10 +34,11 @@ export interface Keyframe {
  * Evaluate a keyframe list at a frame. Numeric props are interpolated with the
  * easing of the *target* keyframe. Non-numeric props snap.
  */
-export function evalKeyframes(frames: Keyframe[], frame: number): Record<string, StyleValue> {
+export function evalKeyframes(frames: Keyframe[], frame: number, fps = 30): Record<string, StyleValue> {
   const out: Record<string, StyleValue> = {};
   if (frames.length === 0) return out;
-  const sorted = [...frames].sort((a, b) => a.frame - b.frame);
+  type Resolved = Keyframe & { frame: number };
+  const sorted: Resolved[] = frames.map((k) => ({ ...k, frame: resolveFrames(k.frame, fps) }) as Resolved).sort((a, b) => a.frame - b.frame);
   const props = new Set<string>();
   for (const k of sorted) for (const p of Object.keys(k)) if (p !== "frame" && p !== "easing") props.add(p);
   for (const p of props) {
@@ -107,9 +110,10 @@ export function toStyle(values: Record<string, StyleValue>): CSSProperties {
 }
 
 /** Hook: evaluate keyframes at the local frame and return a style object. */
-export function useKeyframes(frames: Keyframe[], offset = 0): CSSProperties {
+export function useKeyframes(frames: Keyframe[], offset: Frames = 0): CSSProperties {
   const frame = useFrame();
-  return useMemo(() => toStyle(evalKeyframes(frames, frame - offset)), [frames, frame, offset]);
+  const fps = useFps();
+  return useMemo(() => toStyle(evalKeyframes(frames, frame - resolveFrames(offset, fps), fps)), [frames, frame, offset, fps]);
 }
 
 /* -------------------------------- <Animate> -------------------------------- */
@@ -121,17 +125,17 @@ export interface AnimateProps {
   from?: Record<string, StyleValue>;
   /** … to these values (default: identity: opacity 1, x/y 0, scale 1) */
   to?: Record<string, StyleValue>;
-  /** Frame at which the from→to tween starts (local). */
-  at?: number;
-  /** Duration of the from→to tween. */
-  duration?: number;
+  /** Frame (or "0.4s") at which the from→to tween starts (local). */
+  at?: Frames;
+  /** Duration of the from→to tween: frames or "0.8s". */
+  duration?: Frames;
   easing?: EasingFn;
   /** Use a spring instead of easing for the from→to tween. */
   spring?: SpringConfig | keyof typeof SpringPresets;
   /** Exit animation: values to tween *to* starting at `exitAt`. */
   exit?: Record<string, StyleValue>;
-  exitAt?: number;
-  exitDuration?: number;
+  exitAt?: Frames;
+  exitDuration?: Frames;
   exitEasing?: EasingFn;
   as?: keyof React.JSX.IntrinsicElements;
   style?: CSSProperties;
@@ -150,13 +154,13 @@ export function Animate({
   keyframes,
   from,
   to,
-  at = 0,
-  duration = 20,
+  at: atProp = 0,
+  duration: durProp = 20,
   easing = Easing.outExpo,
   spring: springCfg,
   exit,
-  exitAt,
-  exitDuration = 15,
+  exitAt: exitAtProp,
+  exitDuration: exitDurProp = 15,
   exitEasing = Easing.inCubic,
   as: Tag = "div",
   style,
@@ -166,9 +170,13 @@ export function Animate({
 }: AnimateProps) {
   const frame = useFrame();
   const fps = useFps();
+  const at = resolveFrames(atProp, fps);
+  const duration = resolveFrames(durProp, fps);
+  const exitAt = resolveFrames(exitAtProp, fps);
+  const exitDuration = resolveFrames(exitDurProp, fps);
   const computed = useMemo(() => {
     let values: Record<string, StyleValue> = {};
-    if (keyframes) values = evalKeyframes(keyframes, frame);
+    if (keyframes) values = evalKeyframes(keyframes, frame, fps);
     if (from) {
       const target: Record<string, StyleValue> = { ...identityFor(from), ...(to ?? {}) };
       let t: number;
@@ -233,9 +241,9 @@ export function Stagger({
   itemClassName,
 }: {
   children: ReactNode;
-  each?: number;
-  at?: number;
-  duration?: number;
+  each?: Frames;
+  at?: Frames;
+  duration?: Frames;
   from?: Record<string, StyleValue>;
   to?: Record<string, StyleValue>;
   easing?: EasingFn;
@@ -245,10 +253,13 @@ export function Stagger({
   itemClassName?: string;
 }) {
   const items = (Array.isArray(children) ? children : [children]).flat();
+  const fps = useFps();
+  const atF = resolveFrames(at, fps);
+  const eachF = resolveFrames(each, fps);
   return (
     <>
       {items.map((child, i) => (
-        <Animate key={i} from={from} to={to} at={at + i * each} duration={duration} easing={easing} spring={springCfg} as={as} style={itemStyle} className={itemClassName}>
+        <Animate key={i} from={from} to={to} at={atF + i * eachF} duration={duration} easing={easing} spring={springCfg} as={as} style={itemStyle} className={itemClassName}>
           {child}
         </Animate>
       ))}

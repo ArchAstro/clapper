@@ -1,21 +1,22 @@
 import { Children, isValidElement, type CSSProperties, type ReactElement, type ReactNode } from "react";
 import { Easing, progress, type EasingFn } from "./interpolate";
 import { Sequence, absoluteFill } from "./sequence";
-import { useTimeline, useVideoConfig } from "./timeline";
+import { useFps, useTimeline, useVideoConfig } from "./timeline";
+import { resolveFrames, type Frames } from "./frames";
 
 export type TransitionType = "fade" | "slide" | "wipe" | "zoom" | "blur" | "none";
 export type Direction = "left" | "right" | "up" | "down";
 
 export interface TransitionSpec {
   type: TransitionType;
-  /** Overlap in frames. */
-  duration: number;
+  /** Overlap in frames or "0.5s". */
+  duration: Frames;
   direction?: Direction;
   easing?: EasingFn;
 }
 
 export interface TransitionItemProps {
-  durationInFrames: number;
+  durationInFrames: Frames;
   /** Transition used to enter this item (overrides the series default). */
   transition?: TransitionSpec;
   name?: string;
@@ -33,12 +34,13 @@ function Item(_p: TransitionItemProps): ReactElement | null {
  * </TransitionSeries>
  */
 export function TransitionSeries({ transition = { type: "fade", duration: 15 }, children }: { transition?: TransitionSpec; children: ReactNode }) {
+  const fps = useFps();
   const items = Children.toArray(children).filter(isValidElement) as ReactElement<TransitionItemProps>[];
   let cursor = 0;
   const layout = items.map((item, i) => {
     const tIn = i === 0 ? null : (item.props.transition ?? transition);
-    const from = i === 0 ? 0 : cursor - (tIn?.duration ?? 0);
-    const dur = item.props.durationInFrames;
+    const from = i === 0 ? 0 : cursor - (tIn ? resolveFrames(tIn.duration, fps) : 0);
+    const dur = resolveFrames(item.props.durationInFrames, fps);
     cursor = from + dur;
     return { item, from, dur, tIn };
   });
@@ -62,14 +64,16 @@ TransitionSeries.Item = Item;
 
 function TransitionFrame({ enter, exit, zIndex, children }: { enter: TransitionSpec | null; exit: TransitionSpec | null; zIndex: number; children?: ReactNode }) {
   const { frame, durationInFrames } = useTimeline();
-  const { width, height } = useVideoConfig();
+  const { width, height, fps } = useVideoConfig();
   let style: CSSProperties = { ...absoluteFill, zIndex };
-  if (enter && frame < enter.duration) {
-    const p = progress(frame, 0, enter.duration, enter.easing ?? Easing.inOutCubic);
+  const enterD = enter ? resolveFrames(enter.duration, fps) : 0;
+  const exitD = exit ? resolveFrames(exit.duration, fps) : 0;
+  if (enter && frame < enterD) {
+    const p = progress(frame, 0, enterD, enter.easing ?? Easing.inOutCubic);
     style = { ...style, ...transitionStyle(enter, p, "enter", width, height) };
   }
-  if (exit && frame >= durationInFrames - exit.duration) {
-    const p = progress(frame, durationInFrames - exit.duration, exit.duration, exit.easing ?? Easing.inOutCubic);
+  if (exit && frame >= durationInFrames - exitD) {
+    const p = progress(frame, durationInFrames - exitD, exitD, exit.easing ?? Easing.inOutCubic);
     style = { ...style, ...transitionStyle(exit, p, "exit", width, height) };
   }
   return <div style={style}>{children}</div>;
@@ -116,11 +120,11 @@ function transitionStyle(spec: TransitionSpec, p: number, phase: "enter" | "exit
  *   const SCENES = [{ durationInFrames: 90 }, { durationInFrames: 120, transition: { type: "wipe", duration: 16 } }];
  *   durationInFrames={transitionSeriesLength(SCENES, { type: "fade", duration: 12 })}
  */
-export function transitionSeriesLength(items: { durationInFrames: number; transition?: Pick<TransitionSpec, "duration"> }[], defaultTransition: Pick<TransitionSpec, "duration"> = { duration: 0 }): number {
+export function transitionSeriesLength(items: { durationInFrames: Frames; transition?: Pick<TransitionSpec, "duration"> }[], defaultTransition: Pick<TransitionSpec, "duration"> = { duration: 0 }, fps = 30): number {
   let total = 0;
   items.forEach((item, i) => {
-    total += item.durationInFrames;
-    if (i > 0) total -= (item.transition ?? defaultTransition).duration;
+    total += resolveFrames(item.durationInFrames, fps);
+    if (i > 0) total -= resolveFrames((item.transition ?? defaultTransition).duration, fps);
   });
   return total;
 }

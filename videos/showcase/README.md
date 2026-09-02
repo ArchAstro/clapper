@@ -13,7 +13,7 @@ Three made-up SaaS products, three visual systems, one framework. Each is a 22â€
 ```bash
 pnpm preview                                   # studio
 pnpm render:all                                # out/{ledger,orbit,nimbus,archdev}.mp4
-pnpm review-kit                                # out/review/<id>/: contact sheet, cut strips, spectrogram, waveform
+pnpm review                                    # agenticvids review per spot â†’ out/review/<id>/: contact sheet, cut strips, spectrogram, loudness, lint, brief.md
 pnpm exec agenticvids still src/index.tsx -c orbit --frame 40,200 --out out/stills/orbit --image-format jpeg
 ```
 

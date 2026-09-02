@@ -130,7 +130,7 @@ Each entry: what happened → root cause → workaround → durable fix (DONE or
 
 Priorities: P0 = removes a class of bugs or a recurring hour; P1 = makes the next video faster; P2 = nice.
 
-### P0-1 Scenes as first-class objects
+### P0-1 Scenes as first-class objects — DONE (`defineScenes`, `<Scenes>`, `<Composition scenes>`, `compositions --json`, `render/still --scene`)
 Owns durations, overlaps, absolute starts, names, and exposes them to sound, copy, review kits, and the CLI.
 ```tsx
 const scenes = defineScenes({
@@ -151,14 +151,14 @@ const scenes = defineScenes({
 - `agenticvids compositions --json` prints `{ id, scenes: [{name, start, end}] }`; the review kit reads cuts from it.
 - `render --scene agents` and `still --scene agents --every 6`.
 
-### P0-2 Seconds everywhere, frames underneath
+### P0-2 Seconds everywhere, frames underneath — DONE (`Frames` type + `resolveFrames`; Sequence/Series/Loop/Animate/Stagger/keyframes/Camera/Transition/audio/Reveal/Copy)
 Every `at`, `duration`, `from` accepts `number` (frames) or `"1.2s"`; `useSeconds()` exists but nobody used it because props did not accept it.
 ```tsx
 <Animate at="0.4s" duration="0.8s" />   <Tone at="1.2s" duration="0.5s" />   <Sequence from="3s" />
 ```
 Implementation: `resolveFrames(value, fps)` in one place; keep frames as the canonical unit.
 
-### P0-3 Music and sound bus (audio v2)
+### P0-3 Music and sound bus (audio v2) — MOSTLY DONE (engine v2 shipped; `<Duck>` and a `breath` wave still open)
 - Stereo tone track with `pan`, a reverb send (`space: 0..1`), per-cue `lowpass`, `lfo`.
 - New waves: `pluck` (Karplus–Strong), `epiano` (2-op FM), `breath` (filtered noise pad). Retire raw `square` for UI sounds.
 - `<Keystroke>` = three layers (click 3–6 kHz, thock 150–400 Hz, tail) with deterministic variation; `<Typing text at cps>` emits them from `typedLength`.
@@ -166,28 +166,28 @@ Implementation: `resolveFrames(value, fps)` in one place; keep frames as the can
 - `<Duck>`: scene-level gain automation so a "silence" scene is actually 8–10 LU quieter.
 - Targets to check in the kit: integrated −16 LUFS, LRA ≥ 8 LU, side channel ≥ −30 dB.
 
-### P0-4 `agenticvids review`
+### P0-4 `agenticvids review` — DONE (kit + brief + lint; `packages/cli/src/review.ts`, fixture test `review-check.mjs`)
 One command that renders, builds the kit (contact sheet every N frames, 9-tile strips at every scene cut from P0-1, spectrogram, waveform, loudness table), and writes `review/brief.md` with the scene map so the reviewer prompt is generated, not hand-typed. Optional `--lint`: text-vs-element overlap, safe-margin violations, blank frames after cuts.
 
-### P0-5 Fail loud, name the scene
+### P0-5 Fail loud, name the scene — DONE for render errors (scene + local frame, deepest sequence); delayRender labels still open
 Harness errors already fail the render; add the scene name and local frame from the track registry: `Composition threw at frame 406 (scene "4 · reconcile", local 2): …`. Same for `delayRender` timeouts (print the labels).
 
-### P1-1 Core text primitives
+### P1-1 Core text primitives — DONE (`Reveal`, `Copy`, `Eyebrow`, `Rule` in core with `data-copy` tags; showcase kit re-exports)
 `Reveal` (masked line reveal with `from`, `skew`, `exitAt`), `Copy` (positioned display copy with optional plate), `Eyebrow`, `Rule`. All three projects re-implemented them; the plate-before-text bug came from a project copy.
 
-### P1-2 Character toolkit in core (`@agenticvids/core/rig`)
+### P1-2 Character toolkit in core — PARTLY DONE (`definePoses`, `usePose` with `arc`, `ik2`, `useEyeBlink`, `useBreath`; `<Bubble>` and a shipped generic rig still open)
 Move `person.tsx` ideas into a generic rig: `definePose()`, typed `Pose` with named poses, `usePose(keys)` with arc-biased midpoints (`arc: 20`), two-bone `ik()`, blink/breath/idle generators, `<Bubble>` (thought/speech). Ship the monoline developer as the first rig.
 
 ### P1-3 Studio upgrades
 Cue colors by kind (file/tone/keystroke/music); click a cue to see its spec; markers from P0-1 as a ruler; `M` to jump to the next marker; a pose scrubber (channel sliders) for rig scenes; a "blank frame" indicator on the scrubber.
 
-### P1-4 Render ergonomics
+### P1-4 Render ergonomics — DONE (`--scene`, `--every`, `--draft`); frame cache not done
 `--scenes a,b`, `--every N` for stills, `--crf auto`, `--preview-quality` (half-res draft at CRF 28 for iteration), a `.agenticvids/cache` for unchanged frames (hash of frame DOM is hard; skip until needed).
 
-### P1-5 Determinism docs
+### P1-5 Determinism docs — DONE (lint rule `determinism` in `agenticvids review`; README)
 Document `useRandom(seed)`/`noise1d` and the virtual clock; add a lint that flags `Math.random`, `Date.now`, `performance.now` in video sources.
 
-### P1-6 Typed poses and named keys
+### P1-6 Typed poses and named keys — DONE (`PoseKey.at` takes "0.8s", `pose` takes a name, `arc` lifts hand targets)
 ```tsx
 const P = definePoses({ typing: {...}, lookUp: {...} });      // typed keys
 usePose([{ at: 0, pose: "typing" }, { at: "0.8s", pose: "lookUp", ease: "outBack", arc: 24 }]);
@@ -197,7 +197,7 @@ usePose([{ at: 0, pose: "typing" }, { at: "0.8s", pose: "lookUp", ease: "outBack
 ### P1-7 Data files per video
 `data.ts` with every number and string used in copy and UI (prices, latencies, agent counts). The Nimbus "38 ms vs 88 ms" and Ledger "31 months" reuse came from literals scattered across scenes.
 
-### P1-8 Review-kit lint (geometry)
+### P1-8 Review-kit lint (geometry) — DONE (`overlap`, `safe-area` on `data-copy` boxes at three frames per scene)
 The harness can expose `document.elementsFromPoint` sampling or bounding boxes for elements tagged `data-copy` / `data-hero`. Report: text overlapping another element's box, text outside the 120 px safe area, and elements whose box straddles the canvas edge. This catches 4 of the 12 round-1 findings mechanically.
 
 ### P2 Others

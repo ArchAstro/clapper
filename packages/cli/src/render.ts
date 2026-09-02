@@ -35,7 +35,7 @@ export interface RenderOptions {
   log?: (msg: string) => void;
 }
 
-const CHROME_ARGS = [
+export const CHROME_ARGS = [
   "--force-color-profile=srgb",
   "--disable-lcd-text",
   "--font-render-hinting=none",
@@ -47,7 +47,7 @@ const CHROME_ARGS = [
   "--enable-font-antialiasing",
 ];
 
-async function openHarnessPage(browser: Browser, url: string, viewport: { width: number; height: number }, scale: number, log: (m: string) => void): Promise<Page> {
+export async function openHarnessPage(browser: Browser, url: string, viewport: { width: number; height: number }, scale: number, log: (m: string) => void): Promise<Page> {
   const context = await browser.newContext({ viewport, deviceScaleFactor: scale, reducedMotion: "no-preference" });
   const page = await context.newPage();
   page.on("pageerror", (e) => log(`[page error] ${e.message}`));

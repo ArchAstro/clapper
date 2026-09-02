@@ -135,3 +135,39 @@ describe("random / notes", () => {
     expect(noteToHz(100)).toBe(100);
   });
 });
+
+import { resolveFrames } from "../src/frames";
+import { defineScenes } from "../src/scenes";
+import { ik2 } from "../src/rig";
+
+it("resolveFrames: frames pass through, seconds and ms round to frames", () => {
+  expect(resolveFrames(12, 30)).toBe(12);
+  expect(resolveFrames("1.2s", 30)).toBe(36);
+  expect(resolveFrames("500ms", 30)).toBe(15);
+  expect(resolveFrames("-0.5s", 24)).toBe(-12);
+  expect(resolveFrames(undefined, 30)).toBeUndefined();
+  expect(() => resolveFrames("abc" as never, 30)).toThrow(/Bad time/);
+});
+
+it("defineScenes: hard cuts add up, transitions overlap, lookups agree", () => {
+  const plan = defineScenes({ open: { seconds: 2 }, plan: { frames: 45 }, end: { seconds: 1, transition: { type: "fade", duration: "0.5s" } } }, { fps: 30 });
+  expect(plan.names).toEqual(["open", "plan", "end"]);
+  expect(plan.start("plan")).toBe(60);
+  expect(plan.start("end")).toBe(60 + 45 - 15);
+  expect(plan.total).toBe(60 + 45 - 15 + 30);
+  expect(plan.cuts()).toEqual([60, 90]);
+  expect(plan.local("plan", 72)).toBe(12);
+  expect(plan.at(95)?.name).toBe("end"); // overlap: the incoming scene wins
+  expect(plan.at(5)?.name).toBe("open");
+  expect(() => plan.start("nope" as never)).toThrow(/Unknown scene/);
+  expect(() => defineScenes({ a: {} }, { fps: 30 })).toThrow(/needs seconds or frames/);
+});
+
+it("ik2: reachable target keeps the segment lengths; elbow bends outward", () => {
+  const [ex, ey] = ik2(46, -150, 104, -16, 82, 78, 1);
+  expect(Math.hypot(ex - 46, ey + 150)).toBeCloseTo(82, 5);
+  expect(Math.hypot(104 - ex, -16 - ey)).toBeCloseTo(78, 5);
+  expect(ex).toBeGreaterThan(46);
+  const [lx] = ik2(-46, -150, -104, -16, 82, 78, -1);
+  expect(lx).toBeLessThan(-46);
+});

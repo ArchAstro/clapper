@@ -1,4 +1,4 @@
-import { AbsoluteFill, Animate, Chord, Draw, Drone, EPiano, Easing, Pattern, Riser, RoomTone, Sequence, Thump, Tone, TransitionSeries, Typewriter, Typing, Whoosh, interpolate, progress, spring, transitionSeriesLength, useFrame } from "@agenticvids/core";
+import { AbsoluteFill, Animate, Chord, Draw, Drone, EPiano, Easing, Pattern, Riser, RoomTone, Scenes, Sequence, Thump, Tone, Typewriter, Typing, Whoosh, defineScenes, interpolate, progress, spring, useFrame } from "@agenticvids/core";
 import { Eyebrow, Reveal, EXPO, INOUT, QUINT } from "../kit";
 import { Agents, Blank, Clock, Copy, DESK, Open, Plan, Room, Workstation } from "./archdev";
 import { POSES, usePose } from "./person";
@@ -8,23 +8,26 @@ import { POSES, usePose } from "./person";
  * One continuous score (this file's <Score/>) instead of per-scene beds; hits only
  * where the story earns them. 36 s.
  */
-const S1 = 100, S2 = 220, S3 = 240, S4 = 210, S5 = 150, S6 = 125;
-const HARD = { type: "none" as const, duration: 0 };
-export const ARCHDEV2_LEN = transitionSeriesLength([S1, S2, S3, S4, S5, S6].map((d) => ({ durationInFrames: d })), HARD);
-const START = { open: 0, plan: S1, agents: S1 + S2, review: S1 + S2 + S3, blank: S1 + S2 + S3 + S4, tease: S1 + S2 + S3 + S4 + S5 };
+/** One plan owns every start frame: the score, the copy, the CLI (--scene) and the review kit read it. Hard cuts. */
+export const SCENES = defineScenes(
+  { open: { frames: 100 }, plan: { frames: 220 }, agents: { frames: 240 }, review: { frames: 210 }, blank: { frames: 150 }, tease: { frames: 125 } },
+  { fps: 30 },
+);
+export const ARCHDEV2_LEN = SCENES.total;
+const START = { open: SCENES.start("open"), plan: SCENES.start("plan"), agents: SCENES.start("agents"), review: SCENES.start("review"), blank: SCENES.start("blank"), tease: SCENES.start("tease") };
 
 export function ArchDev2() {
   return (
     <AbsoluteFill className="vid archdev">
       <Score />
-      <TransitionSeries transition={HARD}>
-        <TransitionSeries.Item durationInFrames={S1} name="1 · open"><Open bed={false} zoom={1.4} hook /></TransitionSeries.Item>
-        <TransitionSeries.Item durationInFrames={S2} name="2 · the plan"><Plan bed={false} zoomStart={1.4} /></TransitionSeries.Item>
-        <TransitionSeries.Item durationInFrames={S3} name="3 · the agents"><Agents bed={false} denseAlerts={false} /></TransitionSeries.Item>
-        <TransitionSeries.Item durationInFrames={S4} name="4 · the review"><Review /></TransitionSeries.Item>
-        <TransitionSeries.Item durationInFrames={S5} name="5 · the blank"><Blank bed={false} /></TransitionSeries.Item>
-        <TransitionSeries.Item durationInFrames={S6} name="6 · tease"><Tease /></TransitionSeries.Item>
-      </TransitionSeries>
+      <Scenes plan={SCENES}>
+        <Scenes.Scene name="open"><Open bed={false} zoom={1.4} hook /></Scenes.Scene>
+        <Scenes.Scene name="plan"><Plan bed={false} zoomStart={1.4} /></Scenes.Scene>
+        <Scenes.Scene name="agents"><Agents bed={false} denseAlerts={false} /></Scenes.Scene>
+        <Scenes.Scene name="review"><Review /></Scenes.Scene>
+        <Scenes.Scene name="blank"><Blank bed={false} /></Scenes.Scene>
+        <Scenes.Scene name="tease"><Tease /></Scenes.Scene>
+      </Scenes>
     </AbsoluteFill>
   );
 }
@@ -52,7 +55,7 @@ function Score() {
         }}
         name="bed"
       />
-      <Drone notes={["D1"]} wave="sine" at={START.blank - 10} durationInFrames={S5 + 30} volume={0.025} cutoff={140} lfo={{ rate: 0.12, depth: 0.5 }} spread={0} reverb={0.2} fadeIn={20} fadeOut={40} name="sub" />
+      <Drone notes={["D1"]} wave="sine" at={START.blank - 10} durationInFrames={SCENES.duration("blank") + 30} volume={0.025} cutoff={140} lfo={{ rate: 0.12, depth: 0.5 }} spread={0} reverb={0.2} fadeIn={20} fadeOut={40} name="sub" />
       {/* motif */}
       <Pattern bpm={84} step={0.5} at={g8(0)} steps="D3 . A3 . D4 . F4 . E4 . A3 . D4 . C4 ." wave="pluck" brightness={0.35} volume={0.2} reverb={0.35} width={0.3} name="motif" />
       {/* the plan: a descending line whose last note rings across the cut */}
@@ -199,7 +202,7 @@ export function Tease() {
   const ws = DESK.s + (1.25 - DESK.s) * slide;
   const markIn = progress(frame, 48, 26, INOUT);
   const glow = 0.5 + 0.5 * Math.abs(Math.sin(frame / 9));
-  const fade = progress(frame, S6 - 10, 10, Easing.inCubic);
+  const fade = progress(frame, SCENES.duration("tease") - 10, 10, Easing.inCubic);
   return (
     <Room dark={0.35 - 0.15 * markIn}>
       <Typing text="archdev" at={30} cps={10} volume={0.1} />
