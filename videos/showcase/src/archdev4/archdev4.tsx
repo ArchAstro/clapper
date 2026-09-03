@@ -26,16 +26,16 @@ function Intro() {
   return (
     <Camera keyframes={[{ frame: 0, zoom: 2, x: 960, y: 600 }, { frame: PULL, zoom: 2, x: 960, y: 600 }, { frame: 110, zoom: 1, x: 960, y: 540, easing: Easing.inOutCubic }]}>
       <Panel seed={seed}>
-        <Scribble pose={pose} x={FIG.x} y={FIG.y} typing={frame < PULL + 10 ? 0.9 : 0.4} fury={frame >= 12 && frame < PULL ? 0.22 : 0} />
+        <Scribble pose={pose} x={FIG.x} y={FIG.y} typing={frame < PULL + 10 ? 0.9 : 0.4} fury={frame >= 6 && frame < PULL ? 0.22 : 0} />
         <svg width={1760} height={920} style={{ position: "absolute", inset: 0, overflow: "visible", pointerEvents: "none" }}>
           <path d={roughRect(lid.x, lid.y, lid.w, lid.h, seed + 401, 2.2)} fill={PAPER} stroke={INK} strokeWidth={4.5} />
           <path d={roughRect(lid.x + 14, lid.y + 14, lid.w - 28, lid.h - 28, seed + 402, 1.4)} fill="none" stroke={INK} strokeWidth={2} opacity={0.35} />
           <path d={roughEllipse(lid.x + lid.w / 2, lid.y + lid.h / 2, 14, 14, seed + 403, 1)} fill="none" stroke={INK} strokeWidth={3} opacity={0.5} />
         </svg>
         <div className="marker" data-copy="" style={{ position: "absolute", left: 420, top: 262, width: 920, fontSize: 58, lineHeight: 1.1, color: INK, whiteSpace: "nowrap" }}>
-          <Typewriter text={D4.intro} at={12} cps={13} cursor={false} />
+          <Typewriter text={D4.intro} at={6} cps={13} cursor={false} />
         </div>
-        <Typing text={D4.intro} at={12} cps={13} volume={0.24} />
+        <Typing text={D4.intro} at={6} cps={13} volume={0.24} />
         <Scratch at={0} volume={0.09} length={12} />
         <Whoosh at={PULL} durationInFrames={26} from={420} to={1400} volume={0.09} name="pull-out" />
         <Pluck note="C4" at={PULL + 4} volume={0.12} reverb={0.35} name="intro-pluck" />
@@ -53,23 +53,25 @@ function Outro() {
   const pose = usePose([
     { at: 0, pose: "dead" },
     { at: CHAOS, pose: { ...POSES.dead, hy: 8, tilt: 4 }, ease: "outBack" },
-    { at: TALK - 6, pose: { ...POSES.happy, pupil: 0, mouth: 0.45, brow: -0.15, eyes: 1.05 }, ease: "outBack" },
+    { at: TALK - 16, pose: { ...POSES.dead, hy: 8, tilt: 4 } },
+    { at: TALK - 4, pose: { ...POSES.happy, pupil: 0, mouth: 0.45, brow: -0.15, eyes: 1.05, hy: -4 }, ease: "outBack" },
     { at: TALK + 60, pose: { ...POSES.happy, pupil: 0, mouth: 0.55, brow: -0.2, eyes: 1.05, tilt: -3 }, ease: "inOutCubic" },
   ]);
   const chaosIn = progress(frame, CHAOS, 10, Easing.outBack);
+  const DESK_Y = FIG.y - 64; // the closing panel sits higher so the invitation and the email fit under the desk
   return (
     <Panel seed={seed}>
-      <Scribble pose={pose} x={FIG.x} y={FIG.y} blinkPeriod={70} />
+      <Scribble pose={pose} x={FIG.x} y={DESK_Y} blinkPeriod={70} />
       <Caption at={4} w={1010} size={38}>{D4.outroCaption}</Caption>
       {frame >= CHAOS && (
-        <div className="marker" data-copy="" style={{ position: "absolute", left: 0, right: 0, top: 210, textAlign: "center", fontSize: 128, lineHeight: 1, color: RED, transform: `rotate(-2deg) scale(${chaosIn})`, transformOrigin: "center", whiteSpace: "nowrap" }}>
+        <div className="marker" data-copy="" style={{ position: "absolute", left: 0, right: 0, top: 168, textAlign: "center", fontSize: 124, lineHeight: 1, color: RED, transform: `rotate(-2deg) scale(${chaosIn})`, transformOrigin: "center", whiteSpace: "nowrap" }}>
           {D4.chaos}
         </div>
       )}
-      <Reveal at={TALK} duration={22} className="hand" style={{ position: "absolute", left: 0, right: 0, top: 796, textAlign: "center", fontSize: 50, color: INK }}>
+      <Reveal at={TALK} duration={22} className="hand" style={{ position: "absolute", left: 0, right: 0, top: DESK_Y + 108, textAlign: "center", fontSize: 50, color: INK }}>
         {D4.talk}
       </Reveal>
-      <Reveal at={TALK + 34} duration={24} className="script" style={{ position: "absolute", left: 0, right: 0, top: 850, textAlign: "center", fontSize: 64, color: RED }}>
+      <Reveal at={TALK + 34} duration={24} className="script" style={{ position: "absolute", left: 0, right: 0, top: DESK_Y + 166, textAlign: "center", fontSize: 64, color: RED }}>
         {D4.email}
       </Reveal>
       <Scratch at={4} volume={0.09} />
