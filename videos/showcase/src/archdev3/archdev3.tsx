@@ -1,4 +1,4 @@
-import { AbsoluteFill, Alert, Camera, Chord, Click, Counter, Draw, Duck, Easing, Keystroke, Panel, Pattern, Pluck, Reveal, RoomTone, Rough, RoughRect, Scenes, Sequence, Thump, Tone, Typewriter, Typing, Whoosh, defineScenes, hatchLines, interpolate, progress, roughEllipse, roughPath, roughRect, scribble, sketchHash, useBoil, useFrame, type Frames } from "@clapper/core";
+import { AbsoluteFill, Alert, Camera, Chord, Click, Counter, Draw, Duck, Easing, Keystroke, Panel, Pattern, Pluck, Reveal, RoomTone, Rough, RoughRect, Scenes, Sequence, Thump, Tone, Typewriter, Typing, Whoosh, defineScenes, hatchLines, interpolate, progress, roughEllipse, roughPath, roughRect, scribble, sketchHash, useBoil, useFrame, type Frames, type ScenePlan } from "@clapper/core";
 import type { CSSProperties, ReactNode } from "react";
 import { Caption, PaperScroll as Scroll, PencilScratch as Scratch, SfxWord as Sfx, SketchStamp as Stamp, SketchThought as Thought, SketchWindow as Win } from "@clapper/core";
 import { Grain } from "../kit";
@@ -15,15 +15,15 @@ export const SCENES = defineScenes(
   { fps: 30 },
 );
 
-const INK = "var(--ink)";
-const PAPER = "var(--paper)";
-const RED = "var(--red)";
+export const INK = "var(--ink)";
+export const PAPER = "var(--paper)";
+export const RED = "var(--red)";
 /** Figure placement inside the panel (panel inner box is 1760×920). */
-const FIG = { x: 880, y: 700 };
+export const FIG = { x: 880, y: 700 };
 
 /* --------------------------------- scenes --------------------------------- */
 
-function Open() {
+export function Open() {
   const seed = useBoil(4);
   const frame = useFrame();
   const pose = usePose([{ at: 0, pose: "happy" }, { at: 46, pose: "typing", ease: "inOutCubic" }]);
@@ -46,7 +46,7 @@ function Open() {
   );
 }
 
-function Plan() {
+export function Plan() {
   const seed = useBoil(4);
   const frame = useFrame();
   const pose = usePose([
@@ -84,7 +84,7 @@ const WINS = [
 ];
 const PINGS = [80, 92, 102, 110, 116, 121, 140, 152, 164, 176, 188, 200];
 
-function Agents() {
+export function Agents() {
   const seed = useBoil(4);
   const frame = useFrame();
   const FURY = 126;
@@ -149,7 +149,7 @@ function Agents() {
   );
 }
 
-function Review() {
+export function Review() {
   const seed = useBoil(4);
   const frame = useFrame();
   const STAMP = 118;
@@ -197,7 +197,7 @@ function Review() {
   );
 }
 
-function Blank() {
+export function Blank() {
   const seed = useBoil(4);
   const frame = useFrame();
   const pose = usePose([{ at: 0, pose: "dead" }, { at: 26, pose: "slump", ease: "inOutCubic", arc: 12 }]);
@@ -236,7 +236,7 @@ function Blank() {
 const NODES: [number, number][] = [[0, -92], [-54, -12], [54, -12], [-98, 76], [98, 76]];
 const EDGES: [number, number][] = [[0, 1], [0, 2], [1, 2], [1, 3], [2, 4]];
 
-function Tease() {
+export function Tease() {
   const seed = useBoil(4);
   const frame = useFrame();
   const pose = usePose([{ at: 0, pose: "dead" }, { at: 18, pose: "spark", ease: "outBack" }, { at: 60, pose: { ...POSES.spark, tilt: -4 } }]);
@@ -279,37 +279,53 @@ function Tease() {
 
 /* --------------------------------- score --------------------------------- */
 
-function Score() {
-  const S = SCENES;
+/**
+ * The shared score for the comic story (open → plan → agents → review → blank), keyed off whichever
+ * scene plan the film uses. Scenes the plan does not have are skipped. `tail` adds film-specific cues.
+ */
+export function Score({ plan, tail }: { plan: ScenePlan<any>; tail?: ReactNode }) {
+  const S = plan;
+  const has = (n: string) => (S.names as string[]).includes(n);
   return (
     <>
       <RoomTone volume={0.016} durationInFrames={S.total} fadeIn={8} fadeOut={30} />
+      {has("open") && (
       <Sequence from={S.start("open")} durationInFrames={S.duration("open")} name="score-open">
         <Pattern bpm={104} step={0.25} at={4} steps="C4 . E4 . G4 . E4 . A4 . G4 . E4 . C4 ." wave="pluck" brightness={0.7} volume={0.12} reverb={0.25} repeat={2} humanize={0.02} name="motif" />
         <Pattern bpm={104} step={0.5} at={4} steps="C3 . G2 . A2 . G2 ." wave="pluck" brightness={0.4} volume={0.13} reverb={0.15} repeat={3} name="bass" />
         <Pluck note="C5" at={S.duration("open") - 8} volume={0.12} reverb={0.3} name="open-close" />
       </Sequence>
+      )}
+      {has("plan") && (
       <Sequence from={S.start("plan")} durationInFrames={S.duration("plan")} name="score-plan">
         <Pattern bpm={104} step={0.25} at={0} steps="C4 . E4 G4 . . A4 . B4 . . . C5 . . ." wave="pluck" brightness={0.7} volume={0.11} reverb={0.3} repeat={4} humanize={0.02} name="plan-motif" />
         <Pattern bpm={104} step={0.5} at={0} steps="C3 . G2 . F2 . G2 ." wave="pluck" brightness={0.4} volume={0.13} reverb={0.15} repeat={4} name="plan-bass" />
         <Pluck note="G4" at={S.duration("plan") - 8} volume={0.12} reverb={0.3} name="plan-close" />
       </Sequence>
+      )}
+      {has("agents") && (
       <Sequence from={S.start("agents")} durationInFrames={S.duration("agents")} name="score-agents">
         <Pattern bpm={116} step={0.25} at={0} steps="E4 . E4 . F4 . F4 . G4 . G4 . A4 . A4 ." wave="pluck" brightness={0.75} volume={0.11} reverb={0.3} repeat={3} humanize={0.02} name="agents-rise" />
         <Pattern bpm={116} step={0.5} at={0} steps="A2 . A2 . C3 . D3 ." wave="pluck" brightness={0.45} volume={0.14} reverb={0.15} repeat={5} name="agents-bass" />
         <Pattern bpm={116} step={0.125} at={126} steps="A4 A4 C5 A4 D5 A4 C5 A4 A4 A4 C5 A4 E5 A4 C5 A4" wave="pluck" brightness={0.8} volume={0.14} reverb={0.35} repeat={2} humanize={0.01} name="fury-tremolo" />
       </Sequence>
+      )}
+      {has("review") && (
       <Sequence from={S.start("review")} durationInFrames={S.duration("review")} name="score-review">
         <Pattern bpm={92} step={0.5} at={0} steps="A2 . . . C3 . . . E3 . . . D3 . . ." wave="pluck" brightness={0.4} volume={0.13} reverb={0.25} repeat={2} name="review-bass" />
         <Pattern bpm={92} step={0.25} at={0} steps="E4 . . . C4 . . . A3 . . . . . . ." wave="epiano" volume={0.08} reverb={0.4} repeat={3} name="review-sigh" />
       </Sequence>
+      )}
       {/* starts after the paper flip so the whoosh is not swallowed; releases before the next flip */}
-      <Duck at={S.start("blank") + 8} durationInFrames={S.duration("blank") - 24} depth={0.2} attack={8} release={12} />
+      {has("blank") && <Duck at={S.start("blank") + 8} durationInFrames={S.duration("blank") - 24} depth={0.2} attack={8} release={12} />}
+      {has("tease") && (
       <Sequence from={S.start("tease")} durationInFrames={S.duration("tease")} name="score-tease">
         <Chord at={18} notes={["C3", "G3", "E4", "B4"]} wave="epiano" strum={3} ring={3} volume={0.09} reverb={0.5} width={0.5} name="tease-chord" />
         <Pattern bpm={104} step={0.25} at={66} steps="C5 . E5 . G5 ." wave="pluck" brightness={0.7} volume={0.1} reverb={0.45} name="tease-motif" />
         <Pluck note="C6" at={100} volume={0.14} reverb={0.5} name="ding" />
       </Sequence>
+      )}
+      {tail}
       {S.cuts().map((c) => (
         <Whoosh key={c} at={c - 3} durationInFrames={7} from={2600} to={500} volume={0.13} name="flip" />
       ))}
@@ -320,7 +336,7 @@ function Score() {
 export function ArchDev3() {
   return (
     <AbsoluteFill className="archdev3">
-      <Score />
+      <Score plan={SCENES} />
       <Scenes plan={SCENES}>
         <Scenes.Scene name="open"><Open /></Scenes.Scene>
         <Scenes.Scene name="plan"><Plan /></Scenes.Scene>
