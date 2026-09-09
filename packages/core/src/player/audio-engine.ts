@@ -154,15 +154,23 @@ export class AudioEngine {
       src.stop(now + remaining);
       nodes.push(src);
     } else {
-      const partials: [number, number][] = [[1, 1], ...(spec.partials ?? [])];
+      const feltPartials: [number, number][] = [[1, 1], [2.0015, 0.34], [3.005, 0.16], [4.012, 0.075], [5.024, 0.036]];
+      const malletPartials: [number, number][] = [[1, 1], [2.756, 0.38], [5.404, 0.15], [8.933, 0.055]];
+      const bowedPartials: [number, number][] = [[1, 1], [2, 0.31], [3, 0.18], [4, 0.09], [5, 0.045]];
+      const partials: [number, number][] = spec.wave === "feltpiano" ? feltPartials : spec.wave === "mallet" ? malletPartials : spec.wave === "bowed" ? bowedPartials : [[1, 1], ...(spec.partials ?? [])];
       for (const [ratio, g] of partials) {
         const osc = ctx.createOscillator();
-        osc.type = spec.wave === "pluck" ? "triangle" : spec.wave === "epiano" ? "sine" : spec.wave;
+        osc.type = spec.wave === "pluck" ? "triangle" : spec.wave === "epiano" || spec.wave === "feltpiano" || spec.wave === "mallet" || spec.wave === "bowed" ? "sine" : spec.wave;
         const f0 = spec.freq + ((spec.freqEnd ?? spec.freq) - spec.freq) * (offsetSec / total);
         osc.frequency.setValueAtTime(f0 * ratio, now);
         if (spec.freqEnd !== undefined) osc.frequency.linearRampToValueAtTime(spec.freqEnd * ratio, now + remaining);
         const pg = ctx.createGain();
-        pg.gain.value = g;
+        if (spec.wave === "feltpiano" || spec.wave === "mallet") {
+          const partial = Math.max(1, Math.round(ratio));
+          const decay = Math.max(0.08, (spec.ring ?? 2.4) / Math.pow(partial, 0.7));
+          pg.gain.setValueAtTime(g * Math.exp((-6.9 * offsetSec) / decay), now);
+          pg.gain.exponentialRampToValueAtTime(0.0001, now + Math.min(remaining, decay));
+        } else pg.gain.value = g;
         osc.connect(pg).connect(gain);
         osc.start(now);
         osc.stop(now + remaining);

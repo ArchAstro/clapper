@@ -183,10 +183,12 @@ function resolveSrc(src: string, publicDir: string): string {
 export async function muxAudio(video: string, audio: string, out: string, opts: { audioBitrate?: string; codec?: string; loudnorm?: boolean | number } = {}) {
   const ext = path.extname(out).toLowerCase();
   const acodec = opts.codec ?? (ext === ".webm" ? "libopus" : "aac");
-  // Normalise to a streaming-friendly integrated loudness (default -16 LUFS);
+  // Normalise to a streaming-friendly integrated loudness (default -17 LUFS);
   // LRA 16 keeps the quiet scenes quiet.
-  const lufs = opts.loudnorm === false ? null : typeof opts.loudnorm === "number" ? opts.loudnorm : -16;
-  const af = lufs === null ? [] : ["-af", `loudnorm=I=${lufs}:TP=-1.5:LRA=16`];
+  const lufs = opts.loudnorm === false ? null : typeof opts.loudnorm === "number" ? opts.loudnorm : -17;
+  // The final limiter catches inter-sample/AAC overs that a single-pass
+  // loudnorm estimate can miss on dense, transient-heavy soundtracks.
+  const af = lufs === null ? [] : ["-af", `loudnorm=I=${lufs}:TP=-2.5:LRA=16,alimiter=limit=0.70:level=false:attack=5:release=50`];
   await runFfmpeg(["-y", "-i", video, "-i", audio, "-map", "0:v:0", "-map", "1:a:0", "-c:v", "copy", ...af, "-ar", "48000", "-c:a", acodec, "-b:a", opts.audioBitrate ?? "192k", "-shortest", "-movflags", "+faststart", out]);
 }
 
@@ -247,6 +249,10 @@ export function renderToneTrack(cues: AudioCue[], fps: number, durationInFrames:
       }
     }
   }
+  // A gentle two-pole master low-pass keeps stacked synthetic transients from
+  // accumulating into the brittle, static-like top end common to raw SFX.
+  lowpassInPlace(L, sr, 6500);
+  lowpassInPlace(R, sr, 6500);
   let peak = 0;
   for (let i = 0; i < n; i++) peak = Math.max(peak, Math.abs(L[i]), Math.abs(R[i]));
   if (peak > 0.98) {
@@ -257,6 +263,17 @@ export function renderToneTrack(cues: AudioCue[], fps: number, durationInFrames:
     }
   }
   return [L, R];
+}
+
+function lowpassInPlace(samples: Float32Array, sr: number, hz: number) {
+  const a = 1 - Math.exp((-2 * Math.PI * hz) / sr);
+  let p1 = 0;
+  let p2 = 0;
+  for (let i = 0; i < samples.length; i++) {
+    p1 += a * (samples[i] - p1);
+    p2 += a * (p1 - p2);
+    samples[i] = p2;
+  }
 }
 
 /** Schroeder reverb: 4 parallel combs + 2 series allpasses. `variant` decorrelates L/R. */
@@ -393,6 +410,66 @@ function renderVoice(spec: ToneSpec, n: number, sr: number, detune: number, seed
       buf[idx] = y;
       idx = (idx + 1) % period;
       out[i] = cur * adsr(spec, i / sr, lenSec);
+    }
+  } else if (spec.wave === "mallet") {
+    const modes = [[1, 1, 1], [2.756, 0.38, 0.58], [5.404, 0.15, 0.33], [8.933, 0.055, 0.2]] as const;
+    const phase = modes.map((_, i) => rnd() * Math.PI * 2 + i * 0.51);
+    for (let i = 0; i < n; i++) {
+      const t = i / sr;
+      let v = 0;
+      for (let p = 0; p < modes.length; p++) {
+        const [ratio, gain, decayScale] = modes[p];
+        phase[p] += (2 * Math.PI * f0 * ratio) / sr;
+        v += Math.sin(phase[p]) * gain * Math.exp((-6.9 * t) / Math.max(0.05, ring * decayScale));
+      }
+      const softStrike = 1 - Math.exp(-t / 0.006);
+      out[i] = v * softStrike * 0.72 * adsr(spec, t, lenSec);
+    }
+  } else if (spec.wave === "bowed") {
+    const modes = [[1, 1], [2, 0.31], [3, 0.18], [4, 0.09], [5, 0.045], [7, 0.018]] as const;
+    const phase = modes.map((_, i) => i * 0.61);
+    for (let i = 0; i < n; i++) {
+      const t = i / sr;
+      const vibrato = 1 + 0.0018 * Math.sin(2 * Math.PI * (4.7 + 0.13 * Math.sin(t * 0.41)) * t);
+      const bow = 0.9 + 0.06 * Math.sin(2 * Math.PI * 0.73 * t) + 0.035 * Math.sin(2 * Math.PI * 1.17 * t + 1.2);
+      let v = 0;
+      for (let p = 0; p < modes.length; p++) {
+        const [ratio, gain] = modes[p];
+        phase[p] += (2 * Math.PI * f0 * ratio * vibrato) / sr;
+        v += Math.sin(phase[p]) * gain;
+      }
+      out[i] = v * bow * 0.5 * adsr(spec, t, lenSec);
+    }
+  } else if (spec.wave === "feltpiano") {
+    // Damped piano-string modes: upper partials are slightly stretched and
+    // decay faster, while a tiny dark hammer transient prevents a sterile onset.
+    const modes = [
+      [1, 1, 1],
+      [2.0015, 0.34, 0.62],
+      [3.005, 0.16, 0.42],
+      [4.012, 0.075, 0.31],
+      [5.024, 0.036, 0.24],
+      [6.041, 0.016, 0.19],
+    ] as const;
+    const phase = modes.map((_, i) => rnd() * Math.PI * 2 + i * 0.37);
+    const brightness = spec.brightness ?? 0.35;
+    let hammer = 0;
+    const hammerA = 1 - Math.exp((-2 * Math.PI * 1100) / sr);
+    for (let i = 0; i < n; i++) {
+      const t = i / sr;
+      const f = f0 + (f1 - f0) * (t / lenSec);
+      let v = 0;
+      for (let p = 0; p < modes.length; p++) {
+        const [ratio, gain, decayScale] = modes[p];
+        phase[p] += (2 * Math.PI * f * ratio) / sr;
+        const modalDecay = Math.exp((-6.9 * t) / Math.max(0.08, ring * decayScale));
+        const tone = p === 0 ? gain : gain * (0.45 + brightness * 1.25);
+        v += Math.sin(phase[p]) * tone * modalDecay;
+      }
+      hammer += hammerA * ((rnd() * 2 - 1) - hammer);
+      const hammerEnv = Math.exp(-t / 0.018) * 0.035;
+      const soundboard = 0.055 * Math.sin(phase[0] * 0.501) * Math.exp(-t / Math.max(0.2, ring * 0.8));
+      out[i] = (v * 0.72 + hammer * hammerEnv + soundboard) * adsr(spec, t, lenSec);
     }
   } else if (spec.wave === "epiano") {
     // 2-operator FM, Rhodes-like: bell partial decays fast, body rings.

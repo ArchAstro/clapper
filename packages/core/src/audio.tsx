@@ -135,6 +135,36 @@ export function EPiano({ note, at = 0, length, ring = 2.2, volume = 0.28, pan = 
   return <Tone at={at} durationInFrames={len} freq={note} wave="epiano" attack={0.002} decay={0.01} sustain={1} release={0.08} ring={ring} volume={volume} pan={pan} reverb={reverb} spread={spread} detune={detune} name={name ?? "epiano"} />;
 }
 
+/** A dark, rounded acoustic-piano model with a soft hammer and natural modal decay. */
+export function FeltPiano({ note, at = 0, length, ring = 2.4, volume = 0.2, pan = 0, reverb = 0.46, spread = 0.12, detune = 0, name }: { note: number | string; at?: number; length?: number; ring?: number; volume?: number; pan?: number; reverb?: number; spread?: number; detune?: number; name?: string }) {
+  const { fps } = useVideoConfig();
+  const len = length ?? Math.ceil((ring + 0.45) * fps);
+  return <Tone at={at} durationInFrames={len} freq={note} wave="feltpiano" attack={0.009} decay={0.12} sustain={1} release={0.42} ring={ring} brightness={0.34} cutoff={4200} volume={volume} pan={pan} spread={spread} reverb={reverb} detune={detune} name={name ?? "felt-piano"} />;
+}
+
+/** A quiet fingertip/wood desk tap for physical beats, without a noise transient. */
+export function DeskTap({ at = 0, volume = 0.16, pitch = 150, pan = 0, name }: { at?: number; volume?: number; pitch?: number; pan?: number; name?: string }) {
+  const n = name ?? "desk-tap";
+  return (
+    <>
+      <Tone at={at} durationInFrames={5} freq={pitch} wave="pluck" attack={0.002} decay={0.03} sustain={0.65} release={0.06} ring={0.16} brightness={0.06} cutoff={850} volume={volume * 0.72} pan={pan} reverb={0.08} name={`${n}-wood`} />
+      <Tone at={at} durationInFrames={6} freq={pitch * 0.72} glide={pitch * 0.52} wave="sine" attack={0.003} decay={0.09} sustain={0} release={0.08} cutoff={500} volume={volume * 0.28} pan={pan} name={`${n}-body`} />
+    </>
+  );
+}
+
+/** Tuned wooden percussion with inharmonic modes and no noise transient. */
+export function Mallet({ note, at = 0, length, ring = 1.25, volume = 0.18, pan = 0, reverb = 0.32, spread = 0.08, detune = 0, name }: { note: number | string; at?: number; length?: number; ring?: number; volume?: number; pan?: number; reverb?: number; spread?: number; detune?: number; name?: string }) {
+  const { fps } = useVideoConfig();
+  const len = length ?? Math.ceil((ring + 0.18) * fps);
+  return <Tone at={at} durationInFrames={len} freq={note} wave="mallet" attack={0.006} decay={0.08} sustain={1} release={0.18} ring={ring} brightness={0.4} cutoff={5200} volume={volume} pan={pan} spread={spread} reverb={reverb} detune={detune} name={name ?? "mallet"} />;
+}
+
+/** Warm bowed-string layer for a sustained bed that does not read as a synth pad. */
+export function BowedString({ note, at = 0, durationInFrames, volume = 0.05, attack = 0.8, release = 1.2, pan = 0, spread = 0.14, reverb = 0.42, name }: { note: number | string; at?: Frames; durationInFrames?: Frames; volume?: number; attack?: number; release?: number; pan?: number; spread?: number; reverb?: number; name?: string }) {
+  return <Tone at={at} durationInFrames={durationInFrames} freq={note} wave="bowed" attack={attack} decay={0.4} sustain={0.82} release={release} cutoff={4800} lfo={{ rate: 0.17, depth: 0.08 }} volume={volume} pan={pan} spread={spread} reverb={reverb} name={name ?? "bowed"} />;
+}
+
 /** A chord: several notes at once (optionally strummed by `strum` frames each). */
 export function Chord({ notes, at = 0, wave = "epiano", strum = 0, volume = 0.22, ring = 2.4, reverb = 0.4, spread = 0.4, width = 0.5, name }: { notes: (number | string)[]; at?: number; wave?: "epiano" | "pluck"; strum?: number; volume?: number; ring?: number; reverb?: number; spread?: number; /** stereo width: notes are panned from -width to +width */ width?: number; name?: string }) {
   return (
@@ -204,27 +234,26 @@ export function Drone({ notes = ["D2", "A2"], at = 0, durationInFrames, volume =
   );
 }
 
-/** Very quiet air / room tone. Cinematic beds start here, not with silence. */
-export function RoomTone({ at = 0, durationInFrames, volume = 0.02, cutoff = 600, fadeIn = 20, fadeOut = 20, name }: { at?: Frames; durationInFrames?: Frames; volume?: number; cutoff?: number; fadeIn?: Frames; fadeOut?: Frames; name?: string }) {
-  return <Tone at={at} durationInFrames={durationInFrames} freq={cutoff} wave="noise" attack={0.5} decay={0.1} sustain={1} release={0.5} volume={volume} fadeIn={fadeIn} fadeOut={fadeOut} lfo={{ rate: 0.07, depth: 0.3 }} spread={0.8} name={name ?? "room"} />;
+/** Very quiet, slowly moving air. `breath` avoids the static quality of a continuous white-noise bed. */
+export function RoomTone({ at = 0, durationInFrames, volume = 0.012, cutoff = 380, fadeIn = 30, fadeOut = 30, name }: { at?: Frames; durationInFrames?: Frames; volume?: number; cutoff?: number; fadeIn?: Frames; fadeOut?: Frames; name?: string }) {
+  return <Tone at={at} durationInFrames={durationInFrames} freq={cutoff} wave="breath" attack={1.2} decay={0.4} sustain={1} release={1.2} volume={volume} fadeIn={fadeIn} fadeOut={fadeOut} cutoff={cutoff} lfo={{ rate: 0.09, depth: 0.65 }} spread={0.7} name={name ?? "room"} />;
 }
 
 /**
- * One mechanical keystroke: a bright click transient, a low "thock" body, and
- * a faint key-up tick, with deterministic variation from `seed`.
+ * One soft mechanical keystroke: a felt/wood transient and a low "thock"
+ * body, with deterministic variation from `seed`.
  */
 export function Keystroke({ at = 0, volume = 0.22, seed = 0, space = false, pan = 0, name }: { at?: number; volume?: number; seed?: number; space?: boolean; pan?: number; name?: string }) {
   const h1 = hash(seed * 17 + 1);
   const h2 = hash(seed * 29 + 2);
   const v = volume * (0.8 + 0.4 * h1);
   const body = (space ? 130 : 200) * (0.86 + 0.28 * h2);
-  const cut = space ? 2400 : 3600 + 1800 * h1;
+  const top = (space ? 520 : 760) * (0.9 + 0.2 * h1);
   const n = name ?? "key";
   return (
     <>
-      <Tone at={at} durationInFrames={2} freq={cut} wave="noise" attack={0.0005} decay={0.012} sustain={0} release={0.004} volume={v * 0.9} pan={pan} name={`${n}-c`} />
-      <Tone at={at} durationInFrames={3} freq={body} glide={body * 0.7} wave="sine" attack={0.0008} decay={space ? 0.06 : 0.035} sustain={0} release={0.01} volume={v * (space ? 0.9 : 0.6)} partials={[[2.4, 0.25], [5.1, 0.08]]} pan={pan} name={`${n}-b`} />
-      <Tone at={at + 2} durationInFrames={2} freq={5200} wave="noise" attack={0.0005} decay={0.006} sustain={0} release={0.003} volume={v * 0.22} pan={pan} name={`${n}-u`} />
+      <Tone at={at} durationInFrames={3} freq={top} wave="pluck" attack={0.001} decay={0.02} sustain={0.8} release={0.025} ring={space ? 0.13 : 0.085} brightness={0.18} cutoff={1800} volume={v * 0.44} pan={pan} reverb={0.06} name={`${n}-felt`} />
+      <Tone at={at} durationInFrames={4} freq={body} glide={body * 0.72} wave="sine" attack={0.002} decay={space ? 0.07 : 0.045} sustain={0} release={0.025} volume={v * (space ? 0.58 : 0.42)} partials={[[2.1, 0.16], [3.8, 0.035]]} cutoff={1300} pan={pan} name={`${n}-body`} />
     </>
   );
 }
@@ -280,9 +309,9 @@ export function Whoosh({ at = 0, durationInFrames, volume = 0.25, from = 300, to
   return <Tone at={at} durationInFrames={len} freq={from} glide={to} wave="noise" attack={0.08} decay={0.15} sustain={0.5} release={0.18} volume={volume} name={name ?? "whoosh"} />;
 }
 
-/** A tiny click / tick, e.g. for typewriter effects. */
+/** A tiny felt/wood tick, e.g. for UI and paper movement. */
 export function Click({ at = 0, volume = 0.18, freq = 2400, name }: { at?: number; volume?: number; freq?: number; name?: string }) {
-  return <Tone at={at} durationInFrames={2} freq={freq} wave="noise" attack={0.001} decay={0.02} sustain={0} release={0.02} volume={volume} name={name ?? "click"} />;
+  return <Tone at={at} durationInFrames={3} freq={Math.max(180, freq * 0.42)} wave="pluck" attack={0.001} decay={0.018} sustain={0.75} release={0.025} ring={0.09} brightness={0.16} cutoff={1900} volume={volume * 0.62} reverb={0.04} name={name ?? "click"} />;
 }
 
 /** A sustained low pad chord (bed music without assets). */
@@ -343,12 +372,12 @@ export function Arp({ notes, at = 0, step = 4, length, repeat = 1, volume = 0.18
   );
 }
 
-/** A two-tone alert. */
+/** A mellow two-note notification; intentionally musical rather than buzzy. */
 export function Alert({ at = 0, volume = 0.25, name }: { at?: number; volume?: number; name?: string }) {
   return (
     <>
-      <Tone at={at} durationInFrames={5} freq={880} wave="square" attack={0.002} decay={0.05} sustain={0.5} release={0.05} volume={volume * 0.5} name={`${name ?? "alert"}-a`} />
-      <Tone at={at + 6} durationInFrames={7} freq={660} wave="square" attack={0.002} decay={0.05} sustain={0.5} release={0.08} volume={volume * 0.5} name={`${name ?? "alert"}-b`} />
+      <Tone at={at} durationInFrames={10} freq="E5" wave="epiano" attack={0.004} decay={0.04} sustain={0.8} release={0.12} ring={0.45} cutoff={2600} volume={volume * 0.34} pan={-0.08} reverb={0.22} name={`${name ?? "alert"}-a`} />
+      <Tone at={at + 5} durationInFrames={12} freq="C5" wave="epiano" attack={0.004} decay={0.04} sustain={0.8} release={0.16} ring={0.55} cutoff={2300} volume={volume * 0.3} pan={0.08} reverb={0.26} name={`${name ?? "alert"}-b`} />
     </>
   );
 }

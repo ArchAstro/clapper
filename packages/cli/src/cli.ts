@@ -38,7 +38,7 @@ Render options:
       --preset <name>      x264 preset (default medium)
       --image-format <f>   jpeg (default, q96, ~5x faster) | png (lossless intermediate)
       --mute               Skip audio mixing
-      --loudnorm <lufs|off> Loudness target (default -16 LUFS)
+      --loudnorm <lufs|off> Loudness target (default -17 LUFS)
       --keep-build         Keep this invocation's .clapper/harness-*/build
 
 Review options:

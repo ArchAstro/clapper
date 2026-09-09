@@ -29,7 +29,7 @@ export interface RenderOptions {
   /** Intermediate frame format piped to ffmpeg. Default jpeg (q96); png is lossless but ~5x slower on noisy frames. */
   imageFormat?: "png" | "jpeg";
   muteAudio?: boolean;
-  /** Integrated loudness target in LUFS (default -16); false disables normalisation. */
+  /** Integrated loudness target in LUFS (default -17); false disables normalisation. */
   loudnorm?: boolean | number;
   onProgress?: (done: number, total: number) => void;
   log?: (msg: string) => void;

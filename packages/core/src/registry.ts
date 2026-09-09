@@ -30,12 +30,14 @@ export interface CompositionEntry extends CompositionMeta {
   component: ComponentType<any>;
 }
 
-export type Wave = "sine" | "triangle" | "square" | "sawtooth" | "noise" | "pluck" | "epiano" | "breath";
+export type Wave = "sine" | "triangle" | "square" | "sawtooth" | "noise" | "pluck" | "epiano" | "feltpiano" | "mallet" | "bowed" | "breath";
 
 export interface ToneSpec {
   /**
    * sine/triangle/square/sawtooth: classic oscillators. noise: filtered noise.
-   * pluck: Karplus–Strong string (guitar/harp/felt-piano-like). epiano: 2-op FM Rhodes-like.
+   * pluck: Karplus–Strong string. epiano: 2-op FM Rhodes-like.
+   * feltpiano: damped, slightly inharmonic piano-string modes with a soft hammer.
+   * mallet: tuned wooden modal percussion. bowed: sustained, gently moving string partials.
    */
   wave: Wave;
   /** Hz. For noise: the lowpass cutoff. */
@@ -49,7 +51,7 @@ export interface ToneSpec {
   release: number;
   /** Extra partials for a richer tone: [ratio, gain][] */
   partials?: [number, number][];
-  /** pluck/epiano: seconds to ring down to -60 dB. Default 1.2. */
+  /** pluck/epiano/feltpiano: seconds to ring down to -60 dB. Default 1.2. */
   ring?: number;
   /** pluck: 0 (felt, dark) .. 1 (bright, metallic). Default 0.6. */
   brightness?: number;

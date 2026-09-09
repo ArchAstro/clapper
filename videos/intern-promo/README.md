@@ -1,5 +1,7 @@
 # tryintern.dev promo
 
+`intern-film` is the 38-second brand film: one frozen Friday launch deck transforms into a living Tuesday Launch Room, proving persistent data, company privacy, and human-agent collaboration in one continuous story.
+
 "Send a site, not a deck." 1920×1080 @ 30 fps, ~57 s, eight scenes (`src/scenes/`), transitions between them, synthesized
 sound (pads per scene, chimes on beats, typewriter clicks). Brand tokens, fonts (Instrument Serif / Schibsted Grotesk /
 Fragment Mono) and copy come from `services/node/intern-fe` in the firstlanding repo and the live site.

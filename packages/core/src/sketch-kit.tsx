@@ -20,9 +20,9 @@ const LIGHT = "var(--light, #e9e7e1)";
 const HAND = 'var(--hand, "Patrick Hand", "Comic Sans MS", cursive)';
 const MARKER = 'var(--marker, "Gochi Hand", "Patrick Hand", cursive)';
 
-/** Pencil scratch: a short filtered-noise burst when something gets drawn. */
-export function PencilScratch({ at, volume = 0.13, length = 9, pan = 0 }: { at: Frames; volume?: number; length?: number; pan?: number }) {
-  return <Tone at={at} durationInFrames={length} freq={2400} wave="noise" cutoff={3400} attack={0.01} decay={0.14} sustain={0.25} release={0.06} volume={volume} pan={pan} name="scratch" />;
+/** Pencil scratch: dark paper texture with rounded edges, not broadband hiss. */
+export function PencilScratch({ at, volume = 0.075, length = 9, pan = 0 }: { at: Frames; volume?: number; length?: number; pan?: number }) {
+  return <Tone at={at} durationInFrames={length} freq={900} wave="noise" cutoff={1250} attack={0.025} decay={0.12} sustain={0.16} release={0.08} volume={volume} pan={pan} spread={0.18} name="scratch" />;
 }
 
 /** Comic caption box, top-left by default. */

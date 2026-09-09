@@ -47,6 +47,14 @@ describe("tone synthesis", () => {
     for (const v of r) max = Math.max(max, Math.abs(v));
     expect(max).toBeLessThanOrEqual(0.981);
   });
+  it("master bus softens the brittle top octave without dulling the body", () => {
+    const sr = 48000;
+    const body = tone({ id: "body", endFrame: 15, tone: { wave: "sine", freq: 500, attack: 0, decay: 0, sustain: 1, release: 0 } });
+    const fizz = tone({ id: "fizz", endFrame: 15, tone: { wave: "sine", freq: 12000, attack: 0, decay: 0, sustain: 1, release: 0 } });
+    const [bodyTrack] = renderToneTrack([body], 30, 15, sr);
+    const [fizzTrack] = renderToneTrack([fizz], 30, 15, sr);
+    expect(rmsOf(fizzTrack, sr / 10, sr / 2)).toBeLessThan(rmsOf(bodyTrack, sr / 10, sr / 2) * 0.35);
+  });
   it("pluck and epiano ring down and pan", () => {
     const pluck = tone({ id: "p", endFrame: 60, tone: { wave: "pluck", freq: 220, attack: 0.001, decay: 0.01, sustain: 1, release: 0.05, ring: 0.8, pan: -1 } });
     const [l, r] = renderToneStereo(pluck, 2, 8000);
@@ -56,6 +64,23 @@ describe("tone synthesis", () => {
     const ep = tone({ id: "e", endFrame: 60, tone: { wave: "epiano", freq: 330, attack: 0.002, decay: 0.01, sustain: 1, release: 0.05, ring: 1.5, reverb: 0.5 } });
     const [el] = renderToneStereo(ep, 2, 8000);
     expect(rms(el, 0, 800)).toBeGreaterThan(0.05);
+  });
+  it("felt piano has a rounded modal body, stereo movement, and a natural decay", () => {
+    const cue = tone({ id: "felt", endFrame: 90, tone: { wave: "feltpiano", freq: 261.63, attack: 0.009, decay: 0.12, sustain: 1, release: 0.42, ring: 2.4, brightness: 0.34, spread: 0.12 } });
+    const [l, r] = renderToneStereo(cue, 3, 16000);
+    const early = rmsOf(l, 800, 4000);
+    const late = rmsOf(l, 36000, 44000);
+    expect(early).toBeGreaterThan(0.04);
+    expect(late).toBeLessThan(early * 0.35);
+    expect(rmsOf(l.map((v, i) => v - r[i]), 800, 8000)).toBeGreaterThan(0.001);
+  });
+  it("mallet decays while bowed strings sustain", () => {
+    const mallet = tone({ id: "mallet", endFrame: 60, tone: { wave: "mallet", freq: 220, attack: 0.006, decay: 0.08, sustain: 1, release: 0.18, ring: 1.2 } });
+    const bowed = tone({ id: "bowed", endFrame: 60, tone: { wave: "bowed", freq: 220, attack: 0.2, decay: 0.2, sustain: 0.82, release: 0.4 } });
+    const [m] = renderToneStereo(mallet, 2, 16000);
+    const [b] = renderToneStereo(bowed, 2, 16000);
+    expect(rmsOf(m, 24000, 28000)).toBeLessThan(rmsOf(m, 800, 4800) * 0.2);
+    expect(rmsOf(b, 16000, 24000)).toBeGreaterThan(0.08);
   });
 });
 

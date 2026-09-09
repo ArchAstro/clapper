@@ -37,7 +37,7 @@ export function Open() {
           <span style={{ color: "var(--muted)" }}>› </span>
           <Typewriter text={D.prompt} at={34} cps={13} />
         </div>
-        <Typing text={D.prompt} at={34} cps={13} volume={0.16} pan={-0.3} />
+        <Typing text={D.prompt} at={34} cps={13} volume={0.1} pan={-0.3} />
       </Win>
       <Thought at={9} x={990} y={400} w={340} h={110} exitAt={82}>{D.thought0}</Thought>
       <Scratch at={0} pan={-0.3} />
@@ -84,11 +84,13 @@ const WINS = [
 ];
 const PINGS = [80, 92, 102, 110, 116, 121, 140, 152, 164, 176, 188, 200];
 
-export function Agents() {
+export function Agents({ roundRage = false }: { roundRage?: boolean } = {}) {
   const seed = useBoil(4);
   const frame = useFrame();
   const FURY = 126;
   const fury = progress(frame, FURY, 8, Easing.outCubic);
+  const roundShock = { ...POSES.wide, eyes: 1.5, brow: 0, mouth: -0.9, open: 0.12, pupil: 0.5 };
+  const ragePose = roundRage ? { ...POSES.rage, eyes: 1.55, brow: 0, mouth: -1, open: 0.12, pupil: 0.5, tilt: 1, hy: -4 } : POSES.rage;
   // the windows get blown outward by the hammering: columns slide off the sides, the top row flies up
   const scatter = progress(frame, FURY, 16, Easing.outBack);
   const pose = usePose([
@@ -97,9 +99,9 @@ export function Agents() {
     { at: 42, pose: "swivelR", ease: "outBack", arc: 14 },
     { at: 68, pose: "swivelL", ease: "outBack", arc: 14 },
     { at: 92, pose: "swivelR", ease: "outBack", arc: 12 },
-    { at: 112, pose: "wide", ease: "outBack" },
-    { at: FURY, pose: "rage", ease: "outBack", arc: 22 },
-    { at: 208, pose: "rage" },
+    { at: 112, pose: roundRage ? roundShock : "wide", ease: "outBack" },
+    { at: FURY, pose: ragePose, ease: "outBack", arc: 22 },
+    { at: 208, pose: ragePose },
   ]);
   return (
     <Camera keyframes={[{ frame: 0, zoom: 1 }, { frame: FURY - 2, zoom: 1 }, { frame: FURY + 12, zoom: 1.24, x: 960, y: 620, easing: Easing.outBack }, { frame: FURY + 46, zoom: 1.27, x: 960, y: 616 }, { frame: FURY + 52, zoom: 1.34, x: 960, y: 612, easing: Easing.outBack }, { frame: 209, zoom: 1.3, x: 960, y: 618, easing: Easing.inOutCubic }]}>
@@ -130,18 +132,18 @@ export function Agents() {
         <Caption at={FURY + 8} x={210} y={175} w={660}>{D.agentsCaption2}</Caption>
         {/* sound: six pings on arrival, nags, then the hammering */}
         {WINS.map((_, i) => (
-          <Alert key={`a${i}`} at={2 + i * 12} volume={0.12} name="ping" />
+          <Alert key={`a${i}`} at={2 + i * 12} volume={0.1} name="ping" />
         ))}
         {WINS.map((_, i) => (
           <Scratch key={`s${i}`} at={i * 12} volume={0.08} pan={i < 2 ? -0.5 : i < 4 ? 0.5 : 0} />
         ))}
         {PINGS.filter((f) => f < FURY).map((f, i) => (
-          <Alert key={`n${i}`} at={f} volume={0.11 + (i % 3) * 0.02} name="nag" />
+          <Alert key={`n${i}`} at={f} volume={0.07 + (i % 3) * 0.012} name="nag" />
         ))}
         <Thump at={FURY} volume={0.4} from={140} to={50} name="fury-hit" />
         <Thump at={FURY + 46} volume={0.28} from={120} to={48} name="fury-hit-2" />
-        {Array.from({ length: 40 }).map((_, i) => (
-          <Keystroke key={`k${i}`} at={FURY + 2 + i * 2 + (i % 3 === 0 ? 1 : 0)} volume={0.3 + (i % 4) * 0.05} seed={i} pan={i % 2 ? 0.25 : -0.25} />
+        {Array.from({ length: 22 }).map((_, i) => (
+          <Keystroke key={`k${i}`} at={FURY + 2 + i * 4 + (i % 3 === 0 ? 1 : 0)} volume={0.14 + (i % 4) * 0.018} seed={i} pan={i % 2 ? 0.2 : -0.2} />
         ))}
         <Whoosh at={FURY} durationInFrames={10} from={600} to={2400} volume={0.1} name="scatter" />
       </Panel>
@@ -149,11 +151,28 @@ export function Agents() {
   );
 }
 
-export function Review() {
+const REVIEW_PILE = [
+  ["agent review", "3 new comments"],
+  ["security", "changes requested"],
+  ["CI review", "8 new findings"],
+  ["agent 4", "12 suggestions"],
+  ["agent 5", "conflicts found"],
+  ["agent 6", "reviewing again…"],
+] as const;
+
+export function Review({ pileup = false }: { pileup?: boolean } = {}) {
   const seed = useBoil(4);
   const frame = useFrame();
   const STAMP = 118;
-  const pose = usePose([
+  const pose = usePose(pileup ? [
+    { at: 0, pose: "reading" },
+    { at: 40, pose: "dead", ease: "inOutCubic" },
+    { at: STAMP - 10, pose: { ...POSES.dead, rhx: 60, rhy: -34 }, ease: "outBack", arc: 16 },
+    { at: STAMP + 2, pose: { ...POSES.dead, rhx: 60, rhy: -18 }, ease: "outExpo" },
+    { at: STAMP + 15, pose: { ...POSES.wide, eyes: 1.75, brow: 0, open: 0.65, mouth: -0.55, sweat: 0.7, pupil: 0.35, tilt: -5 }, ease: "outBack" },
+    { at: STAMP + 48, pose: { ...POSES.wide, eyes: 1.8, brow: 0, open: 0.22, mouth: -1, sweat: 1, pupil: 0.55, tilt: 7, hy: -12, lhx: -82, lhy: -218, rhx: 82, rhy: -218 }, ease: "outBack", arc: 18 },
+    { at: STAMP + 88, pose: { ...POSES.wide, eyes: 1.65, brow: 0, open: 0.12, mouth: -1, sweat: 1, pupil: 0.75, tilt: -6, hy: -6, lhx: -88, lhy: -214, rhx: 88, rhy: -214 }, ease: "inOutCubic" },
+  ] : [
     { at: 0, pose: "reading" },
     { at: 40, pose: "dead", ease: "inOutCubic" },
     { at: STAMP - 10, pose: { ...POSES.dead, rhx: 60, rhy: -34 }, ease: "outBack", arc: 16 },
@@ -164,7 +183,23 @@ export function Review() {
   const read = Math.min(D.readTo, Math.round(interpolate(frame, [12, 100], [0, D.readTo], { easing: Easing.linear })));
   return (
     <Panel seed={seed}>
-      <Scribble pose={pose} x={FIG.x + 380} y={FIG.y} />
+      {pileup && REVIEW_PILE.map(([source, message], i) => {
+        const at = STAMP + 12 + i * 12;
+        if (frame < at) return null;
+        const enter = progress(frame, at, 8, Easing.outBack);
+        const left = [1390, 1080, 1430, 870, 1370, 1050][i];
+        const top = [92, 185, 278, 382, 488, 590][i];
+        return (
+          <div key={source} style={{ position: "absolute", left, top, width: 320, height: 104, transform: `translateX(${(1 - enter) * 180}px) rotate(${i % 2 ? 2 : -2}deg) scale(${0.86 + enter * 0.14})`, transformOrigin: "right center", zIndex: 2 }}>
+            <svg width={320} height={104} style={{ position: "absolute", inset: 0, overflow: "visible" }}>
+              <path d={roughRect(3, 3, 314, 98, seed + 500 + i, 1.8)} fill={PAPER} stroke={i === 1 || i === 4 ? RED : INK} strokeWidth={3.5} />
+            </svg>
+            <div className="mono" style={{ position: "absolute", left: 16, top: 13, width: 288, color: RED, fontSize: 18, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em" }}>{source}</div>
+            <div className="hand" style={{ position: "absolute", left: 16, top: 42, width: 288, color: INK, fontSize: 29, lineHeight: 1.05 }}>{message}</div>
+          </div>
+        );
+      })}
+      <Scribble pose={pose} x={FIG.x + 380} y={FIG.y} fury={pileup ? progress(frame, STAMP + 34, 16, Easing.outCubic) * 0.16 : 0} />
       <Win x={50} y={50} w={800} h={660} title={D.prTitle} at={2} lines={17} seedOff={3} right={<span style={{ color: RED }}>{D.prStat}</span>}>
         {/* a few red lines in the diff */}
         <svg width={800} height={660} style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
@@ -179,7 +214,7 @@ export function Review() {
           <svg width={190} height={56} style={{ position: "absolute", inset: 0, overflow: "visible" }}>
             <path d={roughRect(3, 3, 184, 50, seed + 71, 1.6)} fill={frame >= STAMP ? "var(--light)" : PAPER} stroke={INK} strokeWidth={3.5} />
           </svg>
-          <div className="hand" style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 30 }}>Approve</div>
+          <div className="hand" style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 30 }}>{pileup && frame >= STAMP ? "Accepted ✓" : "Approve"}</div>
         </div>
       </Win>
       <Sfx at={STAMP - 26} x={1120} y={300} rot={-6} size={56} color="var(--muted)" exitAt={STAMP + 6}>lgtm</Sfx>
@@ -288,7 +323,7 @@ export function Score({ plan, tail }: { plan: ScenePlan<any>; tail?: ReactNode }
   const has = (n: string) => (S.names as string[]).includes(n);
   return (
     <>
-      <RoomTone volume={0.016} durationInFrames={S.total} fadeIn={8} fadeOut={30} />
+      <RoomTone volume={0.006} durationInFrames={S.total} fadeIn={30} fadeOut={45} />
       {has("open") && (
       <Sequence from={S.start("open")} durationInFrames={S.duration("open")} name="score-open">
         <Pattern bpm={104} step={0.25} at={4} steps="C4 . E4 . G4 . E4 . A4 . G4 . E4 . C4 ." wave="pluck" brightness={0.7} volume={0.12} reverb={0.25} repeat={2} humanize={0.02} name="motif" />
@@ -307,7 +342,7 @@ export function Score({ plan, tail }: { plan: ScenePlan<any>; tail?: ReactNode }
       <Sequence from={S.start("agents")} durationInFrames={S.duration("agents")} name="score-agents">
         <Pattern bpm={116} step={0.25} at={0} steps="E4 . E4 . F4 . F4 . G4 . G4 . A4 . A4 ." wave="pluck" brightness={0.75} volume={0.11} reverb={0.3} repeat={3} humanize={0.02} name="agents-rise" />
         <Pattern bpm={116} step={0.5} at={0} steps="A2 . A2 . C3 . D3 ." wave="pluck" brightness={0.45} volume={0.14} reverb={0.15} repeat={5} name="agents-bass" />
-        <Pattern bpm={116} step={0.125} at={126} steps="A4 A4 C5 A4 D5 A4 C5 A4 A4 A4 C5 A4 E5 A4 C5 A4" wave="pluck" brightness={0.8} volume={0.14} reverb={0.35} repeat={2} humanize={0.01} name="fury-tremolo" />
+        <Pattern bpm={116} step={0.25} at={126} steps="A4 . C5 A4 . A4 C5 . E5 . C5 A4" wave="pluck" brightness={0.42} volume={0.085} reverb={0.4} repeat={2} humanize={0.05} name="fury-tremolo" />
       </Sequence>
       )}
       {has("review") && (
@@ -327,7 +362,7 @@ export function Score({ plan, tail }: { plan: ScenePlan<any>; tail?: ReactNode }
       )}
       {tail}
       {S.cuts().map((c) => (
-        <Whoosh key={c} at={c - 3} durationInFrames={7} from={2600} to={500} volume={0.13} name="flip" />
+        <Whoosh key={c} at={c - 4} durationInFrames={9} from={1250} to={280} volume={0.045} name="flip" />
       ))}
     </>
   );

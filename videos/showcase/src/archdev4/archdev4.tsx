@@ -17,7 +17,7 @@ export const SCENES = defineScenes(
 );
 
 /** Close-up on the machine: the back of a sketched laptop lid, the figure peeking over it, the line typing itself on the paper above. */
-function Intro() {
+export function Intro({ showLaptop = true }: { showLaptop?: boolean } = {}) {
   const seed = useBoil(4);
   const frame = useFrame();
   const pose = usePose([{ at: 0, pose: { ...POSES.typing, pupil: 1, tilt: 4, hy: 6 } }, { at: 80, pose: "typing", ease: "inOutCubic" }]);
@@ -27,15 +27,17 @@ function Intro() {
     <Camera keyframes={[{ frame: 0, zoom: 2, x: 960, y: 600 }, { frame: PULL, zoom: 2, x: 960, y: 600 }, { frame: 110, zoom: 1, x: 960, y: 540, easing: Easing.inOutCubic }]}>
       <Panel seed={seed}>
         <Scribble pose={pose} x={FIG.x} y={FIG.y} typing={frame < PULL + 10 ? 0.9 : 0.4} fury={frame >= 6 && frame < PULL ? 0.22 : 0} />
-        <svg width={1760} height={920} style={{ position: "absolute", inset: 0, overflow: "visible", pointerEvents: "none" }}>
-          <path d={roughRect(lid.x, lid.y, lid.w, lid.h, seed + 401, 2.2)} fill={PAPER} stroke={INK} strokeWidth={4.5} />
-          <path d={roughRect(lid.x + 14, lid.y + 14, lid.w - 28, lid.h - 28, seed + 402, 1.4)} fill="none" stroke={INK} strokeWidth={2} opacity={0.35} />
-          <path d={roughEllipse(lid.x + lid.w / 2, lid.y + lid.h / 2, 14, 14, seed + 403, 1)} fill="none" stroke={INK} strokeWidth={3} opacity={0.5} />
-        </svg>
+        {showLaptop && (
+          <svg width={1760} height={920} style={{ position: "absolute", inset: 0, overflow: "visible", pointerEvents: "none" }}>
+            <path d={roughRect(lid.x, lid.y, lid.w, lid.h, seed + 401, 2.2)} fill={PAPER} stroke={INK} strokeWidth={4.5} />
+            <path d={roughRect(lid.x + 14, lid.y + 14, lid.w - 28, lid.h - 28, seed + 402, 1.4)} fill="none" stroke={INK} strokeWidth={2} opacity={0.35} />
+            <path d={roughEllipse(lid.x + lid.w / 2, lid.y + lid.h / 2, 14, 14, seed + 403, 1)} fill="none" stroke={INK} strokeWidth={3} opacity={0.5} />
+          </svg>
+        )}
         <div className="marker" data-copy="" style={{ position: "absolute", left: 420, top: 262, width: 920, fontSize: 58, lineHeight: 1.1, color: INK, whiteSpace: "nowrap" }}>
           <Typewriter text={D4.intro} at={6} cps={13} cursor={false} />
         </div>
-        <Typing text={D4.intro} at={6} cps={13} volume={0.24} />
+        <Typing text={D4.intro} at={6} cps={13} volume={0.1} />
         <Scratch at={0} volume={0.09} length={12} />
         <Whoosh at={PULL} durationInFrames={26} from={420} to={1400} volume={0.09} name="pull-out" />
         <Pluck note="C4" at={PULL + 4} volume={0.12} reverb={0.35} name="intro-pluck" />
@@ -45,7 +47,7 @@ function Intro() {
 }
 
 /** The website's chaos framing, then the invitation. The figure turns to face us. */
-function Outro() {
+export function Outro() {
   const seed = useBoil(4);
   const frame = useFrame();
   const CHAOS = 58;
@@ -75,7 +77,7 @@ function Outro() {
         {D4.email}
       </Reveal>
       <Scratch at={4} volume={0.09} />
-      <Thump at={CHAOS} volume={0.42} from={150} to={52} name="chaos-hit" />
+      <Thump at={CHAOS} volume={0.3} from={135} to={48} name="chaos-hit" />
       <Scratch at={CHAOS} volume={0.12} length={12} />
       <Scratch at={TALK} volume={0.08} length={14} />
       <Scratch at={TALK + 34} volume={0.09} length={16} pan={0.15} />
