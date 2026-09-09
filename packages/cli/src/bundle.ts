@@ -21,8 +21,10 @@ function corePackageDir(): string {
 }
 
 /** Writes .clapper/<mode>/{index.html,entry.tsx} and returns that directory. */
-export function writeHarnessDir({ entry, projectDir, mode }: BundleTarget): string {
-  const dir = path.join(projectDir, ".clapper", mode);
+export function writeHarnessDir({ entry, projectDir, mode }: BundleTarget, unique = false): string {
+  const parent = path.join(projectDir, ".clapper");
+  fs.mkdirSync(parent, { recursive: true });
+  const dir = unique ? fs.mkdtempSync(path.join(parent, `${mode}-`)) : path.join(parent, mode);
   fs.mkdirSync(dir, { recursive: true });
   let rel = path.relative(dir, entry).split(path.sep).join("/");
   if (!rel.startsWith(".")) rel = "./" + rel;
@@ -65,35 +67,52 @@ function baseConfig(t: BundleTarget, dir: string): InlineConfig {
     cacheDir: path.join(t.projectDir, "node_modules", ".vite-clapper"),
     plugins: [react()],
     resolve: { dedupe: ["react", "react-dom", "react/jsx-runtime", "@clapper/core"], alias: reactAliases(t.projectDir) },
-    server: { fs: { allow: [workspaceRoot, t.projectDir, corePackageDir(), dir] } },
-    optimizeDeps: { include: ["react", "react-dom", "react-dom/client", "react/jsx-runtime"] },
+    server: { fs: { allow: [workspaceRoot, t.projectDir, corePackageDir(), dir, ...(process.env.CLAPPER_RUNTIME ? [process.env.CLAPPER_RUNTIME] : [])] } },
+    // All core entrypoints must share the same timeline context. Prebundling
+    // core and player as separate dependencies duplicates that context in a
+    // regular npm-installed project (the workspace's linked sources hid this).
+    optimizeDeps: {
+      include: ["react", "react-dom", "react-dom/client", "react/jsx-runtime"],
+      exclude: ["@clapper/core", "@clapper/core/player", "@clapper/core/harness", "@clapper/core/rigs", "@clapper/core/latex"],
+    },
     define: { "process.env.NODE_ENV": JSON.stringify(t.mode === "harness" ? "production" : "development") },
   };
 }
 
 /** Production-build the render harness. Returns the outDir. */
 export async function buildHarness(t: BundleTarget): Promise<string> {
-  const dir = writeHarnessDir(t);
-  const outDir = path.join(t.projectDir, ".clapper", `${t.mode}-build`);
-  await build({
-    ...baseConfig(t, dir),
-    base: "./",
-    build: {
-      outDir,
-      emptyOutDir: true,
-      minify: false,
-      sourcemap: false,
-      target: "esnext",
-      assetsInlineLimit: 0,
-      rollupOptions: { input: path.join(dir, "index.html") },
-    },
-  });
-  return outDir;
+  const dir = writeHarnessDir(t, true);
+  const outDir = path.join(dir, "build");
+  try {
+    await build({
+      ...baseConfig(t, dir),
+      base: "./",
+      build: {
+        outDir,
+        emptyOutDir: true,
+        minify: false,
+        sourcemap: false,
+        target: "esnext",
+        assetsInlineLimit: 0,
+        rollupOptions: { input: path.join(dir, "index.html") },
+      },
+    });
+    return outDir;
+  } catch (error) {
+    fs.rmSync(dir, { recursive: true, force: true });
+    throw error;
+  }
+}
+
+/** Remove only the scratch directory owned by this invocation. */
+export function removeHarness(outDir: string) {
+  if (path.basename(outDir) !== "build" || !/^harness-/.test(path.basename(path.dirname(outDir)))) throw new Error("Not a Clapper harness scratch path");
+  fs.rmSync(path.dirname(outDir), { recursive: true, force: true });
 }
 
 /** Serve a built harness directory. */
 export async function serveBuilt(t: BundleTarget, outDir: string): Promise<{ url: string; close: () => Promise<void> }> {
-  const dir = path.join(t.projectDir, ".clapper", t.mode);
+  const dir = path.dirname(outDir);
   const server: PreviewServer = await preview({
     ...baseConfig(t, dir),
     build: { outDir },

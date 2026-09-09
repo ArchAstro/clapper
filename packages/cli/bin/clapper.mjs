@@ -7,4 +7,9 @@ import { fileURLToPath } from "node:url";
 const here = dirname(fileURLToPath(import.meta.url));
 const entry = pathToFileURL(join(here, "..", "src", "cli.ts")).href;
 const mod = await import(entry);
-await mod.main(process.argv.slice(2));
+try {
+  await mod.main(process.argv.slice(2));
+} catch (error) {
+  console.error(`clapper: ${error instanceof Error ? error.message : error}`);
+  process.exitCode = 1;
+}

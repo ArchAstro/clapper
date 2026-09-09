@@ -1,14 +1,18 @@
 import fs from "node:fs";
 import path from "node:path";
 import { parseArgs } from "node:util";
-import { buildHarness, serveBuilt, startStudio } from "./bundle.ts";
+import { buildHarness, removeHarness, serveBuilt, startStudio } from "./bundle.ts";
 import { collectCues, probeCompositions, renderComposition, renderStill, renderStills } from "./render.ts";
 import { reviewComposition } from "./review.ts";
 import { doctor } from "./doctor.ts";
+import { createProject, findConfig, installProject, linkRuntime } from "./project.ts";
 
 const HELP = `clapper — React → MP4
 
 Usage:
+  clapper new <directory> [--template basic|comic]  Create an editable project
+  clapper install                    Restore project dependencies
+  clapper add <package...>            Add libraries with the managed npm
   clapper render <entry> [options]      Render a composition to video
   clapper still <entry> [options]       Render one frame to PNG
   clapper preview <entry> [--port N]    Open the studio (scrub, play, inspect)
@@ -35,12 +39,14 @@ Render options:
       --image-format <f>   jpeg (default, q96, ~5x faster) | png (lossless intermediate)
       --mute               Skip audio mixing
       --loudnorm <lufs|off> Loudness target (default -16 LUFS)
-      --keep-build         Keep .clapper/harness-build after rendering
+      --keep-build         Keep this invocation's .clapper/harness-*/build
 
 Review options:
       --video <file>       Build the kit from an existing MP4 instead of rendering
       --no-lint            Skip the blank-frame / safe-area / overlap / determinism checks
       --draft              Render the review copy at draft quality
+Project commands can omit <entry>: clapper.json supplies entry and composition.
+Dependency scripts are disabled; pass --allow-scripts explicitly if needed.
 `;
 
 export async function main(argv: string[]) {
@@ -71,12 +77,33 @@ export async function main(argv: string[]) {
       video: { type: "string" },
       "no-lint": { type: "boolean" },
       help: { type: "boolean", short: "h" },
+      template: { type: "string" },
+      "allow-scripts": { type: "boolean" },
     },
   });
   const [command, entryArg] = positionals;
   if (values.help || !command) {
     console.log(HELP);
     return;
+  }
+  if (command === "new") {
+    if (!entryArg || positionals.length !== 2) throw new Error("Usage: clapper new <directory> [--template basic|comic]");
+    createProject(entryArg, values.template);
+    return;
+  }
+  const project = findConfig(entryArg ? path.dirname(path.resolve(entryArg)) : process.cwd());
+  if (project && process.env.CLAPPER_VERSION && project.config.runtime !== process.env.CLAPPER_VERSION) throw new Error(`Project pins Clapper ${project.config.runtime}; launcher is ${process.env.CLAPPER_VERSION}. Install the matching launcher.`);
+  if (project && process.env.CLAPPER_RUNTIME) linkRuntime(project.dir);
+  if (command === "install" || command === "add") {
+    const current = findConfig();
+    if (!current) throw new Error("No clapper.json found. Run clapper new <directory> first.");
+    if (command === "add" && positionals.length < 2) throw new Error("Usage: clapper add <package...>");
+    installProject(current.dir, command === "add" ? positionals.slice(1) : [], values["allow-scripts"]);
+    return;
+  }
+  if (!entryArg && project) {
+    process.chdir(project.dir);
+    values.composition ??= project.config.composition;
   }
   if (command === "doctor") {
     const dir = entryArg ? (fs.statSync(path.resolve(entryArg)).isDirectory() ? path.resolve(entryArg) : findProjectDir(path.resolve(entryArg))) : process.cwd();
@@ -87,8 +114,8 @@ export async function main(argv: string[]) {
     if (bad) process.exitCode = 1;
     return;
   }
-  if (!entryArg) throw new Error(`Missing <entry>. ${HELP}`);
-  const entry = path.resolve(entryArg);
+  if (!entryArg && !project) throw new Error("Missing <entry> or clapper.json. Run clapper new <directory>.");
+  const entry = entryArg ? path.resolve(entryArg) : path.resolve(project!.dir, project!.config.entry);
   if (!fs.existsSync(entry)) throw new Error(`Entry not found: ${entry}`);
   const projectDir = findProjectDir(entry);
   const publicDir = path.join(projectDir, "public");
@@ -116,7 +143,7 @@ export async function main(argv: string[]) {
         }
       } finally {
         await server.close();
-        if (!values["keep-build"]) fs.rmSync(outDir, { recursive: true, force: true });
+        if (!values["keep-build"]) removeHarness(outDir);
       }
       return;
     }
@@ -163,7 +190,7 @@ export async function main(argv: string[]) {
         if (errors.length) process.exitCode = 1;
       } finally {
         await server.close();
-        if (!values["keep-build"]) fs.rmSync(outDir, { recursive: true, force: true });
+        if (!values["keep-build"]) removeHarness(outDir);
       }
       return;
     }
@@ -194,7 +221,7 @@ export async function main(argv: string[]) {
         }
       } finally {
         await server.close();
-        if (!values["keep-build"]) fs.rmSync(outDir, { recursive: true, force: true });
+        if (!values["keep-build"]) removeHarness(outDir);
       }
       return;
     }
@@ -273,7 +300,7 @@ export async function main(argv: string[]) {
         console.log(`Wrote ${result.out}  (${result.frames} frames, ${result.audioCues} audio cues, ${result.seconds.toFixed(1)}s render, ${((Date.now() - t0) / 1000).toFixed(1)}s total)`);
       } finally {
         await server.close();
-        if (!values["keep-build"]) fs.rmSync(outDir, { recursive: true, force: true });
+        if (!values["keep-build"]) removeHarness(outDir);
       }
       return;
     }

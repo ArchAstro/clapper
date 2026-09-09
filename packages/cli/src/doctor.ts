@@ -15,6 +15,7 @@ export interface DoctorCheck {
 /** Environment checks: Node, Chromium, ffmpeg encoders, React/core resolution from the project. */
 export function doctor(projectDir?: string): DoctorCheck[] {
   const out: DoctorCheck[] = [];
+  if (process.env.CLAPPER_RUNTIME) out.push({ name: "managed runtime", ok: true, detail: `${process.env.CLAPPER_VERSION} at ${process.env.CLAPPER_RUNTIME}` });
   const major = parseInt(process.versions.node.split(".")[0], 10);
   out.push({ name: "node", ok: major >= 24, detail: `v${process.versions.node}`, fix: "Node 24+ is required (the CLI runs TypeScript natively)." });
 

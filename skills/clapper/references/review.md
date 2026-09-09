@@ -7,7 +7,7 @@ The successful session pattern was author inspection → specialist review → b
 1. Finish a draft and generate its kit. Record round, entry, composition, fps, duration, format, props, source revision (including uncommitted changes), exact MP4 path, and SHA-256. Store the scene map and reviewer reports under that round's output directory. A Git HEAD alone does not identify dirty source.
 2. Check the author-selected opening, every cut, high-risk motion and final frame. Fix obvious failures before spending reviewer effort.
 3. Give every reviewer the same immutable MP4/kit, brief, current scene map, source access, and exact still command. Don't describe desired verdicts or hide known weak spots.
-4. No author edits while the round is being inspected. The kit can be read in parallel, but **all harness-building CLI commands for the same project must be serialized**: output directories alone do not avoid `.clapper/harness-build` races. Reviewers request frames from the parent, or get separately isolated, dependency-resolved project copies. Do not run multiple builds against one checkout.
+4. No author edits while the round is being inspected. The kit can be read in parallel. Current standalone builds isolate scratch per invocation; use distinct reviewer output directories. Older versions share `.clapper/harness-build` and must serialize harness commands or use isolated project copies. If version capabilities are unknown, reviewers request frame batches from the parent until isolation is established.
 
 For an isolated snapshot, keep its own writable `.clapper` directory and resolve imports through the installed workspace packages. A copied `package.json` with `workspace:*` is not a standalone install: `pnpm exec` outside the workspace may try to install and fail. A local test can invoke `node <clapper-repo>/packages/cli/bin/clapper.mjs ...` with the snapshot as `workdir`, after linking/resolving its dependencies. Do not install public lookalike packages to make the copy work.
 
@@ -38,7 +38,7 @@ lint.json (issues), brief.md (sampled-frame/copy-box coverage), and [cues path].
 Choose additional frames/windows that could disprove an apparent success.
 Still command: [exact pnpm --dir ... clapper still ... -c ... --frame ...].
 Rendering access: [request frame batches from parent, OR isolated project path].
-Do not launch harness commands concurrently against the shared project.
+Use unique outputs; serialize harness commands if build isolation is unverified.
 
 Prior fixes to verify: [issue IDs and changes; none for round 1].
 KEEP from prior round: [specific successful decisions to preserve].

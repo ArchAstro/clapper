@@ -2,6 +2,10 @@
 
 Write videos in React. Render them to MP4. Review them like a studio would.
 
+**Standalone distribution:** the native launcher now supports `clapper new`, `clapper add`, and project-local `preview`, `render`, and `review` with a managed Node/Chromium/ffmpeg runtime. See [building and testing the standalone package](docs/standalone.md). Release artifacts are built locally; creating them does not publish a release.
+
+**npm distribution:** [the npm/npx package](docs/npm.md) uses that same launcher and runtime. `node scripts/pack-npm.mjs` creates publishable CLI, platform-launcher, and core tarballs; `node scripts/test-npm.mjs` verifies the actual npm installation. No npm publication is performed by these commands.
+
 Every frame is a pure function of `useFrame()`. You compose scenes with ordinary React (hooks, context, CSS, SVG, any
 library, KaTeX), a scene plan positions them in time, sounds are React elements that register cues, and a headless
 Chromium harness renders each frame deterministically into ffmpeg. The same entry opens in a browser editor for scrubbing,

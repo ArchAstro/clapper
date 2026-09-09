@@ -4,6 +4,10 @@
   "type": "module",
   "packageManager": "pnpm@11.7.0",
   "scripts": {
+    "build:standalone": "node scripts/build-release.mjs",
+    "test:standalone": "node scripts/test-standalone.mjs",
+    "pack:npm": "node scripts/pack-npm.mjs",
+    "test:npm": "node scripts/test-npm.mjs",
     "build": "pnpm -r --filter './packages/*' run build",
     "typecheck": "pnpm -r run typecheck",
     "test": "pnpm -r run test",

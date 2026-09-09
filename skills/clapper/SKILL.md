@@ -9,6 +9,8 @@ Make the next useful artifact yourself: a scene plan, a few proof frames, a play
 
 ## 1. Find the project and choose the shortest route
 
+For a standalone install, start with `clapper --version` and the project's `clapper.json`. Use `clapper new <directory> --template basic|comic`, then `clapper preview`, `clapper render`, or `clapper review` from the generated project. `clapper install` restores portable dependencies; `clapper add <package>` adds libraries using managed npm. No source checkout or system Node/pnpm is needed. The project pins a runtime version; use the matching launcher instead of silently migrating it. When working on the framework or an older workspace project, follow the checkout route below.
+
 1. Locate the Clapper checkout: use the current workspace if it contains `packages/core` and `packages/cli`; otherwise check `/Users/calvin/archastro/clapper`. Read its `CLAUDE.md`, project README, package scripts, and Git status. Preserve existing edits. Never assume a new checkout has the same APIs as the last session.
 2. Choose the mode:
    - **New film:** start from `videos/_template`; choose one visual sibling from the table below.
@@ -77,7 +79,7 @@ pnpm --dir "$clapper_project" exec clapper review src/index.tsx -c "$clapper_id"
 
 JPEG q96 is the default intermediate and was much faster than PNG on grain. Choose PNG when lossless intermediates matter. CRF 17 suits flat art; 20–22 was useful for grain-heavy work. Measure the result instead of treating those as delivery requirements. Use short scene/range probes to diagnose slow renders.
 
-**Concurrency constraint:** Clapper rebuilds and deletes `<project>/.clapper/harness-build`. Separate output directories do not isolate it. Serialize `compositions`, `cues`, `still`, `render`, and `review` against the same project, including reviewer requests. Parallel reviewers can inspect an immutable kit; independent render commands need separate project snapshots with working dependency resolution. Do not edit source while reviewers are capturing frames.
+**Concurrency:** the standalone packaging implementation gives each build a unique `.clapper/harness-*/build` directory; those versions can build concurrently with distinct output paths. Older Clapper versions rebuild/delete one `.clapper/harness-build` directory: serialize their harness commands or use isolated project snapshots. Check the installed version/source rather than assuming isolation. Do not edit source while reviewers are capturing frames.
 
 ## 5. Review, fix, deliver
 
