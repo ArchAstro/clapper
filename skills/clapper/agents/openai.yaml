@@ -1,0 +1,4 @@
+interface:
+  display_name: "Clapper"
+  short_description: "Make React films with sound and adversarial review"
+  default_prompt: "Use $clapper to create or improve a video with polished visuals, intentional audio, and evidence-backed adversarial review."
