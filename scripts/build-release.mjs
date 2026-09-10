@@ -69,7 +69,18 @@ try {
     for (const [name, spec] of Object.entries(metadata.dependencies ?? {})) {
       if (String(spec).startsWith("workspace:")) {
         const sibling = JSON.parse(
-          fs.readFileSync(path.join(repo, "packages", name.split("/").at(-1), "package.json"), "utf8"),
+          fs.readFileSync(
+            path.join(
+              repo,
+              "packages",
+              name
+                .split("/")
+                .at(-1)
+                .replace(/^clapper-/, ""),
+              "package.json",
+            ),
+            "utf8",
+          ),
         );
         metadata.dependencies[name] = sibling.version;
       }
@@ -86,7 +97,7 @@ try {
   // Stable top-level links for generated projects (no global npm publication).
   const coreRequire = createRequire(path.join(repo, "packages/core/package.json"));
   const rootRequire = createRequire(path.join(repo, "package.json"));
-  const projectDependencies = { "@clapper/core": "packages/core" };
+  const projectDependencies = { "@archastro/clapper-core": "packages/core" };
   function collectProjectDependency(pkg, req) {
     if (projectDependencies[pkg]) return;
     const source = path.dirname(req.resolve(`${pkg}/package.json`));

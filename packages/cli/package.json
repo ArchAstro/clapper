@@ -1,11 +1,11 @@
 {
-  "name": "@clapper/cli",
-  "version": "0.3.0",
+  "name": "@archastro/clapper",
+  "version": "0.3.1",
   "license": "MIT",
   "engines": {
     "node": ">=24"
   },
-  "description": "Render @clapper compositions to MP4 in headless Chromium, and preview them in a studio.",
+  "description": "Render @archastro compositions to MP4 in headless Chromium, and preview them in a studio.",
   "type": "module",
   "bin": {
     "clapper": "./bin/clapper.mjs"
@@ -16,8 +16,8 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
-    "@clapper/music": "workspace:*",
-    "@clapper/core": "workspace:*",
+    "@archastro/clapper-music": "workspace:*",
+    "@archastro/clapper-core": "workspace:*",
     "@vitejs/plugin-react": "^5.0.0",
     "playwright": "1.62.1",
     "tsx": "^4.20.0",

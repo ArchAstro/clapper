@@ -10,9 +10,9 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@clapper/core": "workspace:*",
-    "@clapper/music": "workspace:*",
-    "@clapper/cli": "workspace:*",
+    "@archastro/clapper-core": "workspace:*",
+    "@archastro/clapper-music": "workspace:*",
+    "@archastro/clapper": "workspace:*",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },

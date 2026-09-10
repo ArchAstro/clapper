@@ -28,7 +28,7 @@ For a standalone install, start with `clapper --version` and the project's `clap
 | Playful springs and spatial movement | `videos/showcase/src/orbit/` |
 | Terminal, graphs, camera and grain | `videos/showcase/src/nimbus/` |
 | Character acting and continuous score | `videos/showcase/src/archdev/archdev2.tsx` |
-| Boiling-ink comic and reusable rig | `videos/showcase/src/archdev3/`, `@clapper/core/rigs` |
+| Boiling-ink comic and reusable rig | `videos/showcase/src/archdev3/`, `@archastro/clapper-core/rigs` |
 | New opening/ending around approved scenes | `videos/showcase/src/archdev4/archdev4.tsx` |
 | Sampled original score, beat-driven choreography, Music inspector | `videos/cat-ballet/src/score.ts`, `src/index.tsx`, `clapper.json` |
 
@@ -58,7 +58,7 @@ For a new video, copy only the template's authored files (`package.json`, `tscon
 
 ## 3. Author picture and sound together
 
-For a full musical score, follow [music.md](references/music.md): compose with `@clapper/music`, select real SFZ presets, prepare through `clapper.json`, and place `ScoreAudio` in the film. The studio's Music tab exposes a clickable piano roll and exact source code. Use synthesized cues for foley or their intended timbre; use sampled instruments for a requested sampled score.
+For a full musical score, follow [music.md](references/music.md): compose with `@archastro/clapper-music`, select real SFZ presets, prepare through `clapper.json`, and place `ScoreAudio` in the film. The studio's Music tab exposes a clickable piano roll and exact source code. Use synthesized cues for foley or their intended timbre; use sampled instruments for a requested sampled score.
 
 1. Write a compact beat plan: audience, promise, duration, format, style reference, one action per scene, on-screen copy, and the intended sound/quiet beat. For a requested spec, use an HTML task UI. Otherwise a short scene table is enough; don't delay a simple edit with a spec.
 2. `defineScenes` owns durations and overlaps. Pass the plan to both `<Composition scenes={SCENES}>` and `<Scenes plan={SCENES}>`. Use `SCENES.start(name)` for global sound cues. Inside a scene, `useFrame()` is local. Numeric times are frames; `"0.4s"` is seconds. Recompute frame references after a retime.

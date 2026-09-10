@@ -2,8 +2,8 @@ import { once } from "node:events";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import type { AudioCue, CompositionMeta } from "@clapper/core";
-import type { HarnessApi } from "@clapper/core/harness";
+import type { AudioCue, CompositionMeta } from "@archastro/clapper-core";
+import type { HarnessApi } from "@archastro/clapper-core/harness";
 import { type Browser, chromium, type Page } from "playwright";
 import { mixAudio, muxAudio, resolveVideoOptions, startFrameEncoder } from "./ffmpeg.ts";
 

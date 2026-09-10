@@ -2,7 +2,7 @@
 
 Write videos in React. Render them to MP4. Review them like a studio would.
 
-**Music as code:** [`@clapper/music`](docs/music.md) adds typed scores, tempo maps, MIDI interchange and native SFZ rendering with 75 catalogued CC0 presets. See [`videos/cat-ballet`](videos/cat-ballet/README.md) for an original chamber waltz synchronized to a cat's ballet choreography.
+**Music as code:** [`@archastro/clapper-music`](docs/music.md) adds typed scores, tempo maps, MIDI interchange and native SFZ rendering with 75 catalogued CC0 presets. See [`videos/cat-ballet`](videos/cat-ballet/README.md) for an original chamber waltz synchronized to a cat's ballet choreography.
 
 **Animal rock band:** [`After Closing`](videos/animal-rock/README.md) adds an original three-piece jam, note-driven performers and three curated CC0 guitar/bass/drum presets (78 presets total).
 
@@ -29,10 +29,10 @@ videos/<name>/src/index.tsx            packages/cli (Node)                      
 
 ## What is in the box
 
-1. **`@clapper/core`** — the React runtime: timeline and scenes, tweens and springs, camera, text effects, transitions,
+1. **`@archastro/clapper-core`** — the React runtime: timeline and scenes, tweens and springs, camera, text effects, transitions,
    LaTeX, media, an audio DSL synthesized offline (tones, plucks, FM piano, patterns, drones, keystrokes, ducking),
    hand-drawn "boiling ink" primitives, and two character rigs. Browser code only.
-2. **`@clapper/cli`** — `clapper render · still · preview · compositions · cues · review · doctor`. Vite bundling,
+2. **`@archastro/clapper`** — `clapper render · still · preview · compositions · cues · review · doctor`. Vite bundling,
    Playwright frame capture, ffmpeg encoding, audio synthesis and mixing. Runs its TypeScript natively on Node 24+.
 3. **The studio** — a browser editor: live thumbnails, viewport overlays, an NLE timeline with lanes per audio kind,
    an inspector with cue preview, and a scratch panel that compiles TSX in the browser.
@@ -105,8 +105,8 @@ frame-referenced fixes, re-render, repeat. Two or three rounds is typical for sh
 
 | Path | What |
 | --- | --- |
-| `packages/core` | `@clapper/core`: runtime, audio DSL, sketch primitives, `@clapper/core/rigs` (Person, Scribble), `/latex`, `/player` (studio), `/harness`. |
-| `packages/cli` | `@clapper/cli`: the `clapper` command, renderer, offline synth and mixer, review kit and lint, doctor. `test/` has the unit tests, `review-check.mjs` (lint fixture), `studio-check.mjs`, `dom-probe.mjs`. |
+| `packages/core` | `@archastro/clapper-core`: runtime, audio DSL, sketch primitives, `@archastro/clapper-core/rigs` (Person, Scribble), `/latex`, `/player` (studio), `/harness`. |
+| `packages/cli` | `@archastro/clapper`: the `clapper` command, renderer, offline synth and mixer, review kit and lint, doctor. `test/` has the unit tests, `review-check.mjs` (lint fixture), `studio-check.mjs`, `dom-probe.mjs`. |
 | `videos/_template` | Starter project: scenes, score, data, theme, scripts, a 9:16 variant. |
 | `videos/showcase` | Ledger, Orbit, Nimbus (agency spots), ArchDev v1/v2 (character film with a continuous score), ArchDev v3 (rage-comic cut). `README.md` has the review scores per round. |
 | `videos/intern-promo` | The tryintern.dev promo (57 s). |
@@ -154,7 +154,7 @@ frame-referenced fixes, re-render, repeat. Two or three rounds is typical for sh
    sequence's start + `at`. The studio plays cues live (Web Audio); the renderer synthesizes tones offline in Node,
    sums them into one track, and mixes file cues with ffmpeg (`adelay`/`afade`/`amix`).
 6. **Text & SVG.** `<Typewriter/>` (+ `typedLength()` to sync clicks), `<SplitText by="word|char|line"/>`, `<Counter/>`,
-   `<Draw>` (stroke-dashoffset reveal of every shape inside), `useBlink()`. `<Latex>` from `@clapper/core/latex` (KaTeX).
+   `<Draw>` (stroke-dashoffset reveal of every shape inside), `useBlink()`. `<Latex>` from `@archastro/clapper-core/latex` (KaTeX).
    Display-copy primitives: `<Reveal at from skew exitAt>` (masked line reveal), `<Copy x y align size plate>` (positioned
    line with an optional backing plate), `<Eyebrow>`, `<Rule>`. They tag the DOM with `data-copy`, which is what the review
    lint measures for safe-area and overlap.
@@ -163,7 +163,7 @@ frame-referenced fixes, re-render, repeat. Two or three rounds is typical for sh
    per frame and, when a key sets `arc`, lifts the hand targets through a midpoint so travel curves instead of sliding.
    `ik2()` is two-bone inverse kinematics with an outward elbow; `useEyeBlink()` / `useBreath()` are deterministic idle motion.
    `<Bubble x y kind="speech"|"thought" tail at exitAt>` pops a bubble from its tail tip. `evalPose()` is the pure blend behind `usePose()`.
-   Two characters ship in `@clapper/core/rigs`: `<Person pose>` (the monoline developer, with `PERSON_POSES`, `usePersonPose`,
+   Two characters ship in `@archastro/clapper-core/rigs`: `<Person pose>` (the monoline developer, with `PERSON_POSES`, `usePersonPose`,
    `<Archie>` and `<Desk>`) and `<Scribble pose typing fury>` (the rage-comic developer, `SCRIBBLE_POSES`, `useScribblePose`).
    Both are pure functions of a pose record, the frame and, for Scribble, the boil seed; ArchDev v1–v3 use them as-is.
 7. **Media & readiness.** `<Img/>`, `<Video/>` (currentTime driven by the frame; its soundtrack is mixed into the render unless
@@ -251,7 +251,7 @@ own headline elements to opt in. The brief says so when a composition has none.
 ## Extending
 
 It is all React: publish a package of components/hooks that use `useFrame()`/`useTimeline()` and it works in any video.
-`@clapper/core/latex` is the reference "extension" (kept as a subpath so KaTeX loads only when imported).
+`@archastro/clapper-core/latex` is the reference "extension" (kept as a subpath so KaTeX loads only when imported).
 Things that need to block a frame until ready use `delayRender()`. Things that make sound register through
 `getRegistry().audio` (see `audio.tsx`).
 

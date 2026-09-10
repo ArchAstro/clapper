@@ -15,7 +15,7 @@ import {
   useFrame,
   useSpring,
   Whoosh,
-} from "@clapper/core";
+} from "@archastro/clapper-core";
 import {
   EXPO,
   Eyebrow,

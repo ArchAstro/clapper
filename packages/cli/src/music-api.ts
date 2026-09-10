@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { compileScore, scoreAsset } from "@clapper/music";
+import { compileScore, scoreAsset } from "@archastro/clapper-music";
 import type { Plugin } from "vite";
 import { loadScore } from "./music-render.ts";
 

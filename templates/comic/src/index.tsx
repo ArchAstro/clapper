@@ -9,8 +9,8 @@ import {
   Scenes,
   SketchWindow,
   useFrame,
-} from "@clapper/core";
-import { SCRIBBLE_POSES, Scribble } from "@clapper/core/rigs";
+} from "@archastro/clapper-core";
+import { SCRIBBLE_POSES, Scribble } from "@archastro/clapper-core/rigs";
 import { DATA } from "./data";
 import "./theme.css";
 

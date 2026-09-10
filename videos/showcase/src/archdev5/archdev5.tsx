@@ -1,4 +1,4 @@
-import { AbsoluteFill, DeskTap, FeltPiano, Scenes, Sequence } from "@clapper/core";
+import { AbsoluteFill, DeskTap, FeltPiano, Scenes, Sequence } from "@archastro/clapper-core";
 import { Agents, Blank, Open, Plan, Review } from "../archdev3/archdev3";
 import { Intro, Outro, SCENES } from "../archdev4/archdev4";
 import { Grain } from "../kit";

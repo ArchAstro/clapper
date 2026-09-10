@@ -19,7 +19,7 @@ test("CLI exports transparent and translucent pixels, with and without audio", {
     fs.writeFileSync(
       entry,
       `
-import { Composition, registerRoot, Tone, useFrame } from "@clapper/core";
+import { Composition, registerRoot, Tone, useFrame } from "@archastro/clapper-core";
 function Overlay() {
   const frame = useFrame();
   return <>

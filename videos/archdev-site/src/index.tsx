@@ -22,13 +22,13 @@ import {
   useBoil,
   useFrame,
   SketchWindow as Win,
-} from "@clapper/core";
+} from "@archastro/clapper-core";
 import {
   SCRIBBLE_POSES as POSES,
   Scribble,
   type ScribblePose,
   useScribblePose as usePose,
-} from "@clapper/core/rigs";
+} from "@archastro/clapper-core/rigs";
 import type { ReactNode } from "react";
 import { D } from "./data";
 import "./fonts/fonts.css";

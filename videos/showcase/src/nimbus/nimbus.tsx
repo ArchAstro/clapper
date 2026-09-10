@@ -22,7 +22,7 @@ import {
   useFrame,
   useSpring,
   Whoosh,
-} from "@clapper/core";
+} from "@archastro/clapper-core";
 import { EXPO, Eyebrow, Grain, INOUT, type Pt, QUINT, Reveal, Vignette } from "../kit";
 import { TypeClicks } from "./typeclicks";
 

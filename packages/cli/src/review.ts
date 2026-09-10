@@ -1,7 +1,7 @@
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
-import type { CompositionMeta, SceneMeta } from "@clapper/core";
+import type { CompositionMeta, SceneMeta } from "@archastro/clapper-core";
 import { chromium } from "playwright";
 import { resolveFfmpeg } from "./ffmpeg.ts";
 import { CHROME_ARGS, openHarnessPage, renderComposition } from "./render.ts";

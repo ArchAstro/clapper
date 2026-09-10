@@ -9,7 +9,7 @@ import {
   useBlink,
   useFps,
   useFrame,
-} from "@clapper/core";
+} from "@archastro/clapper-core";
 import { type CSSProperties, type ReactNode, useMemo } from "react";
 
 /* Shared visual vocabulary for the Intern promo, mirroring the landing page's

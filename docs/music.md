@@ -1,11 +1,11 @@
 # Scores as code
 
-`@clapper/music` compiles typed musical scores into a deterministic event timeline. The CLI renders each instrument with native sfizz, mixes stems, masters the result to −18 LUFS, and uses that same prepared WAV in the studio and final export. Musical time is quarter-note beats at 960 PPQ, independent of video frames.
+`@archastro/clapper-music` compiles typed musical scores into a deterministic event timeline. The CLI renders each instrument with native sfizz, mixes stems, masters the result to −18 LUFS, and uses that same prepared WAV in the studio and final export. Musical time is quarter-note beats at 960 PPQ, independent of video frames.
 
 ## A complete first score
 
 ```ts
-import { defineScore, phrase, chord, track } from "@clapper/music";
+import { defineScore, phrase, chord, track } from "@archastro/clapper-music";
 
 export default defineScore({
   title: "A small waltz",
@@ -56,7 +56,7 @@ The studio's **Music** tab displays the configured score beside the film. **Scor
 Add `"score": "src/score.ts"` to `clapper.json`, alongside `runtime`, `entry` and `composition`. Then:
 
 ```tsx
-import { ScoreAudio } from "@clapper/core/music";
+import { ScoreAudio } from "@archastro/clapper-core/music";
 import score from "./score";
 
 function Film() {
@@ -73,7 +73,7 @@ Use `compileScore(score)`, `ticksToSeconds`, `secondsToBeat` and markers to alig
 1. `master.wav`, individual track WAVs and MIDI parts, `score.mid` when representable, compiled `score.json`, and a hash/provenance `manifest.json`. WAV stems have track gain/pan/reverb applied but are not individually loudness-normalized. Only the master is mastered.
 2. Cache keys include the compiled performance, renderer revision, sfizz executable hash and pinned sample-pack version. Cache hits verify output hashes. Use `--force` to render afresh. On the tested Apple Silicon build, fresh sampled renders are byte-identical, including sustain and reverb; different CPU/engine builds may differ in floating-point output.
 3. Internal rendering supports more than 15 melodic tracks by rendering each as a separate SFZ part. A single-port MIDI export supports 15 melodic channels plus percussion. Larger scores emit separate MIDI parts and omit the combined file instead of silently wrapping channels.
-4. MIDI interchange preserves notes, tempos, meters, controllers, bends and marker events. Track names carry SFZ IDs when exported by Clapper. Imported external MIDI needs instrument mapping; effects/routing/gain automation are not recovered, and the CLI reports those limitations. The Node MIDI adapter is available separately at `@clapper/music/midi`; the browser-safe composition entrypoint avoids loading the MIDI file parser.
+4. MIDI interchange preserves notes, tempos, meters, controllers, bends and marker events. Track names carry SFZ IDs when exported by Clapper. Imported external MIDI needs instrument mapping; effects/routing/gain automation are not recovered, and the CLI reports those limitations. The Node MIDI adapter is available separately at `@archastro/clapper-music/midi`; the browser-safe composition entrypoint avoids loading the MIDI file parser.
 5. This milestone provides per-track mixing and master processing, not a general DAW bus graph, arbitrary plugin hosting, MIDI 2.0/MPE, notation engraving, or a piano-roll editor. Additional SFZ libraries need a catalog/provenance entry; arbitrary external library import is not yet automated.
 
 ## Verification and showcase

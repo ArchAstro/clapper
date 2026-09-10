@@ -1,4 +1,4 @@
-import { AbsoluteFill, Panel, useBoil, useFrame } from "@clapper/core";
+import { AbsoluteFill, Panel, useBoil, useFrame } from "@archastro/clapper-core";
 import { Scribble, usePose } from "./scribble";
 
 /** Pose sheet for eyeballing the rig: three figures, three moods, boiling lines. */

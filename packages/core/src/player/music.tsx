@@ -1,4 +1,4 @@
-import { type CompiledScore, secondsToBeat } from "@clapper/music";
+import { type CompiledScore, secondsToBeat } from "@archastro/clapper-music";
 import { useEffect, useState } from "react";
 import type { AudioCue } from "../registry";
 

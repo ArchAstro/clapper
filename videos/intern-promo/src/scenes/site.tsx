@@ -1,4 +1,4 @@
-import { Animate, Click, interpolate, Pad, SplitText, Stagger, useFrame } from "@clapper/core";
+import { Animate, Click, interpolate, Pad, SplitText, Stagger, useFrame } from "@archastro/clapper-core";
 import { Chip, Dot, Kicker, Paper, Rise, SiteFrame } from "../ui";
 
 export const SITE_LEN = 280;

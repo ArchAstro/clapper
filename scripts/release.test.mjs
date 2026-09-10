@@ -8,7 +8,12 @@ import { test } from "node:test";
 import { main, orderArtifacts, publicationState, verifyFiles } from "./release.mjs";
 
 test("platforms precede music, core and CLI; missing or duplicate packages fail", () => {
-  const names = ["@clapper/cli", "@clapper/core", "@clapper/music", "@clapper/launcher-darwin-arm64"];
+  const names = [
+    "@archastro/clapper",
+    "@archastro/clapper-core",
+    "@archastro/clapper-music",
+    "@archastro/clapper-launcher-darwin-arm64",
+  ];
   const artifacts = names.map((name) => ({ name }));
   assert.deepEqual(
     orderArtifacts(artifacts, ["darwin-arm64"]).map((a) => a.name),
@@ -63,7 +68,7 @@ if (command === 'pnpm' && args[0] === 'pack:npm') {
   const platform = process.platform + '-' + process.arch;
   const version = '1.0.0';
   fs.mkdirSync('dist/npm/' + version, {recursive:true});
-  const names = ['@clapper/cli', '@clapper/music', '@clapper/core', '@clapper/launcher-' + platform];
+  const names = ['@archastro/clapper', '@archastro/clapper-music', '@archastro/clapper-core', '@archastro/clapper-launcher-' + platform];
   const artifacts = names.map((name, i) => ({name, file: i + '.tgz', integrity:'sha512-test'}));
   for (const a of artifacts) fs.writeFileSync('dist/npm/' + version + '/' + a.file, 'fixture');
   fs.writeFileSync('dist/runtime.tgz', 'fixture');

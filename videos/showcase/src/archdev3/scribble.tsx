@@ -4,7 +4,7 @@ export type {
   ScribblePose as SPose,
   ScribblePoseKey as SKey,
   ScribblePoseName as PoseName,
-} from "@clapper/core/rigs";
+} from "@archastro/clapper-core/rigs";
 export {
   SCRIBBLE_GREY,
   SCRIBBLE_INK,
@@ -12,4 +12,4 @@ export {
   SCRIBBLE_POSES as POSES,
   Scribble,
   useScribblePose as usePose,
-} from "@clapper/core/rigs";
+} from "@archastro/clapper-core/rigs";

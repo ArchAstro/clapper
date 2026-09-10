@@ -5,7 +5,7 @@ Frank, terse, for whoever picks this up next. Goal: make building the next video
 
 ## 1. What was built
 
-1. `packages/core` (`@clapper/core`): frame-deterministic React runtime. Timeline (`useFrame`, `Sequence`, `Series`, `Loop`, `TransitionSeries`), tweens (`interpolate`, `spring`, `Animate`, keyframes, `Stagger`), `Camera`, synthesized sound as React elements (`Tone`, `Chime`, `Whoosh`, `Click`, `Pad`, `Thump`, `Riser`, `Pop`, `Arp`, `Alert`, `Audio`), text/SVG effects (`Typewriter`, `SplitText`, `Counter`, `Draw`), `Latex`, media readiness (`Img`, `Video`, `delayRender`), a render harness (virtual clock, animation sync) and a studio.
+1. `packages/core` (`@archastro/clapper-core`): frame-deterministic React runtime. Timeline (`useFrame`, `Sequence`, `Series`, `Loop`, `TransitionSeries`), tweens (`interpolate`, `spring`, `Animate`, keyframes, `Stagger`), `Camera`, synthesized sound as React elements (`Tone`, `Chime`, `Whoosh`, `Click`, `Pad`, `Thump`, `Riser`, `Pop`, `Arp`, `Alert`, `Audio`), text/SVG effects (`Typewriter`, `SplitText`, `Counter`, `Draw`), `Latex`, media readiness (`Img`, `Video`, `delayRender`), a render harness (virtual clock, animation sync) and a studio.
 2. `packages/cli` (`clapper render | still | preview | compositions`): Vite bundle, Playwright frame capture (JPEG q96), ffmpeg-static encode, offline tone synthesis, mix, loudnorm mux.
 3. Videos: `videos/intern-promo` (57 s tryintern.dev promo) and `videos/showcase` (Ledger, Orbit, Nimbus, ArchDev; 22–36 s each; ArchDev is a character film on a monoline rig).
 4. Review loop: `videos/showcase/scripts/review-kit.mjs` (contact sheet, cut strips, spectrogram, waveform) + a reviewer subagent briefed as a studio creative director. 2–3 rounds per spot; all five spots ended at SHIP 8–9/10.
@@ -60,7 +60,7 @@ Each entry: what happened → root cause → workaround → durable fix (DONE or
 
 ### 2.8 review-kit could not resolve ffmpeg from a workspace package
 - What: `node scripts/review-kit.mjs` threw `ERR_MODULE_NOT_FOUND` for `ffmpeg-static` (it is a dependency of `packages/cli`, not of the video project).
-- Fix DONE: resolve via `createRequire(require.resolve("@clapper/cli/package.json"))("ffmpeg-static")`.
+- Fix DONE: resolve via `createRequire(require.resolve("@archastro/clapper/package.json"))("ffmpeg-static")`.
 - Fix PROPOSED: make the kit a CLI command (`clapper review-kit`), which owns ffmpeg (see §3, P0-4).
 
 ### 2.9 `still` took one frame per bundle
@@ -109,7 +109,7 @@ Each entry: what happened → root cause → workaround → durable fix (DONE or
 - Page errors are captured per worker and thrown on the next `setFrame`, so a throw in scene 5 surfaces only when a worker reaches it. Fine for correctness; confusing for progress output.
 
 ### 2.16 CLI runs TypeScript natively
-- Node 24+ type stripping runs `packages/cli/src/*.ts` directly (no build). Constraints: relative imports need `.ts` extensions, no enums/namespaces/parameter properties, and `import type` only from `@clapper/core` (browser code). This saved a build step but will surprise anyone who adds an enum.
+- Node 24+ type stripping runs `packages/cli/src/*.ts` directly (no build). Constraints: relative imports need `.ts` extensions, no enums/namespaces/parameter properties, and `import type` only from `@archastro/clapper-core` (browser code). This saved a build step but will surprise anyone who adds an enum.
 
 ### 2.17 Brand sourcing was manual
 - The early product demos adapted brand tokens, fonts, logos and copy, then localized Google Fonts files. The public repository includes the font license inventory and self-contained examples.
@@ -188,7 +188,7 @@ Harness errors already fail the render; add the scene name and local frame from 
 ### P1-1 Core text primitives — DONE (`Reveal`, `Copy`, `Eyebrow`, `Rule` in core with `data-copy` tags; showcase kit re-exports)
 `Reveal` (masked line reveal with `from`, `skew`, `exitAt`), `Copy` (positioned display copy with optional plate), `Eyebrow`, `Rule`. All three projects re-implemented them; the plate-before-text bug came from a project copy.
 
-### P1-2 Character toolkit in core — DONE (`definePoses`, `usePose`/`evalPose` with `arc`, `ik2`, `useEyeBlink`, `useBreath`, `<Bubble>`; two shipped rigs in `@clapper/core/rigs`: `Person` and `Scribble`; comic kit in core)
+### P1-2 Character toolkit in core — DONE (`definePoses`, `usePose`/`evalPose` with `arc`, `ik2`, `useEyeBlink`, `useBreath`, `<Bubble>`; two shipped rigs in `@archastro/clapper-core/rigs`: `Person` and `Scribble`; comic kit in core)
 Move `person.tsx` ideas into a generic rig: `definePose()`, typed `Pose` with named poses, `usePose(keys)` with arc-biased midpoints (`arc: 20`), two-bone `ik()`, blink/breath/idle generators, `<Bubble>` (thought/speech). Ship the monoline developer as the first rig.
 
 ### P1-3 Studio upgrades — DONE as an editor (project thumbnails, viewport overlays incl. copy boxes, NLE timeline with lanes per depth and per audio kind, gain envelopes, loop range, snapping, inspector with cue preview, cues table, Babel scratch compositions); pose scrubber still open

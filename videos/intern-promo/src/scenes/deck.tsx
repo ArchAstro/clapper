@@ -1,4 +1,4 @@
-import { Animate, interpolate, Pad, Sequence, SplitText, useFrame, Whoosh } from "@clapper/core";
+import { Animate, interpolate, Pad, Sequence, SplitText, useFrame, Whoosh } from "@archastro/clapper-core";
 import { Dark, Kicker } from "../ui";
 
 export const DECK_LEN = 130;

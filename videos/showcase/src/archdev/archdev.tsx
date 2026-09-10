@@ -29,7 +29,7 @@ import {
   useFps,
   useFrame,
   Whoosh,
-} from "@clapper/core";
+} from "@archastro/clapper-core";
 import type { ReactNode } from "react";
 import { Eyebrow, Grain, INOUT, QUINT, Reveal, Vignette } from "../kit";
 import { Archie, type ArchieState, Desk, Person, POSES, type Pose, usePose } from "./person";

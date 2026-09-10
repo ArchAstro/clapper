@@ -1,4 +1,4 @@
-import { Click, typedLength, useFps } from "@clapper/core";
+import { Click, typedLength, useFps } from "@archastro/clapper-core";
 import { useMemo } from "react";
 
 /** Click per typed character (or every Nth), synced to <Typewriter> with the same props. */

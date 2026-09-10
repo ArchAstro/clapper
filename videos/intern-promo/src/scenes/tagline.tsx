@@ -1,4 +1,13 @@
-import { Animate, Chime, Img, interpolate, Pad, SplitText, staticFile, useFrame } from "@clapper/core";
+import {
+  Animate,
+  Chime,
+  Img,
+  interpolate,
+  Pad,
+  SplitText,
+  staticFile,
+  useFrame,
+} from "@archastro/clapper-core";
 import { Paper, Rise, Wordmark } from "../ui";
 
 export const TAGLINE_LEN = 140;

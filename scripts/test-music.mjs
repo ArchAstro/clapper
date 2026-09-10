@@ -72,7 +72,7 @@ const source = path.join(project, "src/score.ts");
 fs.writeFileSync(source, `export default ${JSON.stringify(score)};`);
 fs.writeFileSync(
   path.join(project, "src/index.tsx"),
-  'import {Composition,registerRoot} from "@clapper/core"; import {ScoreAudio} from "@clapper/core/music"; import score from "./score"; function Film(){return <><ScoreAudio score={score}/><div>Music proof</div></>}; registerRoot(()=> <Composition id="proof" component={Film} width={640} height={360} fps={30} durationInFrames={240}/>);',
+  'import {Composition,registerRoot} from "@archastro/clapper-core"; import {ScoreAudio} from "@archastro/clapper-core/music"; import score from "./score"; function Film(){return <><ScoreAudio score={score}/><div>Music proof</div></>}; registerRoot(()=> <Composition id="proof" component={Film} width={640} height={360} fps={30} durationInFrames={240}/>);',
 );
 await prepareScore(source, project);
 const { url, server } = await startStudio(

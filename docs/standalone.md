@@ -11,7 +11,7 @@ node scripts/build-release.mjs
 node scripts/test-standalone.mjs
 
 # Use the two local artifacts before a GitHub release is published.
-set -lx CLAPPER_RUNTIME_URL "file://$PWD/dist/clapper-runtime-0.3.0-darwin-arm64.tar.gz"
+set -lx CLAPPER_RUNTIME_URL "file://$PWD/dist/clapper-runtime-0.3.1-darwin-arm64.tar.gz"
 ./dist/clapper-darwin-arm64 new /tmp/my-film --template comic
 cd /tmp/my-film
 /absolute/path/to/clapper-darwin-arm64 preview

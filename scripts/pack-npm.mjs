@@ -71,7 +71,7 @@ try {
     const [os, cpu] = m.platform.split("-");
     pack(dir, {
       ...common,
-      name: `@clapper/launcher-${m.platform}`,
+      name: `@archastro/clapper-launcher-${m.platform}`,
       description: `Clapper native launcher for ${m.platform}`,
       os: [os],
       cpu: [cpu],
@@ -86,13 +86,13 @@ try {
   fs.copyFileSync(path.join(repo, "docs/npm.md"), path.join(cli, "README.md"));
   pack(cli, {
     ...common,
-    name: "@clapper/cli",
+    name: "@archastro/clapper",
     description: "Create and render React videos with a managed Clapper runtime",
     bin: { clapper: "bin/clapper.cjs" },
     engines: { node: ">=20" },
     files: ["bin", "README.md"],
     optionalDependencies: Object.fromEntries(
-      manifests.map((m) => [`@clapper/launcher-${m.platform}`, version]),
+      manifests.map((m) => [`@archastro/clapper-launcher-${m.platform}`, version]),
     ),
     clapperPlatforms: manifests.map((m) => m.platform),
   });
@@ -113,7 +113,7 @@ try {
   pack(core, {
     ...source,
     ...common,
-    dependencies: { ...source.dependencies, "@clapper/music": version },
+    dependencies: { ...source.dependencies, "@archastro/clapper-music": version },
     files: ["src"],
   });
   fs.writeFileSync(

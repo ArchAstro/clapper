@@ -12,7 +12,7 @@ Compose a musical idea that fits the requested scene or genre, then use the actu
 ## 2. Author the score
 
 ```ts
-import { defineScore, note, phrase, chord, track } from "@clapper/music";
+import { defineScore, note, phrase, chord, track } from "@archastro/clapper-music";
 
 export default defineScore({
   title: "Small steps", tempo: 108, meter: [3, 4], seed: 17, tail: 3,
@@ -49,7 +49,7 @@ clapper score export src/score.ts -o out/score.mid
 clapper score import existing.mid -o src/imported-score.json
 ```
 
-Add `"score": "src/score.ts"` to the existing `clapper.json`, preserving its runtime, entry and composition. Import the score in React and mount `<ScoreAudio score={score}/>` from `@clapper/core/music` at the root of the composition. `preview`, `render`, `still` and `review` then prepare its audio automatically. A bare `score render` writes its output directory; it does not itself attach the WAV to the film.
+Add `"score": "src/score.ts"` to the existing `clapper.json`, preserving its runtime, entry and composition. Import the score in React and mount `<ScoreAudio score={score}/>` from `@archastro/clapper-core/music` at the root of the composition. `preview`, `render`, `still` and `review` then prepare its audio automatically. A bare `score render` writes its output directory; it does not itself attach the WAV to the film.
 
 Use `compileScore(score)`, `ticksToSeconds`, `secondsToBeat` and score markers to derive scene lengths, choreography, strums or drum strikes. Instrument performance should drive visible action: animate the drummer from actual drum onsets, not a generic wiggle. Account for ScoreAudio's offset when converting between score and film time.
 

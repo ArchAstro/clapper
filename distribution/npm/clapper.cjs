@@ -6,7 +6,7 @@ const path = require("node:path");
 
 const metadata = require(path.join(__dirname, "..", "package.json"));
 const platform = `${process.platform}-${process.arch}`;
-const pkg = `@clapper/launcher-${platform}`;
+const pkg = `@archastro/clapper-launcher-${platform}`;
 if (!metadata.optionalDependencies?.[pkg]) {
   console.error(
     `clapper: this release does not include ${platform}. Supported: ${metadata.clapperPlatforms.join(", ")}`,
@@ -18,7 +18,7 @@ try {
   executable = require.resolve(`${pkg}/bin/clapper`);
 } catch {
   console.error(
-    `clapper: ${pkg}@${metadata.version} is missing. Reinstall @clapper/cli with optional dependencies enabled (npm install --include=optional).`,
+    `clapper: ${pkg}@${metadata.version} is missing. Reinstall @archastro/clapper with optional dependencies enabled (npm install --include=optional).`,
   );
   process.exit(1);
 }

@@ -3,7 +3,7 @@ import "katex/dist/katex.min.css";
 import { type CSSProperties, useMemo } from "react";
 
 /**
- * Render LaTeX with KaTeX. Import from "@clapper/core/latex".
+ * Render LaTeX with KaTeX. Import from "@archastro/clapper-core/latex".
  *   <Latex display>{String.raw`\int_0^1 x^2\,dx = \tfrac13`}</Latex>
  */
 export function Latex({

@@ -4,7 +4,7 @@
 
 1. Anchor to real brand assets/copy when supplied. Use a distinct visual grammar: type roles, spacing, palette, material, motion and transitions that suit the subject. Ledger's editorial restraint, Orbit's springy blocks, and Nimbus's terminal glow are alternatives, not ingredients to mix indiscriminately.
 2. Each scene needs an action and an information hierarchy. Establish, act, react, hold. A character's emotion should read through silhouette, posture, gaze and timing before the caption explains it.
-3. Reuse core `Copy`, `Reveal`, `Eyebrow`, `Rule`, `Camera`, and animation helpers. Mark custom essential text with `data-copy=""`. Use `Person`/`Scribble` and named pose helpers from `@clapper/core/rigs` for compatible character designs. `definePoses`/`usePose`, IK and arc channels support custom acting; don't redraw an existing rig merely to change a gesture.
+3. Reuse core `Copy`, `Reveal`, `Eyebrow`, `Rule`, `Camera`, and animation helpers. Mark custom essential text with `data-copy=""`. Use `Person`/`Scribble` and named pose helpers from `@archastro/clapper-core/rigs` for compatible character designs. `definePoses`/`usePose`, IK and arc channels support custom acting; don't redraw an existing rig merely to change a gesture.
 4. Important async assets must be ready before capture: use local fonts/images and the core readiness APIs where needed. Test the actual rendered font, not just the fallback geometry.
 
 ## Checks that found real defects

@@ -11,7 +11,7 @@ import {
   useKeyframes,
   useSpring,
   Whoosh,
-} from "@clapper/core";
+} from "@archastro/clapper-core";
 import type { ReactNode } from "react";
 import { Kicker, LockGlyph, Paper, Rise } from "../ui";
 

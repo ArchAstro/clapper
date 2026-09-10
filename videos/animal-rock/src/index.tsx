@@ -1,6 +1,6 @@
-import { Composition, defineScenes, registerRoot, useFrame } from "@clapper/core";
-import { ScoreAudio } from "@clapper/core/music";
-import { compileScore, secondsToBeat } from "@clapper/music";
+import { Composition, defineScenes, registerRoot, useFrame } from "@archastro/clapper-core";
+import { ScoreAudio } from "@archastro/clapper-core/music";
+import { compileScore, secondsToBeat } from "@archastro/clapper-music";
 import { Drummer, Player } from "./band";
 import { score } from "./score";
 

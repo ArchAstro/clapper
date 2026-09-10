@@ -1,4 +1,4 @@
-import { compileScore, type Score, scoreAsset } from "@clapper/music";
+import { compileScore, type Score, scoreAsset } from "@archastro/clapper-music";
 import { useLayoutEffect, useMemo, useState } from "react";
 import { Audio } from "./audio";
 import type { Frames } from "./frames";

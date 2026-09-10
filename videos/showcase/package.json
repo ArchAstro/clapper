@@ -11,8 +11,8 @@
     "review": "for id in ledger orbit nimbus archdev archdev2 archdev3 archdev4; do clapper review src/index.tsx -c $id --video out/$id.mp4 || true; done"
   },
   "dependencies": {
-    "@clapper/cli": "workspace:*",
-    "@clapper/core": "workspace:*",
+    "@archastro/clapper": "workspace:*",
+    "@archastro/clapper-core": "workspace:*",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },

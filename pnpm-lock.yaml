@@ -20,10 +20,10 @@ importers:
 
   packages/cli:
     dependencies:
-      '@clapper/core':
+      '@archastro/clapper-core':
         specifier: workspace:*
         version: link:../core
-      '@clapper/music':
+      '@archastro/clapper-music':
         specifier: workspace:*
         version: link:../music
       '@vitejs/plugin-react':
@@ -51,7 +51,7 @@ importers:
       '@babel/standalone':
         specifier: ^7.29.8
         version: 7.29.8
-      '@clapper/music':
+      '@archastro/clapper-music':
         specifier: workspace:*
         version: link:../music
       katex:
@@ -95,10 +95,10 @@ importers:
 
   videos/_template:
     dependencies:
-      '@clapper/cli':
+      '@archastro/clapper':
         specifier: workspace:*
         version: link:../../packages/cli
-      '@clapper/core':
+      '@archastro/clapper-core':
         specifier: workspace:*
         version: link:../../packages/core
       react:
@@ -117,13 +117,13 @@ importers:
 
   videos/animal-rock:
     dependencies:
-      '@clapper/cli':
+      '@archastro/clapper':
         specifier: workspace:*
         version: link:../../packages/cli
-      '@clapper/core':
+      '@archastro/clapper-core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@clapper/music':
+      '@archastro/clapper-music':
         specifier: workspace:*
         version: link:../../packages/music
       react:
@@ -142,10 +142,10 @@ importers:
 
   videos/archdev-site:
     dependencies:
-      '@clapper/cli':
+      '@archastro/clapper':
         specifier: workspace:*
         version: link:../../packages/cli
-      '@clapper/core':
+      '@archastro/clapper-core':
         specifier: workspace:*
         version: link:../../packages/core
       react:
@@ -164,13 +164,13 @@ importers:
 
   videos/cat-ballet:
     dependencies:
-      '@clapper/cli':
+      '@archastro/clapper':
         specifier: workspace:*
         version: link:../../packages/cli
-      '@clapper/core':
+      '@archastro/clapper-core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@clapper/music':
+      '@archastro/clapper-music':
         specifier: workspace:*
         version: link:../../packages/music
       react:
@@ -189,10 +189,10 @@ importers:
 
   videos/intern-promo:
     dependencies:
-      '@clapper/cli':
+      '@archastro/clapper':
         specifier: workspace:*
         version: link:../../packages/cli
-      '@clapper/core':
+      '@archastro/clapper-core':
         specifier: workspace:*
         version: link:../../packages/core
       react:
@@ -211,10 +211,10 @@ importers:
 
   videos/showcase:
     dependencies:
-      '@clapper/cli':
+      '@archastro/clapper':
         specifier: workspace:*
         version: link:../../packages/cli
-      '@clapper/core':
+      '@archastro/clapper-core':
         specifier: workspace:*
         version: link:../../packages/core
       react:

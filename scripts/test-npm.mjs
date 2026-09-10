@@ -12,8 +12,8 @@ const manifest = JSON.parse(fs.readFileSync(path.join(repo, `dist/manifest-${pla
 const packed = path.join(repo, "dist/npm", manifest.version);
 const list = JSON.parse(fs.readFileSync(path.join(packed, "artifacts.json"), "utf8"));
 const tarball = (name) => path.join(packed, list.artifacts.find((a) => a.name === name).file);
-const cli = tarball("@clapper/cli"),
-  native = tarball(`@clapper/launcher-${platform}`);
+const cli = tarball("@archastro/clapper"),
+  native = tarball(`@archastro/clapper-launcher-${platform}`);
 const root = fs.mkdtempSync(path.join(os.tmpdir(), "clapper-npm-test-"));
 const prefix = path.join(root, "global");
 const env = {
@@ -45,14 +45,14 @@ const executable = path.join(prefix, "bin/clapper");
 assert.equal(run(executable, ["--version"]).trim(), manifest.version);
 assert.equal(fs.existsSync(env.CLAPPER_HOME), false, "version must not download a runtime");
 const metadata = JSON.parse(
-  fs.readFileSync(path.join(prefix, "lib/node_modules/@clapper/cli/package.json"), "utf8"),
+  fs.readFileSync(path.join(prefix, "lib/node_modules/@archastro/clapper/package.json"), "utf8"),
 );
 assert.ok(!JSON.stringify(metadata).includes("workspace:"));
-assert.equal(metadata.optionalDependencies[`@clapper/launcher-${platform}`], manifest.version);
+assert.equal(metadata.optionalDependencies[`@archastro/clapper-launcher-${platform}`], manifest.version);
 assert.equal(metadata.license, "MIT");
 assert.equal(metadata.publishConfig.access, "public");
 assert.match(
-  fs.readFileSync(path.join(prefix, "lib/node_modules/@clapper/cli/LICENSE"), "utf8"),
+  fs.readFileSync(path.join(prefix, "lib/node_modules/@archastro/clapper/LICENSE"), "utf8"),
   /MIT License/,
 );
 const project = path.join(root, "npm film");

@@ -9,7 +9,7 @@ import {
   Typewriter,
   Typing,
   useFrame,
-} from "@clapper/core";
+} from "@archastro/clapper-core";
 import { Dot, LockGlyph, Wordmark } from "./ui";
 
 export const INTERN_FILM_DURATION = 1140;

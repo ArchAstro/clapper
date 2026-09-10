@@ -109,7 +109,7 @@ export function createProject(target: string, template = "basic") {
   fs.cpSync(path.join(runtime, "templates", template, "src"), path.join(dest, "src"), { recursive: true });
   const bundled = JSON.parse(fs.readFileSync(path.join(runtime, "runtime.json"), "utf8"))
     .projectDependencies as Record<string, string>;
-  if (!bundled || !bundled["@clapper/core"])
+  if (!bundled || !bundled["@archastro/clapper-core"])
     throw new Error("Runtime is missing starter dependency metadata");
   const deps: Record<string, string> = {};
   const devDeps: Record<string, string> = {};

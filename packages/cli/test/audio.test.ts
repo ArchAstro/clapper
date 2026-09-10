@@ -1,4 +1,4 @@
-import type { AudioCue } from "@clapper/core";
+import type { AudioCue } from "@archastro/clapper-core";
 import { describe, expect, it } from "vitest";
 import { renderToneSamples, renderToneStereo, renderToneTrack } from "../src/ffmpeg.ts";
 

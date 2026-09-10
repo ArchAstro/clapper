@@ -12,7 +12,7 @@ React → MP4 video framework (pnpm workspace). See README.md for the model and 
 - Everything on screen must be a pure function of `useFrame()`; never use wall-clock time or `setTimeout` for motion.
 - Sounds are React elements (`<Tone>`, `<Chime>`, `<Audio>`…); cues are collected during render, so a cue inside a `<Sequence>` only exists while that sequence is mounted (that is fine: the renderer visits every frame).
 - The CLI runs its TypeScript directly on Node 24+ (type stripping): keep relative imports in `packages/cli/src` with `.ts` extensions and avoid enums/namespaces there.
-- `packages/core` is browser-only; `packages/cli` is Node-only. `@clapper/core/harness` and `/player` are mounted by the CLI's generated `.clapper/*` entries.
+- `packages/core` is browser-only; `packages/cli` is Node-only. `@archastro/clapper-core/harness` and `/player` are mounted by the CLI's generated `.clapper/*` entries.
 - A composition that throws fails the render (by design); check `[page error]` lines.
 - Size a `TransitionSeries` composition with `transitionSeriesLength()`; give hard-cut scenes an instant anchor at local frame 0.
 - Review loop for showcase-grade work: `clapper review <entry> -c <id>` (or `pnpm review` in `videos/showcase`) writes `out/review/<id>/` with a contact sheet, cut strips, spectrogram, loudness at cuts, lint and `brief.md`; a reviewer subagent (creative-director brief) reads it, renders its own stills (`still --scene x`), and returns SHIP/REVISE with frame-referenced fixes. Two to three rounds is typical.

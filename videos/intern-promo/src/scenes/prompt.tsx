@@ -1,4 +1,14 @@
-import { Animate, Camera, Chime, Easing, Pad, Sequence, Typewriter, useFrame, Whoosh } from "@clapper/core";
+import {
+  Animate,
+  Camera,
+  Chime,
+  Easing,
+  Pad,
+  Sequence,
+  Typewriter,
+  useFrame,
+  Whoosh,
+} from "@archastro/clapper-core";
 import { Dot, Paper, Rise, TypeClicks } from "../ui";
 
 export const PROMPT_LEN = 280;

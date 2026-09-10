@@ -1,6 +1,6 @@
 {
-  "name": "@clapper/music",
-  "version": "0.3.0",
+  "name": "@archastro/clapper-music",
+  "version": "0.3.1",
   "type": "module",
   "license": "MIT",
   "description": "Typed musical scores, tempo maps and MIDI interchange for Clapper",

@@ -1,4 +1,4 @@
-import { chord, defineScore, type Note, note } from "@clapper/music";
+import { chord, defineScore, type Note, note } from "@archastro/clapper-music";
 
 // AFTER CLOSING — an original E-minor garage-rock jam for a three-piece band.
 // One guitar alternates riffing, power chords and a melodic solo: no phantom overdub.

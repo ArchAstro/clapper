@@ -128,7 +128,7 @@ export function startFrameEncoder(o: VideoEncodeOptions) {
 
 /* ------------------------------ audio mixing ------------------------------- */
 
-import type { AudioCue, ToneSpec } from "@clapper/core";
+import type { AudioCue, ToneSpec } from "@archastro/clapper-core";
 
 export interface MixOptions {
   cues: AudioCue[];

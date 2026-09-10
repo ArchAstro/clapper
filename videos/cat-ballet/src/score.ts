@@ -1,4 +1,4 @@
-import { chord, defineScore, type Note, note, phrase } from "@clapper/music";
+import { chord, defineScore, type Note, note, phrase } from "@archastro/clapper-music";
 
 // An original 24-bar chamber waltz in D. Written notes, not a generated audio file.
 const harmony = [

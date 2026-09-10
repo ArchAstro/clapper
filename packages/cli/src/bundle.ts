@@ -26,7 +26,7 @@ export interface BundleTarget {
 }
 
 function corePackageDir(): string {
-  return path.dirname(require.resolve("@clapper/core/package.json"));
+  return path.dirname(require.resolve("@archastro/clapper-core/package.json"));
 }
 
 /** Writes .clapper/<mode>/{index.html,entry.tsx} and returns that directory. */
@@ -39,8 +39,8 @@ export function writeHarnessDir({ entry, projectDir, mode }: BundleTarget, uniqu
   if (!rel.startsWith(".")) rel = "./" + rel;
   const mount =
     mode === "harness"
-      ? `import { mountHarness } from "@clapper/core/harness";\nmountHarness();`
-      : `import { mountStudio } from "@clapper/core/player";\nmountStudio();`;
+      ? `import { mountHarness } from "@archastro/clapper-core/harness";\nmountHarness();`
+      : `import { mountStudio } from "@archastro/clapper-core/player";\nmountStudio();`;
   fs.writeFileSync(path.join(dir, "entry.tsx"), `import ${JSON.stringify(rel)};\n${mount}\n`);
   fs.writeFileSync(
     path.join(dir, "index.html"),
@@ -49,7 +49,7 @@ export function writeHarnessDir({ entry, projectDir, mode }: BundleTarget, uniqu
   return dir;
 }
 
-/** Projects that do not depend on React themselves get the copy @clapper/core was built against. */
+/** Projects that do not depend on React themselves get the copy @archastro/clapper-core was built against. */
 function reactAliases(projectDir: string): { find: RegExp; replacement: string }[] {
   try {
     createRequire(path.join(projectDir, "package.json")).resolve("react");
@@ -87,7 +87,7 @@ function baseConfig(t: BundleTarget, dir: string): InlineConfig {
     cacheDir: path.join(t.projectDir, ".clapper", "node_modules", ".vite"),
     plugins: [react()],
     resolve: {
-      dedupe: ["react", "react-dom", "react/jsx-runtime", "@clapper/core"],
+      dedupe: ["react", "react-dom", "react/jsx-runtime", "@archastro/clapper-core"],
       alias: reactAliases(t.projectDir),
     },
     server: {
@@ -107,12 +107,12 @@ function baseConfig(t: BundleTarget, dir: string): InlineConfig {
     optimizeDeps: {
       include: ["react", "react-dom", "react-dom/client", "react/jsx-runtime"],
       exclude: [
-        "@clapper/core",
-        "@clapper/core/player",
-        "@clapper/core/harness",
-        "@clapper/core/rigs",
-        "@clapper/core/latex",
-        "@clapper/core/music",
+        "@archastro/clapper-core",
+        "@archastro/clapper-core/player",
+        "@archastro/clapper-core/harness",
+        "@archastro/clapper-core/rigs",
+        "@archastro/clapper-core/latex",
+        "@archastro/clapper-core/music",
       ],
     },
     define: { "process.env.NODE_ENV": JSON.stringify(t.mode === "harness" ? "production" : "development") },

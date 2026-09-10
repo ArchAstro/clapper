@@ -27,10 +27,10 @@ function cleanHead() {
 }
 export function orderArtifacts(artifacts, platforms) {
   const names = [
-    ...platforms.map((p) => `@clapper/launcher-${p}`),
-    "@clapper/music",
-    "@clapper/core",
-    "@clapper/cli",
+    ...platforms.map((p) => `@archastro/clapper-launcher-${p}`),
+    "@archastro/clapper-music",
+    "@archastro/clapper-core",
+    "@archastro/clapper",
   ];
   assert.equal(new Set(platforms).size, platforms.length, "Duplicate platforms");
   assert.ok(platforms.length > 0, "No platforms prepared");
@@ -119,7 +119,15 @@ async function publish(dryRun) {
   const artifacts = orderArtifacts(receipt.artifacts, receipt.platforms);
   const tag = receipt.version.includes("-") ? "next" : "latest";
   if (!dryRun) {
-    run("npm", ["whoami", `--registry=${registry}`]);
+    const account = run("npm", ["whoami", `--registry=${registry}`], true);
+    const members = JSON.parse(
+      run("npm", ["org", "ls", "archastro", account, "--json", `--registry=${registry}`], true),
+    );
+    assert.ok(
+      Object.hasOwn(members, account),
+      `npm account ${account} is not a member of @archastro; sign in with an authorized account`,
+    );
+    console.log(`npm account: ${account} (@archastro ${members[account]})`);
   }
   // Preflight every package before making any registry writes.
   const plan = [];

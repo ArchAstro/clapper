@@ -20,7 +20,7 @@ import {
   useBoil,
   useFrame,
   Whoosh,
-} from "@clapper/core";
+} from "@archastro/clapper-core";
 import { Agents, Blank, FIG, INK, Open, PAPER, Plan, RED, Review, Score } from "../archdev3/archdev3";
 import { POSES, Scribble, usePose } from "../archdev3/scribble";
 import { Grain } from "../kit";

@@ -1,9 +1,9 @@
-import { Easing, interpolate, noise1d, useFrame } from "@clapper/core";
+import { Easing, interpolate, noise1d, useFrame } from "@archastro/clapper-core";
 import type { CSSProperties } from "react";
 
 /* ---------- shared motion vocabulary for the showcase videos ---------- */
 
-export { Eyebrow, Reveal, Rule } from "@clapper/core";
+export { Eyebrow, Reveal, Rule } from "@archastro/clapper-core";
 export const EXPO = Easing.outExpo;
 export const QUINT = Easing.outQuint;
 export const INOUT = Easing.inOutQuint;

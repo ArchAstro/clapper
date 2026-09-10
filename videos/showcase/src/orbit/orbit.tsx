@@ -19,7 +19,7 @@ import {
   useFrame,
   useSpring,
   Whoosh,
-} from "@clapper/core";
+} from "@archastro/clapper-core";
 import { EXPO, Grain, INOUT, QUINT, Reveal } from "../kit";
 
 /**

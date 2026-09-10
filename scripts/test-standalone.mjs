@@ -143,11 +143,11 @@ try {
   await run(["new", musicProject]);
   fs.writeFileSync(
     path.join(musicProject, "src/score.ts"),
-    'import {defineScore,phrase} from "@clapper/music"; export default defineScore({title:"Installed music",tempo:120,tail:1,tracks:[{id:"bells",instrument:"glockenspiel",clips:[{notes:phrase("C5 E5 G5",{duration:.5})}]}]});',
+    'import {defineScore,phrase} from "@archastro/clapper-music"; export default defineScore({title:"Installed music",tempo:120,tail:1,tracks:[{id:"bells",instrument:"glockenspiel",clips:[{notes:phrase("C5 E5 G5",{duration:.5})}]}]});',
   );
   fs.writeFileSync(
     path.join(musicProject, "src/index.tsx"),
-    'import {Composition,registerRoot} from "@clapper/core"; import {ScoreAudio} from "@clapper/core/music"; import score from "./score"; function Film(){return <><ScoreAudio score={score}/><div>Installed music</div></>}; registerRoot(()=> <Composition id="spot" component={Film} width={640} height={360} fps={30} durationInFrames={90}/>);',
+    'import {Composition,registerRoot} from "@archastro/clapper-core"; import {ScoreAudio} from "@archastro/clapper-core/music"; import score from "./score"; function Film(){return <><ScoreAudio score={score}/><div>Installed music</div></>}; registerRoot(()=> <Composition id="spot" component={Film} width={640} height={360} fps={30} durationInFrames={90}/>);',
   );
   const musicConfig = JSON.parse(fs.readFileSync(path.join(musicProject, "clapper.json"), "utf8"));
   musicConfig.score = "src/score.ts";

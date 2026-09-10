@@ -16,7 +16,7 @@ import {
   useFormat,
   useFrame,
   useProgress,
-} from "@clapper/core";
+} from "@archastro/clapper-core";
 import { DATA } from "./data";
 import "./theme.css";
 

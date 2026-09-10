@@ -1,4 +1,4 @@
-import { Animate, Chime, Pad, SplitText, Stagger } from "@clapper/core";
+import { Animate, Chime, Pad, SplitText, Stagger } from "@archastro/clapper-core";
 import { Kicker, Paper, Rise } from "../ui";
 
 export const PRICING_LEN = 190;

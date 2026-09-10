@@ -20,7 +20,7 @@ import {
   Typing,
   useFrame,
   Whoosh,
-} from "@clapper/core";
+} from "@archastro/clapper-core";
 import { Eyebrow, INOUT, Reveal } from "../kit";
 import { Agents, Blank, Clock, Copy, DESK, Open, Plan, Room, Workstation } from "./archdev";
 import { POSES, usePose } from "./person";

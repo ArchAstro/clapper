@@ -39,7 +39,7 @@ import {
   useFrame,
   Whoosh,
   SketchWindow as Win,
-} from "@clapper/core";
+} from "@archastro/clapper-core";
 import type { ReactNode } from "react";
 import { Grain } from "../kit";
 import { D } from "./data";

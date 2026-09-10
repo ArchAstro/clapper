@@ -1,8 +1,8 @@
 import fs from "node:fs";
 import path from "node:path";
 import { parseArgs } from "node:util";
-import { compileScore, defineScore, phrase, type Score } from "@clapper/music";
-import { exportMidi, importMidi } from "@clapper/music/midi";
+import { compileScore, defineScore, phrase, type Score } from "@archastro/clapper-music";
+import { exportMidi, importMidi } from "@archastro/clapper-music/midi";
 import { catalog, installInstrument } from "./instruments.ts";
 import { loadScore, renderScore } from "./music-render.ts";
 

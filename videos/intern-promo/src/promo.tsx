@@ -1,4 +1,4 @@
-import { AbsoluteFill, Sequence, TransitionSeries } from "@clapper/core";
+import { AbsoluteFill, Sequence, TransitionSeries } from "@archastro/clapper-core";
 import { CONNECT_LEN, ConnectScene } from "./scenes/connect";
 import { DECK_LEN, DeckScene } from "./scenes/deck";
 import { END_LEN, EndScene } from "./scenes/end";

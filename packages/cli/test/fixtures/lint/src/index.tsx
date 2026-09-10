@@ -1,4 +1,12 @@
-import { AbsoluteFill, Composition, Copy, defineScenes, registerRoot, Scenes, useFrame } from "@clapper/core";
+import {
+  AbsoluteFill,
+  Composition,
+  Copy,
+  defineScenes,
+  registerRoot,
+  Scenes,
+  useFrame,
+} from "@archastro/clapper-core";
 
 /** Deliberately broken: overlapping copy, copy off the safe area, a blank frame after the cut, Math.random in a frame. */
 const SCENES = defineScenes({ a: { seconds: 1 }, b: { seconds: 1 } }, { fps: 30 });

@@ -83,13 +83,13 @@ export function doctor(projectDir?: string): DoctorCheck[] {
 
   const dir = projectDir ?? process.cwd();
   const req = createRequire(path.join(dir, "package.json"));
-  for (const mod of ["react", "react-dom", "@clapper/core"]) {
+  for (const mod of ["react", "react-dom", "@archastro/clapper-core"]) {
     try {
       const p = req.resolve(`${mod}/package.json`);
       const v = JSON.parse(fs.readFileSync(p, "utf8")).version;
       out.push({ name: mod, ok: true, detail: `${v} from ${path.relative(dir, path.dirname(p)) || "."}` });
     } catch {
-      const soft = mod !== "@clapper/core";
+      const soft = mod !== "@archastro/clapper-core";
       out.push({
         name: mod,
         ok: soft,

@@ -17,8 +17,8 @@ import {
   useFrame,
   useSpring,
   useVideoConfig,
-} from "@clapper/core";
-import { Latex } from "@clapper/core/latex";
+} from "@archastro/clapper-core";
+import { Latex } from "@archastro/clapper-core/latex";
 
 /** A 3s kitchen-sink composition used to validate the pipeline end-to-end. */
 export function Smoke() {

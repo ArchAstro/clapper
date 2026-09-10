@@ -1,4 +1,4 @@
-import { Composition, registerRoot } from "@clapper/core";
+import { Composition, registerRoot } from "@archastro/clapper-core";
 import "./fonts/fonts.css";
 import "./theme.css";
 import { INTERN_FILM_DURATION, InternFilm } from "./film";

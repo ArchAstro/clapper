@@ -1,6 +1,6 @@
 {
-  "name": "@clapper/core",
-  "version": "0.3.0",
+  "name": "@archastro/clapper-core",
+  "version": "0.3.1",
   "license": "MIT",
   "description": "React runtime for frame-deterministic animated video: timeline, sequences, tweens, springs, camera, audio, LaTeX.",
   "type": "module",
@@ -24,7 +24,7 @@
     "react-dom": ">=18"
   },
   "dependencies": {
-    "@clapper/music": "workspace:*",
+    "@archastro/clapper-music": "workspace:*",
     "@babel/standalone": "^7.29.8",
     "katex": "^0.16.22"
   },
