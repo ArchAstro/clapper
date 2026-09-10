@@ -1,8 +1,8 @@
 # Clapper
 
-[![Watch Clapper turn code into animation and original music — 25-second intro](docs/media/clapper-intro.png)](https://raw.githubusercontent.com/ArchAstro/clapper/main/docs/media/clapper-intro.mp4)
+[![Watch Clapper turn code into animation and original music — 25-second intro](docs/media/clapper-intro.png)](https://cdn.jsdelivr.net/gh/ArchAstro/clapper@f39d98581ce8eb3eb4455ecaca0b970570ab690c/docs/media/clapper-intro.mp4)
 
-**[▶ Play the intro · 25 seconds · sound on](https://raw.githubusercontent.com/ArchAstro/clapper/main/docs/media/clapper-intro.mp4)** · [Video file](docs/media/clapper-intro.mp4) · [Source](videos/clapper-intro)
+**[▶ Play the intro · 25 seconds · sound on](https://cdn.jsdelivr.net/gh/ArchAstro/clapper@f39d98581ce8eb3eb4455ecaca0b970570ab690c/docs/media/clapper-intro.mp4)** · [Video file](docs/media/clapper-intro.mp4) · [Source](videos/clapper-intro)
 
 Install the skill for your coding agent:
 
