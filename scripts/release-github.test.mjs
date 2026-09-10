@@ -43,12 +43,13 @@ function fixture(options = {}) {
             : [],
         );
       if (endpoint.includes("/assets?")) return JSON.stringify([assets]);
-      if (endpoint.includes("/releases?")) return JSON.stringify([release ? [release] : []]);
-    }
-    if (args[0] === "release" && args[1] === "create") {
-      release = { id: 1, tag_name: "v0.3.0", draft: true, target_commitish: receipt.head };
-      assert.ok(args.includes("--draft"));
-      return "";
+      if (endpoint.includes("/releases?"))
+        return JSON.stringify([release && !options.staleList ? [release] : []]);
+      if (endpoint.endsWith("/releases") && args.includes("POST")) {
+        release = { id: 1, tag_name: "v0.3.0", draft: true, target_commitish: receipt.head };
+        assert.ok(args.includes("draft=true"));
+        return JSON.stringify(release);
+      }
     }
     if (args[0] === "release" && args[1] === "upload") {
       assert.ok(!args.includes("--clobber"));
@@ -74,19 +75,20 @@ function fixture(options = {}) {
   };
   return { calls, root: "/fixture", execute, request };
 }
-test("creates draft, uploads, verifies, publishes and checks anonymous access", async () => {
-  const f = fixture();
+test("creates draft despite stale listing, uploads, verifies, publishes and checks anonymous access", async () => {
+  const f = fixture({ staleList: true });
   await ensureGithubRelease(receipt, f);
   assert.deepEqual(
     f.calls.filter((c) => c[1] === "release").map((c) => c[2]),
-    ["create", "upload", "edit"],
+    ["upload", "edit"],
   );
+  assert.equal(f.calls.filter((c) => c.includes("POST")).length, 1);
   assert.equal(f.calls.filter((c) => c[0] === "HEAD").length, 3);
 });
 test("retry of matching release makes no writes", async () => {
   const f = fixture({ existing: true });
   await ensureGithubRelease(receipt, f);
-  assert.ok(f.calls.every((c) => c[1] !== "release"));
+  assert.ok(f.calls.every((c) => c[1] !== "release" && !c.includes("POST")));
 });
 test("digest conflicts, wrong tags and private repositories fail before writes", async () => {
   for (const options of [
@@ -96,7 +98,7 @@ test("digest conflicts, wrong tags and private repositories fail before writes",
   ]) {
     const f = fixture(options);
     await assert.rejects(ensureGithubRelease(receipt, f));
-    assert.ok(f.calls.every((c) => c[1] !== "release"));
+    assert.ok(f.calls.every((c) => c[1] !== "release" && !c.includes("POST")));
   }
 });
 test("failed upload leaves draft unpublished", async () => {
@@ -106,7 +108,7 @@ test("failed upload leaves draft unpublished", async () => {
   assert.ok(f.calls.every((c) => c[2] !== "edit"));
   options.uploadFails = false;
   await ensureGithubRelease(receipt, f);
-  assert.equal(f.calls.filter((c) => c[2] === "create").length, 1, "Retry must resume the draft");
+  assert.equal(f.calls.filter((c) => c.includes("POST")).length, 1, "Retry must resume the draft");
 });
 test("dry run has no network or GitHub side effects", async () => {
   const f = fixture();

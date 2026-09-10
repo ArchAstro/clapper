@@ -69,25 +69,24 @@ export async function ensureGithubRelease(receipt, { root, execute, request = fe
   let release = releases.find((r) => r.tag_name === tag);
   if (!release) {
     // Keep incomplete uploads unpublished; a retry resumes this draft.
-    execute("gh", [
-      "release",
-      "create",
-      tag,
-      "--repo",
-      repository,
-      "--target",
-      receipt.head,
-      "--title",
-      `Clapper ${receipt.version}`,
-      "--notes",
-      "React video and original music-as-code runtime. Includes matching native sources, licenses and checksums. macOS builds are ad-hoc signed.",
-      "--draft",
-      ...(receipt.version.includes("-") ? ["--prerelease"] : []),
+    // Use the creation response: the releases listing can lag behind a successful write.
+    release = api(`${base}/releases`, [
+      "--method",
+      "POST",
+      "-f",
+      `tag_name=${tag}`,
+      "-f",
+      `target_commitish=${receipt.head}`,
+      "-f",
+      `name=Clapper ${receipt.version}`,
+      "-f",
+      "body=React video and original music-as-code runtime. Includes matching native sources, licenses and checksums. macOS builds are ad-hoc signed.",
+      "-F",
+      "draft=true",
+      "-F",
+      `prerelease=${receipt.version.includes("-")}`,
     ]);
-    release = api(`${base}/releases?per_page=100`, ["--paginate", "--slurp"])
-      .flat()
-      .find((r) => r.tag_name === tag);
-    assert.ok(release, "Created GitHub release was not returned by the API");
+    assert.ok(release.id && release.tag_name === tag, "Unexpected GitHub creation response");
   }
   // Drafts may not have created their tag yet. Refuse a draft aimed at other source.
   if (release.draft)
