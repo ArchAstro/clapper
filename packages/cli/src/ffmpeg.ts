@@ -45,12 +45,36 @@ export interface VideoEncodeOptions {
   preset?: string;
   /** Pixel format; yuv420p for compatibility. */
   pixFmt?: string;
+  /** Preserve alpha using ProRes 4444 in a MOV container. */
+  transparent?: boolean;
   imageFormat?: "png" | "jpeg";
+}
+
+/** Resolve capture and encoding together so alpha cannot be silently discarded. */
+export function resolveVideoOptions(
+  o: Pick<VideoEncodeOptions, "codec" | "imageFormat" | "out" | "transparent" | "pixFmt">,
+) {
+  if (o.transparent) {
+    if (o.codec && o.codec !== "prores")
+      throw new Error("--transparent requires --codec prores (or omit --codec).");
+    if (path.extname(o.out).toLowerCase() !== ".mov")
+      throw new Error("--transparent requires a .mov output file.");
+    if (o.imageFormat && o.imageFormat !== "png")
+      throw new Error("--transparent requires --image-format png (or omit --image-format).");
+    if (o.pixFmt && o.pixFmt !== "yuva444p10le")
+      throw new Error("Transparent ProRes requires pixel format yuva444p10le.");
+  }
+  const codec = o.codec ?? (o.transparent ? "prores" : "h264");
+  return {
+    codec,
+    imageFormat: o.imageFormat ?? (o.transparent ? "png" : "jpeg"),
+    pixFmt: o.pixFmt ?? (o.transparent ? "yuva444p10le" : codec === "prores" ? "yuv422p10le" : "yuv420p"),
+  };
 }
 
 /** Spawn an ffmpeg that consumes PNG frames on stdin and writes a video file. */
 export function startFrameEncoder(o: VideoEncodeOptions) {
-  const codec = o.codec ?? "h264";
+  const { codec, imageFormat, pixFmt } = resolveVideoOptions({ ...o, imageFormat: o.imageFormat ?? "png" });
   const vcodec =
     codec === "h264"
       ? [
@@ -80,7 +104,7 @@ export function startFrameEncoder(o: VideoEncodeOptions) {
           ]
         : codec === "vp9"
           ? ["-c:v", "libvpx-vp9", "-crf", String(o.crf ?? 30), "-b:v", "0", "-row-mt", "1"]
-          : ["-c:v", "prores_ks", "-profile:v", "3"];
+          : ["-c:v", "prores_ks", "-profile:v", o.transparent ? "4" : "3"];
   const args = [
     "-y",
     "-f",
@@ -88,12 +112,12 @@ export function startFrameEncoder(o: VideoEncodeOptions) {
     "-framerate",
     String(o.fps),
     "-vcodec",
-    o.imageFormat === "jpeg" ? "mjpeg" : "png",
+    imageFormat === "jpeg" ? "mjpeg" : "png",
     "-i",
     "pipe:0",
     ...vcodec,
     "-pix_fmt",
-    o.pixFmt ?? (codec === "prores" ? "yuv422p10le" : "yuv420p"),
+    pixFmt,
     "-r",
     String(o.fps),
     "-an",

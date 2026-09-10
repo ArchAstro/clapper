@@ -26,7 +26,7 @@ Usage:
 
 Render options:
   -c, --composition <id>   Composition id (default: the only/first one)
-  -o, --out <file>         Output file (default: out/<id>.mp4)
+  -o, --out <file>         Output file (default: out/<id>.mp4; .mov with --transparent)
       --props <json>       Props passed to the composition
       --range <a-b>        Frame range, inclusive start, exclusive end (e.g. 0-90)
       --scene <name>       Limit to one scene of a defineScenes() plan (render: range; still: frames are scene-local)
@@ -39,6 +39,7 @@ Render options:
       --crf <n>            Quality (lower = better; default 17)
       --preset <name>      x264 preset (default medium)
       --image-format <f>   jpeg (default, q96, ~5x faster) | png (lossless intermediate)
+      --transparent        Preserve alpha (render only; PNG capture, ProRes 4444 .mov)
       --mute               Skip audio mixing
       --loudnorm <lufs|off> Loudness target (default -17 LUFS)
       --keep-build         Keep this invocation's .clapper/harness-*/build
@@ -72,6 +73,7 @@ export async function main(argv: string[]) {
       crf: { type: "string" },
       preset: { type: "string" },
       "image-format": { type: "string" },
+      transparent: { type: "boolean" },
       mute: { type: "boolean" },
       loudnorm: { type: "string" },
       "keep-build": { type: "boolean" },
@@ -93,6 +95,8 @@ export async function main(argv: string[]) {
     console.log(HELP);
     return;
   }
+  if (values.transparent && command !== "render")
+    throw new Error("--transparent is supported by clapper render only.");
   if (command === "new") {
     if (!entryArg || positionals.length !== 2)
       throw new Error("Usage: clapper new <directory> [--template basic|comic]");
@@ -361,7 +365,7 @@ export async function main(argv: string[]) {
           path.join(
             projectDir,
             "out",
-            `${compositionId}${values.scene ? `.${values.scene}` : ""}${values.draft ? ".draft" : ""}.mp4`,
+            `${compositionId}${values.scene ? `.${values.scene}` : ""}${values.draft ? ".draft" : ""}.${values.transparent ? "mov" : "mp4"}`,
           );
         let last = -1;
         const result = await renderComposition({
@@ -377,6 +381,7 @@ export async function main(argv: string[]) {
           crf: values.crf ? parseInt(values.crf, 10) : values.draft ? 28 : undefined,
           preset: values.preset ?? (values.draft ? "veryfast" : undefined),
           imageFormat: values["image-format"] as never,
+          transparent: values.transparent,
           muteAudio: values.mute,
           loudnorm:
             values.loudnorm === undefined

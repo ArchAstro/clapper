@@ -185,8 +185,15 @@ frame-referenced fixes, re-render, repeat. Two or three rounds is typical for sh
 
 ## Renderer
 
-`clapper render <entry> -c <id> -o out.mp4 [--scene plan] [--draft] [--concurrency 4] [--scale 2] [--range 0-90] [--codec h264|h265|vp9|prores] [--crf 17] [--image-format png|jpeg] [--mute] [--props '{"title":"x"}']`
+`clapper render <entry> -c <id> -o out.mp4 [--scene plan] [--draft] [--concurrency 4] [--scale 2] [--range 0-90] [--codec h264|h265|vp9|prores] [--crf 17] [--image-format png|jpeg] [--transparent] [--mute] [--props '{"title":"x"}']`
 
+- `clapper render <entry> -c <id> --transparent -o out/overlay.mov` preserves transparency using ProRes 4444.
+  With no `-o`, the output defaults to `out/<id>.mov`. This automatically selects PNG capture and ProRes;
+  explicit JPEG, other codecs, or non-MOV outputs are rejected. Leave the composition background transparent:
+  this preserves existing alpha, including partial opacity, but does not remove painted backgrounds.
+  Audio is preserved. Ordinary renders retain their existing settings.
+  Verify the full capture/encode/mux path with `node --test packages/cli/test/transparent-check.mjs`
+  (requires Chromium, FFmpeg, and ffprobe).
 - `--scene <name>` renders one scene of a `defineScenes` plan; `--draft` is half resolution, CRF 28, veryfast, for iteration.
 - `clapper still <entry> -c <id> --scene review` writes the first, middle and last frame of the scene; `--frame 12,40` is
   scene-local when `--scene` is given; `--every 30` samples across the scene or `--range`.

@@ -5,7 +5,7 @@ import path from "node:path";
 import type { AudioCue, CompositionMeta } from "@clapper/core";
 import type { HarnessApi } from "@clapper/core/harness";
 import { type Browser, chromium, type Page } from "playwright";
-import { mixAudio, muxAudio, startFrameEncoder } from "./ffmpeg.ts";
+import { mixAudio, muxAudio, resolveVideoOptions, startFrameEncoder } from "./ffmpeg.ts";
 
 declare global {
   interface Window {
@@ -28,6 +28,8 @@ export interface RenderOptions {
   preset?: string;
   /** Intermediate frame format piped to ffmpeg. Default jpeg (q96); png is lossless but ~5x slower on noisy frames. */
   imageFormat?: "png" | "jpeg";
+  /** Capture and export alpha as ProRes 4444 MOV. */
+  transparent?: boolean;
   muteAudio?: boolean;
   /** Integrated loudness target in LUFS (default -17); false disables normalisation. */
   loudnorm?: boolean | number;
@@ -113,6 +115,7 @@ export interface RenderResult {
 }
 
 export async function renderComposition(o: RenderOptions): Promise<RenderResult> {
+  const { imageFormat: fmt } = resolveVideoOptions(o);
   const log = o.log ?? ((m) => console.error(m));
   const scale = o.scale ?? 1;
   const concurrency = Math.max(1, o.concurrency ?? Math.min(4, Math.max(1, os.cpus().length - 1)));
@@ -141,7 +144,6 @@ export async function renderComposition(o: RenderOptions): Promise<RenderResult>
     const videoOnly = path.join(workDir, `video${path.extname(o.out) || ".mp4"}`);
     // JPEG capture by default: PNG-encoding a 1080p frame with grain or
     // gradients costs ~250 ms; JPEG q96 costs ~40 ms and is invisible after x264.
-    const fmt = o.imageFormat ?? "jpeg";
     const encoder = startFrameEncoder({
       fps: meta.fps,
       width: meta.width * scale,
@@ -151,6 +153,7 @@ export async function renderComposition(o: RenderOptions): Promise<RenderResult>
       crf: o.crf,
       preset: o.preset,
       imageFormat: fmt,
+      transparent: o.transparent,
     });
     const stdin = encoder.child.stdin!;
     let encoderFailed: Error | null = null;
@@ -201,6 +204,7 @@ export async function renderComposition(o: RenderOptions): Promise<RenderResult>
           await page.evaluate((frame) => window.__clapper!.setFrame(frame), f);
           const buf = await page.screenshot({
             type: fmt,
+            omitBackground: o.transparent,
             quality: fmt === "jpeg" ? 96 : undefined,
             animations: "allow",
             caret: "hide",
