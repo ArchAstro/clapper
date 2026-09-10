@@ -45,6 +45,10 @@ test("CLI preparation gates publication and forwards dry-run to every package", 
     fs.mkdirSync(path.join(root, "scripts"));
     fs.mkdirSync(path.join(root, "bin"));
     fs.copyFileSync(new URL("./release.mjs", import.meta.url), path.join(root, "scripts/release.mjs"));
+    fs.copyFileSync(
+      new URL("./release-github.mjs", import.meta.url),
+      path.join(root, "scripts/release-github.mjs"),
+    );
     fs.writeFileSync(path.join(root, ".gitignore"), "dist/\ncommands.log\n");
     // Only orchestration is under test here; native builds have their own acceptance suites.
     const stub = `#!${process.execPath}
@@ -66,7 +70,7 @@ if (command === 'pnpm' && args[0] === 'pack:npm') {
   fs.writeFileSync('dist/launcher', 'fixture');
   fs.writeFileSync('dist/npm/' + version + '/artifacts.json', JSON.stringify({version, platforms:[platform], artifacts}));
   const sourceRevision = cp.execFileSync('git', ['rev-parse','HEAD'], {encoding:'utf8'}).trim();
-  fs.writeFileSync('dist/manifest-' + platform + '.json', JSON.stringify({version, sourceRevision, runtime:{file:'runtime.tgz', url:'https://example.invalid/runtime'}, launcher:{file:'launcher'}}));
+  fs.writeFileSync('dist/manifest-' + platform + '.json', JSON.stringify({version, sourceRevision, runtime:{file:'runtime.tgz', url:'https://github.com/ArchAstro/clapper/releases/download/v1.0.0/runtime.tgz'}, launcher:{file:'launcher'}}));
 }
 `;
     for (const tool of ["pnpm", "go", "npm"])
@@ -88,6 +92,8 @@ if (command === 'pnpm' && args[0] === 'pack:npm') {
     const prepared = invoke(["prepare"]);
     assert.equal(prepared.status, 0, prepared.stderr);
     assert.ok(fs.existsSync(path.join(root, "dist/release-prepared.json")));
+    // New source edits are not included in publishing the previously tested artifacts.
+    fs.writeFileSync(path.join(root, "new-development.txt"), "not in release");
     const preview = invoke(["publish", "--dry-run"]);
     assert.equal(preview.status, 0, preview.stderr);
     const commands = fs
@@ -102,6 +108,7 @@ if (command === 'pnpm' && args[0] === 'pack:npm') {
       publishes.map((c) => path.basename(c[2])),
       ["3.tgz", "1.tgz", "2.tgz", "0.tgz"],
     );
+    fs.unlinkSync(path.join(root, "new-development.txt"));
     assert.equal(invoke(["prepare"], { CLAPPER_TEST_FAIL: "check" }).status, 1);
     assert.ok(!fs.existsSync(path.join(root, "dist/release-prepared.json")), "Failure invalidates approval");
   } finally {

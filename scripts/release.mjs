@@ -5,6 +5,7 @@ import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { ensureGithubRelease } from "./release-github.mjs";
 
 const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const registry = "https://registry.npmjs.org";
@@ -107,17 +108,17 @@ async function existingIntegrity(name, version) {
 async function publish(dryRun) {
   assert.ok(fs.existsSync(receiptFile), "Run pnpm release:prepare first");
   const receipt = JSON.parse(fs.readFileSync(receiptFile, "utf8"));
-  assert.equal(cleanHead(), receipt.head, "Prepared release is from another commit; prepare again");
+  // Publication consumes the immutable, tested artifacts, not the current source tree.
+  // Later development must not force a rebuild of an already-uploaded version on retry.
+  assert.match(receipt.head, /^[a-f0-9]{40}$/i, "Invalid prepared source revision");
+  run("git", ["cat-file", "-e", `${receipt.head}^{commit}`]);
   verifyFiles(repo, receipt.files);
+  console.log(
+    `Publishing prepared ${receipt.version} from commit ${receipt.head}; current source edits are not included.`,
+  );
   const artifacts = orderArtifacts(receipt.artifacts, receipt.platforms);
   const tag = receipt.version.includes("-") ? "next" : "latest";
   if (!dryRun) {
-    // No credentials: public users must be able to download the managed runtime.
-    const response = await fetch(receipt.runtimeURL, {
-      method: "HEAD",
-      signal: AbortSignal.timeout(30000),
-    });
-    assert.ok(response.ok, `Publish the public GitHub runtime first: ${receipt.runtimeURL}`);
     run("npm", ["whoami", `--registry=${registry}`]);
   }
   // Preflight every package before making any registry writes.
@@ -128,6 +129,7 @@ async function publish(dryRun) {
       : publicationState(await existingIntegrity(artifact.name, receipt.version), artifact.integrity);
     plan.push({ artifact, state });
   }
+  await ensureGithubRelease(receipt, { root: repo, execute: run, dryRun });
   for (const { artifact, state } of plan) {
     if (state === "skip") {
       console.log(`Already published with matching integrity: ${artifact.name}@${receipt.version}`);

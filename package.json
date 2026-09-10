@@ -18,7 +18,7 @@
     "pack:npm": "node scripts/pack-npm.mjs",
     "release:prepare": "node scripts/release.mjs prepare",
     "release:publish": "node scripts/release.mjs publish",
-    "test:release": "node --test scripts/release.test.mjs",
+    "test:release": "node --test scripts/release.test.mjs scripts/release-github.test.mjs",
     "test:npm": "node scripts/test-npm.mjs",
     "build": "pnpm -r --filter './packages/*' run build",
     "typecheck": "pnpm -r run typecheck",

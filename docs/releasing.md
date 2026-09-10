@@ -9,16 +9,18 @@ From a clean, committed checkout:
 ```fish
 pnpm release:prepare
 pnpm release:publish --dry-run
-# Make the GitHub runtime public (section 2), then authenticate with npm:
+gh auth login
 npm login --registry=https://registry.npmjs.org
 pnpm release:publish
 ```
 
-`release:prepare` installs from the lockfile, runs lint/format, public-source, type, unit and Go checks, builds the runtime/packages, and runs standalone and npm acceptance tests. Only a successful run writes `dist/release-prepared.json`, binding the tested files to their hashes and Git commit. Preparation does not publish anything. Commit source changes before preparation; any later commit, rebuild or altered artifact requires preparation again. This convenience workflow currently qualifies one native platform per release.
+`release:prepare` installs from the lockfile, runs lint/format, public-source, type, unit and Go checks, builds the runtime/packages, and runs standalone and npm acceptance tests. Only a successful run writes `dist/release-prepared.json`, binding the tested files to their hashes and Git commit. Preparation does not publish anything. Commit source changes before preparation. Publishing consumes these exact prepared artifacts, not subsequent source edits; it prints the source revision being released. Changed artifacts require preparation again. This convenience workflow currently qualifies one native platform per release.
 
-`release:publish` verifies that receipt and a clean checkout, checks anonymous access to the GitHub runtime and npm authentication, then publishes launchers → music → core → CLI. It uses `latest` for stable versions and `next` for prereleases. A retry skips already-published versions only when their registry integrity matches; conflicting versions fail before any new publication. npm publication is not atomic: if authentication or the network fails midway, fix the issue and rerun the same command. The wrapper never changes repository visibility, creates GitHub releases, or logs in for you.
+`release:publish` verifies the receipt and artifact hashes, preflights npm authentication/version conflicts, creates or resumes the GitHub release, uploads the launcher/runtime/manifest, verifies remote SHA-256 digests and anonymous downloads, then publishes launchers → music → core → CLI. New GitHub releases stay drafts until every upload is verified. Existing tags must point at the prepared commit; existing assets must match byte-for-byte and are never overwritten. It uses `latest` for stable npm versions and `next` for prereleases (also marked prerelease on GitHub). A retry skips already-published npm versions only when their registry integrity matches. Publication is not atomic: after a network/authentication failure, rerun the same command with the same prepared artifacts to resume.
 
-`--dry-run` validates prepared files and runs npm's publication preview without registry writes; it skips remote availability/authentication checks, so it is not proof of publishing permissions. Unknown flags are rejected. In CI, provide npm credentials through the runner's npm configuration instead of `npm login`; the scripts inherit that configuration and return a nonzero exit code on failure. Interactive npm authentication may require 2FA. The lower-level commands below remain available for diagnosis.
+One-time setup: make the repository public explicitly and authenticate with GitHub and npm. The wrapper never changes repository visibility or logs in for you. Push the prepared commit before publishing. GitHub credentials need release-write permission; npm credentials need publishing rights in the `@clapper` scope. Do not rebuild a version after any release asset/package has been published; use the original prepared artifacts or choose a new version.
+
+`--dry-run` validates prepared files, prints the planned GitHub operation and runs npm's publication preview without external writes; it skips remote availability/authentication checks, so it is not proof of publishing permissions. Unknown flags are rejected. In CI, provide `GH_TOKEN` with contents-write permission and npm credentials through the runner's npm configuration instead of interactive login; scripts return nonzero on failure. Interactive npm authentication may require 2FA. The lower-level commands below remain available for diagnosis, not as extra steps in the normal workflow.
 
 ## 1. Prepare an immutable candidate
 
@@ -46,7 +48,7 @@ Artifacts are in `dist/` and `dist/npm/0.3.0/`. Each npm package includes MIT li
 
 ## 2. Make the runtime available before npm
 
-Make the GitHub repository public through its settings after reviewing the intended source/examples. Then publish the matching runtime assets. This is separate from npm publishing: the CLI's first real command downloads this archive.
+`pnpm release:publish` performs this step automatically. The manual equivalent below is only for troubleshooting. Repository visibility is a one-time explicit setup step, not changed by the script. The CLI's first real command downloads this runtime archive.
 
 ```fish
 gh release create v0.3.0 \
