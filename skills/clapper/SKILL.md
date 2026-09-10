@@ -81,16 +81,22 @@ JPEG q96 is the default intermediate and was much faster than PNG on grain. Choo
 
 **Concurrency:** the standalone packaging implementation gives each build a unique `.clapper/harness-*/build` directory; those versions can build concurrently with distinct output paths. Older Clapper versions rebuild/delete one `.clapper/harness-build` directory: serialize their harness commands or use isolated project snapshots. Check the installed version/source rather than assuming isolation. Do not edit source while reviewers are capturing frames.
 
-## 5. Review, fix, deliver
+## 5. Required adversarial review gate
 
-For a new finished film or substantial polish, follow [review.md](references/review.md): author inspection → independent visual and audio critiques → evidence-backed fixes → fresh review of the changed result. Add a muted-feed reviewer when social distribution matters. A quick preview request does not require the whole loop.
+**A successful render is not a finished film.** For a new finished film, showcase, substantial polish, or final original score, read and follow [review.md](references/review.md). Plan reviewer access before the final encode. This gate is required unless the user explicitly limits the task to a draft, preview, or diagnostic.
+
+1. **Independent reviewers are required when available and permitted.** After author inspection, delegate read-only critique of the frozen export to separate visual and audio reviewers. For original music, require explicit composition/performance review too (the audio reviewer may cover both). Music-only work needs music/audio review, not an invented visual deliverable. Add a muted-feed/story reviewer for social-feed work.
+2. **Review the actual artifact.** Supply the exact export path/hash, brief, scene map, kit and source snapshot. Visual review must include playback/motion evidence, not just a contact sheet. Audio review must address the final muxed soundtrack; stems, source and loudness numbers alone are insufficient. Reviewers must state what they actually saw/heard and what remains unverified.
+3. **Collect verdicts and an issue ledger.** Each required reviewer returns SHIP / REVISE / BLOCKED, inspected frames/time ranges, evidence-backed issues, and verification of prior fixes. Missing reports, tools, playback or listening evidence do not count as approval. Self-review and `clapper review` output do not substitute for independent critique.
+4. **Fix → regenerate → independently recheck.** Reproduce findings, record decisions, fix accepted blockers/major defects, and have reviewers verify the changed export. Any picture, sound, timing, props, format or encode change invalidates affected approvals. Keep the reports tied to the final artifact, not an earlier draft.
+5. **Do not declare final/approved without the gate.** Every required domain must have sufficient evidence, an independent SHIP verdict, and no unresolved blocker/major defect. If independence or required media inspection is unavailable, deliver only a clearly labeled draft/partial result with **review incomplete**, naming the missing check. Ask for the specific capability or user acceptance of that limitation; never silently downgrade the requirement. Do not chase an arbitrary numeric score or add unrelated redesign.
 
 Completion means:
 
 1. The requested entry/ID/format renders; picture is inspected at opening, cuts, motion trouble spots, and final held frame; factual copy and CTA agree.
 2. Sound was checked on the exported file. Report whether it was actually auditioned or only measured. No claim of listening based on a waveform.
-3. Review blockers are fixed and verified. Record remaining taste notes and any unverified dimension. A score is supporting feedback, not a substitute for evidence or a promise of awards/virality.
-4. The final MP4 and kit match the final source/props/format; changes after review invalidate the affected checks. Link the playable output and preview, name the composition and duration, and give a short verdict.
+3. Required independent reviews are complete, and accepted blockers/major defects are fixed and rechecked. Record remaining minor/taste notes and any user-accepted limitation. A score is supporting feedback, not a substitute for evidence or a promise of awards/virality.
+4. The final MP4 and kit match the final source/props/format. Link the playable output and review reports, name the composition/duration, and report visual, audio and (when applicable) music verdicts separately. Never describe an unreviewed replacement as the approved file.
 
 Keep commits, pushes, uploads and publishing within the user's requested scope. This skill does not authorize them.
 
