@@ -1,19 +1,21 @@
 ---
 name: clapper
-description: Create, edit, preview, render, and improve Clapper React videos and original music-as-code scores. Covers sampled SFZ instruments, MIDI and stems, the studio Music/Code view, motion design, characters, foley, and adversarial visual/audio review. Use for Clapper films, original scores, animated demos, and recuts; not ordinary website UI or unrelated video editors.
+description: Bootstrap Clapper and create, edit, preview, render, and improve React videos and original music-as-code scores. Handles CLI/runtime/project setup, sampled SFZ instruments, MIDI and stems, the studio Music/Code view, motion design, characters, foley, and adversarial visual/audio review. Use for Clapper films, original scores, animated demos, and recuts; not ordinary website UI or unrelated video editors.
 ---
 
 # Clapper: brief → picture + sound → reviewed MP4
 
 Make the next useful artifact yourself: a scene plan, a few proof frames, a playable draft, or a verified final. Keep updates short and numbered. Ask only for decisions that materially change the film; infer ordinary production choices from the request and existing project.
 
-## 1. Find the project and choose the shortest route
+## 1. Bootstrap, then choose the shortest route
 
-For a standalone install, start with `clapper --version` and the project's `clapper.json`. Use `clapper new <directory> --template basic|comic`, then `clapper preview`, `clapper render`, or `clapper review` from the generated project. `clapper install` restores portable dependencies; `clapper add <package>` adds libraries using managed npm. No source checkout or system Node/pnpm is needed. The project pins a runtime version; use the matching launcher instead of silently migrating it. When working on the framework or an older workspace project, follow the checkout route below.
+**Read [bootstrap.md](references/bootstrap.md) first.** Installing this skill is the user's only setup step; perform the remaining setup yourself. Detect the project, OS/architecture and installed tools. With Node/npm available, run the bundled `scripts/bootstrap.mjs` using the installed skill's absolute path. It installs a pinned CLI through npm's cache, prepares the managed runtime, creates/restores the project, runs doctor and captures a proof frame. Without Node/npm, follow the verified native-launcher route in that reference. Reuse a working install; never silently upgrade a pinned project. Use the source route only for an existing framework workspace or framework development.
 
-1. Locate the Clapper checkout: use the current workspace if it contains `packages/core` and `packages/cli`; otherwise use the user-provided checkout or an installed `clapper` command. Read its `CLAUDE.md`, project README, package scripts, and Git status. Preserve existing edits. Never assume a new checkout has the same APIs as the last session.
+For the rest of this skill, `clapper` means the exact command prefix resolved during bootstrap (possibly `npm exec --yes --package=@archastro/clapper@<resolved-version> -- clapper`, or an absolute native launcher path). It does not assume a global executable. Run commands with the project directory as `workdir`. Do not require pnpm, a source checkout, system FFmpeg, a browser install or a separate sampler for the standalone route.
+
+1. Read project instructions, `clapper.json`, package scripts and Git status; preserve existing edits. Read API exports from the installed runtime or existing source checkout rather than assuming the last session's API. Bootstrap already verified the first frame; inspect that proof and continue instead of repeating setup.
 2. Choose the mode:
-   - **New film:** start from `videos/_template`; choose one visual sibling from the table below.
+   - **New film:** use the bootstrapped basic/comic project; choose a visual direction from the brief and a relevant available example.
    - **Recut:** preserve the previous composition ID; reuse exported scene components and make the new scene plan explicit. Review changed scenes and both joins, plus regressions in the full export.
    - **Audio pass:** keep picture timing fixed unless authorized to retime; read [audio.md](references/audio.md).
    - **Original music / band / choreography:** read [music.md](references/music.md), then [audio.md](references/audio.md) for mix review. Music-only requests do not require creating a video.
@@ -32,29 +34,23 @@ For a standalone install, start with `clapper --version` and the project's `clap
 | New opening/ending around approved scenes | `videos/showcase/src/archdev4/archdev4.tsx` |
 | Sampled original score, beat-driven choreography, Music inspector | `videos/cat-ballet/src/score.ts`, `src/index.tsx`, `clapper.json` |
 
-Use the existing primitive before inventing a replacement. Later local examples such as `archdev5` may contain useful new instruments; check exports and tests before relying on them. They are not automatically reviewed or shipped because their source exists.
+The table names repository examples, not files guaranteed to exist beside an installed skill. Prefer the installed runtime's templates and core/music exports; fetch only a relevant example from the matching official release tag if needed. Missing checkout examples must not block a new film. Use the existing primitive before inventing a replacement. Later local examples such as `archdev5` may contain useful new instruments; check exports and tests before relying on them. They are not automatically reviewed or shipped because their source exists.
 
 ## 2. Get to a working frame
 
-Commands below are Fish syntax. Set actual paths and IDs once; use the tool's `workdir` or `pnpm --dir` rather than relying on persistent `cd` state.
+Commands below use the resolved `clapper` prefix and the project root as `workdir`. Set the actual composition ID from bootstrap or `compositions`; don't rely on persistent `cd` state. These are production checks, not a second installation sequence.
 
 ```fish
-set -l clapper_repo (pwd) # run from the Clapper checkout
-set -l clapper_project "$clapper_repo/videos/showcase"
-set -l clapper_id archdev4
-
-pnpm --dir "$clapper_project" exec clapper --help
-pnpm --dir "$clapper_project" exec clapper doctor src/index.tsx
-pnpm --dir "$clapper_project" exec clapper compositions src/index.tsx --json
-pnpm --dir "$clapper_project" exec clapper still src/index.tsx -c "$clapper_id" --frame 0,30 --out out/stills/first-look
-pnpm --dir "$clapper_project" exec clapper preview src/index.tsx --port 4321
+set -l clapper_id spot # replace with the requested/configured ID
+clapper --help
+clapper compositions --json
+clapper still -c "$clapper_id" --frame 0,30 --out out/stills/first-look
+clapper preview --port 4321
 ```
 
 Preview is a long-running server. Use its printed URL (the port may change). Open the user handoff in their main Google Chrome profile; automated browser checks use an isolated profile. Space plays, arrows step, `[` / `]` jump cuts, `s` shows safe areas, `c` shows copy boxes, `i` / `o` set a loop range. ScoreAudio plays the actual prepared WAV; synthesized cue previews are approximations. Judge the exported combined mix.
 
-If setup is missing: Node 24+, pnpm, `pnpm install` at the repository root, then `pnpm --dir packages/cli exec playwright install chromium`. Build the encoder with `node scripts/build-ffmpeg.mjs` or use system FFmpeg with libx264. Run doctor against the actual video project. Use the actual Clapper packages: don't substitute a similarly named unrelated npm package.
-
-For a new video, copy only the template's authored files (`package.json`, `tsconfig.json`, `src/`, and assets if present) into an unused `videos/<name>`; never copy `node_modules`, `.clapper`, or `out`. Set a unique package name and composition ID, then install workspace links. Keep useful `preview`, `still`, `review`, `render`, and `typecheck` scripts with explicit IDs.
+If a dependency or runtime check fails, return to the appropriate route in [bootstrap.md](references/bootstrap.md); don't improvise a second installation. For legacy workspace projects, pass their explicit entry and use the checkout-local CLI; preserve that workflow instead of converting it silently.
 
 ## 3. Author picture and sound together
 
@@ -70,13 +66,13 @@ For a full musical score, follow [music.md](references/music.md): compose with `
 
 ```fish
 # For a scene named intro; replace with a name from the scene map.
-pnpm --dir "$clapper_project" exec clapper still src/index.tsx -c "$clapper_id" --scene intro --every 6 -o out/stills/intro
-pnpm --dir "$clapper_project" exec clapper render src/index.tsx -c "$clapper_id" --scene intro --draft -o out/intro-draft.mp4
-pnpm --dir "$clapper_project" exec clapper review src/index.tsx -c "$clapper_id" --draft -o out/review/round-1
+clapper still -c "$clapper_id" --scene intro --every 6 -o out/stills/intro
+clapper render -c "$clapper_id" --scene intro --draft -o out/intro-draft.mp4
+clapper review -c "$clapper_id" --draft -o out/review/round-1
 
 # Final encode, then review that exact file without another encode.
-pnpm --dir "$clapper_project" exec clapper render src/index.tsx -c "$clapper_id" --crf 20 -o out/final.mp4
-pnpm --dir "$clapper_project" exec clapper review src/index.tsx -c "$clapper_id" --video out/final.mp4 -o out/review/final
+clapper render -c "$clapper_id" --crf 20 -o out/final.mp4
+clapper review -c "$clapper_id" --video out/final.mp4 -o out/review/final
 ```
 
 `--scene` makes explicit still frame numbers scene-local. `--range a-b` is start-inclusive/end-exclusive; with `still --range`, explicit frame numbers are offsets from the range start too. Without either, `--frame` is absolute. Valid final frame is `durationInFrames - 1`.
