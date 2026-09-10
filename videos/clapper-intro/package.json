@@ -1,0 +1,21 @@
+{
+  "name": "clapper-intro",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "preview": "clapper preview",
+    "render": "clapper render --loudnorm off --crf 19 -o out/clapper-intro.mp4",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@archastro/clapper-core": "workspace:*",
+    "@archastro/clapper-music": "workspace:*",
+    "@archastro/clapper": "workspace:*",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0"
+  }
+}

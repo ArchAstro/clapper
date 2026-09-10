@@ -1,0 +1,1 @@
+{ "runtime": "0.3.1", "entry": "src/index.tsx", "composition": "clapper-intro", "score": "src/score.ts" }

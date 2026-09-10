@@ -48,12 +48,12 @@ importers:
 
   packages/core:
     dependencies:
-      '@babel/standalone':
-        specifier: ^7.29.8
-        version: 7.29.8
       '@archastro/clapper-music':
         specifier: workspace:*
         version: link:../music
+      '@babel/standalone':
+        specifier: ^7.29.8
+        version: 7.29.8
       katex:
         specifier: ^0.16.22
         version: 0.16.47
@@ -163,6 +163,31 @@ importers:
         version: 19.2.5(@types/react@19.2.18)
 
   videos/cat-ballet:
+    dependencies:
+      '@archastro/clapper':
+        specifier: workspace:*
+        version: link:../../packages/cli
+      '@archastro/clapper-core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@archastro/clapper-music':
+        specifier: workspace:*
+        version: link:../../packages/music
+      react:
+        specifier: ^19.2.0
+        version: 19.2.8
+      react-dom:
+        specifier: ^19.2.0
+        version: 19.2.8(react@19.2.8)
+    devDependencies:
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.2.18
+      '@types/react-dom':
+        specifier: ^19.0.0
+        version: 19.2.5(@types/react@19.2.18)
+
+  videos/clapper-intro:
     dependencies:
       '@archastro/clapper':
         specifier: workspace:*
