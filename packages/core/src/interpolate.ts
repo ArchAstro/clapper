@@ -56,7 +56,10 @@ export const Easing = {
   }) as EasingFn,
   bezier,
   /** Step function with n steps. */
-  steps: (n: number): EasingFn => (t) => Math.min(1, Math.floor(t * n) / n),
+  steps:
+    (n: number): EasingFn =>
+    (t) =>
+      Math.min(1, Math.floor(t * n) / n),
 };
 
 export type Extrapolate = "clamp" | "extend" | "identity";
@@ -110,7 +113,12 @@ export const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 export const mix = lerp;
 
 /** Progress 0..1 of `frame` through [start, start+duration), eased. Clamped. */
-export function progress(frame: number, start: number, duration: number, easing: EasingFn = Easing.linear): number {
+export function progress(
+  frame: number,
+  start: number,
+  duration: number,
+  easing: EasingFn = Easing.linear,
+): number {
   if (duration <= 0) return frame >= start ? 1 : 0;
   return easing(clamp((frame - start) / duration, 0, 1));
 }
@@ -186,7 +194,13 @@ export function spring({
 
 /** Frames until a spring with this config is within 0.5% of rest. Cached. */
 const settleCache = new Map<string, number>();
-export function springSettleFrames({ fps, config = SpringPresets.default }: { fps: number; config?: SpringConfig }): number {
+export function springSettleFrames({
+  fps,
+  config = SpringPresets.default,
+}: {
+  fps: number;
+  config?: SpringConfig;
+}): number {
   const key = `${fps}:${config.mass ?? 1}:${config.stiffness ?? 100}:${config.damping ?? 10}:${config.velocity ?? 0}`;
   const cached = settleCache.get(key);
   if (cached !== undefined) return cached;
@@ -214,7 +228,11 @@ export function springSettleFrames({ fps, config = SpringPresets.default }: { fp
 /* ------------------------------- helpers ---------------------------------- */
 
 /** Stagger helper: delay for item i of n, in frames. */
-export function stagger(index: number, each: number, opts: { from?: "start" | "end" | "center"; total?: number } = {}): number {
+export function stagger(
+  index: number,
+  each: number,
+  opts: { from?: "start" | "end" | "center"; total?: number } = {},
+): number {
   const { from = "start", total } = opts;
   if (from === "start" || total === undefined) return index * each;
   if (from === "end") return (total - 1 - index) * each;

@@ -1,1 +1,1 @@
-{"runtime":"0.3.0-dev.1","entry":"src/index.tsx","composition":"cat-ballet","score":"src/score.ts"}
+{ "runtime": "0.3.0", "entry": "src/index.tsx", "composition": "cat-ballet", "score": "src/score.ts" }

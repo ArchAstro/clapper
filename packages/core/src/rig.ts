@@ -1,8 +1,8 @@
 import { useMemo } from "react";
-import { Easing, type EasingFn } from "./interpolate";
 import { evalKeyframes } from "./animate";
+import { type Frames, resolveFrames } from "./frames";
+import { Easing, type EasingFn } from "./interpolate";
 import { useFps, useFrame } from "./timeline";
-import { resolveFrames, type Frames } from "./frames";
 
 /**
  * Character rig helpers. A pose is a flat record of numeric channels; scenes
@@ -11,7 +11,9 @@ import { resolveFrames, type Frames } from "./frames";
  */
 
 /** Declare a typed set of named poses. */
-export function definePoses<P extends Record<keyof P, number>, N extends string>(poses: Record<N, P>): Record<N, P> {
+export function definePoses<P extends Record<keyof P, number>, N extends string>(
+  poses: Record<N, P>,
+): Record<N, P> {
   return poses;
 }
 
@@ -28,7 +30,13 @@ export interface PoseKey<P extends Record<keyof P, number>, N extends string> {
   arc?: number;
 }
 
-const EASES: Record<string, EasingFn> = { linear: Easing.linear, outBack: Easing.outBack, inOutCubic: Easing.inOutCubic, outExpo: Easing.outExpo, outQuint: Easing.outQuint };
+const EASES: Record<string, EasingFn> = {
+  linear: Easing.linear,
+  outBack: Easing.outBack,
+  inOutCubic: Easing.inOutCubic,
+  outExpo: Easing.outExpo,
+  outQuint: Easing.outQuint,
+};
 
 export interface PoseOptions<P> {
   /** [x, y] channel pairs that get a lifted midpoint when a key sets `arc`. */
@@ -37,11 +45,17 @@ export interface PoseOptions<P> {
 }
 
 /** Pure pose blend at a local frame (what usePose returns). */
-export function evalPose<P extends Record<keyof P, number>, N extends string>(poses: Record<N, P>, keys: PoseKey<P, N>[], frame: number, fps: number, options: PoseOptions<P> = {}): P {
+export function evalPose<P extends Record<keyof P, number>, N extends string>(
+  poses: Record<N, P>,
+  keys: PoseKey<P, N>[],
+  frame: number,
+  fps: number,
+  options: PoseOptions<P> = {},
+): P {
   const resolved = keys.map((k) => ({
     frame: resolveFrames(k.at, fps),
     pose: (typeof k.pose === "string" ? poses[k.pose as N] : k.pose) as unknown as Record<string, number>,
-    easing: typeof k.ease === "string" ? EASES[k.ease] : k.ease ?? Easing.inOutCubic,
+    easing: typeof k.ease === "string" ? EASES[k.ease] : (k.ease ?? Easing.inOutCubic),
     arc: k.arc ?? 0,
   }));
   const kf: any[] = [];
@@ -59,14 +73,29 @@ export function evalPose<P extends Record<keyof P, number>, N extends string>(po
 }
 
 /** Blend pose keys at the local frame (see evalPose). */
-export function usePose<P extends Record<keyof P, number>, N extends string>(poses: Record<N, P>, keys: PoseKey<P, N>[], options: PoseOptions<P> = {}): P {
+export function usePose<P extends Record<keyof P, number>, N extends string>(
+  poses: Record<N, P>,
+  keys: PoseKey<P, N>[],
+  options: PoseOptions<P> = {},
+): P {
   const frame = useFrame();
   const fps = useFps();
-  return useMemo(() => evalPose(poses, keys, frame, fps, options), [poses, keys, frame, fps, options.arcChannels, options.offset]);
+  return useMemo(
+    () => evalPose(poses, keys, frame, fps, options),
+    [poses, keys, frame, fps, options.arcChannels, options.offset],
+  );
 }
 
 /** Two-bone IK: returns the elbow for shoulder (sx,sy) reaching target (tx,ty); the elbow bends outward from centre (side ±1). */
-export function ik2(sx: number, sy: number, tx: number, ty: number, l1: number, l2: number, side: 1 | -1): [number, number] {
+export function ik2(
+  sx: number,
+  sy: number,
+  tx: number,
+  ty: number,
+  l1: number,
+  l2: number,
+  side: 1 | -1,
+): [number, number] {
   let dx = tx - sx;
   let dy = ty - sy;
   let d = Math.hypot(dx, dy);
@@ -96,7 +125,15 @@ export function ik2(sx: number, sy: number, tx: number, ty: number, l1: number, 
 }
 
 /** Deterministic blink amount 0..1 (1 = closed) with a period in frames. */
-export function useEyeBlink({ period = 92, length = 5, offset = 37 }: { period?: number; length?: number; offset?: number } = {}): number {
+export function useEyeBlink({
+  period = 92,
+  length = 5,
+  offset = 37,
+}: {
+  period?: number;
+  length?: number;
+  offset?: number;
+} = {}): number {
   const frame = useFrame();
   const t = (frame + offset) % period;
   return t < length ? 1 - Math.abs(t - length / 2.5) / (length / 2) : 0;

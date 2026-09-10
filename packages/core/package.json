@@ -1,6 +1,7 @@
 {
   "name": "@clapper/core",
-  "version": "0.1.0",
+  "version": "0.3.0",
+  "license": "MIT",
   "description": "React runtime for frame-deterministic animated video: timeline, sequences, tweens, springs, camera, audio, LaTeX.",
   "type": "module",
   "main": "./src/index.ts",
@@ -11,8 +12,8 @@
     "./player": "./src/player/index.tsx",
     "./harness": "./src/harness/index.tsx",
     "./package.json": "./package.json",
-    "./rigs": "./src/rigs/index.ts"
-    ,"./music": "./src/score-audio.tsx"
+    "./rigs": "./src/rigs/index.ts",
+    "./music": "./src/score-audio.tsx"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json --noEmit",

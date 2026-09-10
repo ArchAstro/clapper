@@ -1,9 +1,29 @@
 import type { AudioCue, CompositionMeta, TrackInfo } from "../registry";
 import type { AudioEngine } from "./audio-engine";
-import { cueCategory, cueLabel, cueName, noteName, timecode, volumeEnvelope, type Selection } from "./state";
+import { cueCategory, cueLabel, cueName, noteName, type Selection, timecode, volumeEnvelope } from "./state";
 
 /** Right panel, "inspect" tab: the selected track or cue, else the composition. */
-export function Inspector({ meta, tracks, cues, selection, frame, engine, onSeek, onRange, onSelect }: { meta: CompositionMeta; tracks: TrackInfo[]; cues: AudioCue[]; selection: Selection; frame: number; engine: AudioEngine; onSeek: (f: number) => void; onRange: (r: [number, number] | null) => void; onSelect: (s: Selection) => void }) {
+export function Inspector({
+  meta,
+  tracks,
+  cues,
+  selection,
+  frame,
+  engine,
+  onSeek,
+  onRange,
+  onSelect,
+}: {
+  meta: CompositionMeta;
+  tracks: TrackInfo[];
+  cues: AudioCue[];
+  selection: Selection;
+  frame: number;
+  engine: AudioEngine;
+  onSeek: (f: number) => void;
+  onRange: (r: [number, number] | null) => void;
+  onSelect: (s: Selection) => void;
+}) {
   const fps = meta.fps;
   const sec = (f: number) => `${(f / fps).toFixed(2)} s`;
   if (selection?.kind === "track") {
@@ -35,9 +55,15 @@ export function Inspector({ meta, tracks, cues, selection, frame, engine, onSeek
           <dd>{t.depth}</dd>
         </dl>
         <div className="row">
-          <button className="btn sm" onClick={() => onSeek(t.startFrame)}>go to start</button>
-          <button className="btn sm" onClick={() => onRange([t.startFrame, t.endFrame])}>loop this</button>
-          <button className="btn sm" onClick={() => onSelect(null)}>clear</button>
+          <button className="btn sm" onClick={() => onSeek(t.startFrame)}>
+            go to start
+          </button>
+          <button className="btn sm" onClick={() => onRange([t.startFrame, t.endFrame])}>
+            loop this
+          </button>
+          <button className="btn sm" onClick={() => onSelect(null)}>
+            clear
+          </button>
         </div>
       </>
     );
@@ -131,14 +157,24 @@ export function Inspector({ meta, tracks, cues, selection, frame, engine, onSeek
         <Chart title="gain" pts={env} dur={dur} />
         {t?.automation?.cutoff && <Chart title="cutoff (Hz)" pts={t.automation.cutoff} dur={dur} />}
         <div className="row">
-          <button className="btn sm" onClick={() => engine.previewCue(c, fps)}>▶ preview</button>
-          <button className="btn sm" onClick={() => onSeek(c.startFrame)}>go to start</button>
-          <button className="btn sm" onClick={() => onRange([c.startFrame, c.endFrame])}>loop this</button>
-          <button className="btn sm" onClick={() => onSelect(null)}>clear</button>
+          <button className="btn sm" onClick={() => engine.previewCue(c, fps)}>
+            ▶ preview
+          </button>
+          <button className="btn sm" onClick={() => onSeek(c.startFrame)}>
+            go to start
+          </button>
+          <button className="btn sm" onClick={() => onRange([c.startFrame, c.endFrame])}>
+            loop this
+          </button>
+          <button className="btn sm" onClick={() => onSelect(null)}>
+            clear
+          </button>
         </div>
         <details>
           <summary className="hint">spec JSON</summary>
-          <pre style={{ fontSize: 10.5, whiteSpace: "pre-wrap", userSelect: "text" }}>{JSON.stringify({ ...c, tone: t }, null, 1)}</pre>
+          <pre style={{ fontSize: 10.5, whiteSpace: "pre-wrap", userSelect: "text" }}>
+            {JSON.stringify({ ...c, tone: t }, null, 1)}
+          </pre>
         </details>
       </>
     );
@@ -166,16 +202,26 @@ export function Inspector({ meta, tracks, cues, selection, frame, engine, onSeek
         <dt>sequences</dt>
         <dd>{tracks.length} mounted so far</dd>
         <dt>cues</dt>
-        <dd className="wrap">{[...byCat.entries()].map(([k, n]) => `${k} ${n}`).join(" · ") || "none registered yet"}</dd>
+        <dd className="wrap">
+          {[...byCat.entries()].map(([k, n]) => `${k} ${n}`).join(" · ") || "none registered yet"}
+        </dd>
       </dl>
-      <p className="hint">Click a block in the timeline to inspect it. Double-click a block to loop it. Scrub the film once so every sequence and cue registers.</p>
+      <p className="hint">
+        Click a block in the timeline to inspect it. Double-click a block to loop it. Scrub the film once so
+        every sequence and cue registers.
+      </p>
     </>
   );
 }
 
 function Chart({ title, pts, dur }: { title: string; pts: [number, number][]; dur: number }) {
   const max = Math.max(1e-6, ...pts.map(([, v]) => v));
-  const d = pts.map(([f, v], i) => `${i ? "L" : "M"}${((f / Math.max(1, dur)) * 100).toFixed(1)} ${(100 - (v / max) * 88).toFixed(1)}`).join(" ");
+  const d = pts
+    .map(
+      ([f, v], i) =>
+        `${i ? "L" : "M"}${((f / Math.max(1, dur)) * 100).toFixed(1)} ${(100 - (v / max) * 88).toFixed(1)}`,
+    )
+    .join(" ");
   return (
     <div>
       <div className="hint" style={{ display: "flex", justifyContent: "space-between" }}>
@@ -191,7 +237,17 @@ function Chart({ title, pts, dur }: { title: string; pts: [number, number][]; du
 }
 
 /** "cues" tab: every cue of the composition, sortable by start. */
-export function CueTable({ cues, fps, selection, onPick }: { cues: AudioCue[]; fps: number; selection: Selection; onPick: (c: AudioCue) => void }) {
+export function CueTable({
+  cues,
+  fps,
+  selection,
+  onPick,
+}: {
+  cues: AudioCue[];
+  fps: number;
+  selection: Selection;
+  onPick: (c: AudioCue) => void;
+}) {
   const sorted = [...cues].sort((a, b) => a.startFrame - b.startFrame);
   if (!sorted.length) return <p className="hint">No cues registered yet. Scrub through the film once.</p>;
   return (
@@ -207,11 +263,18 @@ export function CueTable({ cues, fps, selection, onPick }: { cues: AudioCue[]; f
       </thead>
       <tbody>
         {sorted.map((c) => (
-          <tr key={c.id} className={selection?.kind === "cue" && selection.id === c.id ? "sel" : ""} onClick={() => onPick(c)}>
+          <tr
+            key={c.id}
+            className={selection?.kind === "cue" && selection.id === c.id ? "sel" : ""}
+            onClick={() => onPick(c)}
+          >
             <td>{timecode(c.startFrame, fps)}</td>
             <td>{c.endFrame - c.startFrame}</td>
             <td>
-              <span className={`swatch block audio-${cueCategory(c)}`} style={{ position: "static", padding: 0, height: 8 }} />
+              <span
+                className={`swatch block audio-${cueCategory(c)}`}
+                style={{ position: "static", padding: 0, height: 8 }}
+              />
               {cueCategory(c)}
             </td>
             <td title={cueLabel(c)}>{cueLabel(c)}</td>

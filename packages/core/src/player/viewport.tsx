@@ -20,7 +20,23 @@ interface CopyBox {
 }
 
 /** The composition, scaled to fit (or zoomed), with safe-area / thirds / copy-box overlays and a HUD. */
-export function Viewport({ entry, frame, overlays, zoom, error, onError, scene }: { entry: CompositionEntry; frame: number; overlays: Overlays; zoom: Zoom; error: string | null; onError: (m: string) => void; scene: { name: string; local: number } | null }) {
+export function Viewport({
+  entry,
+  frame,
+  overlays,
+  zoom,
+  error,
+  onError,
+  scene,
+}: {
+  entry: CompositionEntry;
+  frame: number;
+  overlays: Overlays;
+  zoom: Zoom;
+  error: string | null;
+  onError: (m: string) => void;
+  scene: { name: string; local: number } | null;
+}) {
   const { component: Comp, ...meta } = entry;
   const stageRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
@@ -33,7 +49,9 @@ export function Viewport({ entry, frame, overlays, zoom, error, onError, scene }
     if (!el) return;
     const ro = new ResizeObserver(() => {
       const pad = 48;
-      setFit(Math.max(0.05, Math.min((el.clientWidth - pad) / meta.width, (el.clientHeight - pad) / meta.height)));
+      setFit(
+        Math.max(0.05, Math.min((el.clientWidth - pad) / meta.width, (el.clientHeight - pad) / meta.height)),
+      );
     });
     ro.observe(el);
     return () => ro.disconnect();
@@ -56,7 +74,13 @@ export function Viewport({ entry, frame, overlays, zoom, error, onError, scene }
       range.selectNodeContents(el.firstElementChild ?? el);
       const r = range.getBoundingClientRect();
       if (r.width <= 0 || r.height <= 0) continue;
-      out.push({ x: (r.left - cr.left) / scale, y: (r.top - cr.top) / scale, w: r.width / scale, h: r.height / scale, text: text.slice(0, 32) });
+      out.push({
+        x: (r.left - cr.left) / scale,
+        y: (r.top - cr.top) / scale,
+        w: r.width / scale,
+        h: r.height / scale,
+        text: text.slice(0, 32),
+      });
     }
     setBoxes(out);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -67,8 +91,19 @@ export function Viewport({ entry, frame, overlays, zoom, error, onError, scene }
   return (
     <div className="stage" ref={stageRef}>
       <div className="inner">
-        <div style={{ width: meta.width * scale, height: meta.height * scale, position: "relative", flex: "none" }}>
-          <div className="canvas" ref={canvasRef} style={{ width: meta.width, height: meta.height, transform: `scale(${scale})` }}>
+        <div
+          style={{
+            width: meta.width * scale,
+            height: meta.height * scale,
+            position: "relative",
+            flex: "none",
+          }}
+        >
+          <div
+            className="canvas"
+            ref={canvasRef}
+            style={{ width: meta.width, height: meta.height, transform: `scale(${scale})` }}
+          >
             <div className="comp-root">
               <ErrorBoundary onError={onError} resetKey={entry.id}>
                 <TimelineProvider config={meta} frame={frame} mode="preview">
@@ -81,16 +116,39 @@ export function Viewport({ entry, frame, overlays, zoom, error, onError, scene }
             <div className="overlay">
               {overlays.safe && (
                 <>
-                  <div className="safe" style={{ left: mx, top: my, width: meta.width - 2 * mx, height: meta.height - 2 * my }} />
-                  <div className="title" style={{ left: mx * 2, top: my * 2, width: meta.width - 4 * mx, height: meta.height - 4 * my }} />
+                  <div
+                    className="safe"
+                    style={{ left: mx, top: my, width: meta.width - 2 * mx, height: meta.height - 2 * my }}
+                  />
+                  <div
+                    className="title"
+                    style={{
+                      left: mx * 2,
+                      top: my * 2,
+                      width: meta.width - 4 * mx,
+                      height: meta.height - 4 * my,
+                    }}
+                  />
                 </>
               )}
               {overlays.grid && (
                 <>
-                  <div className="third" style={{ left: meta.width / 3, top: 0, width: 1, height: meta.height }} />
-                  <div className="third" style={{ left: (meta.width * 2) / 3, top: 0, width: 1, height: meta.height }} />
-                  <div className="third" style={{ top: meta.height / 3, left: 0, height: 1, width: meta.width }} />
-                  <div className="third" style={{ top: (meta.height * 2) / 3, left: 0, height: 1, width: meta.width }} />
+                  <div
+                    className="third"
+                    style={{ left: meta.width / 3, top: 0, width: 1, height: meta.height }}
+                  />
+                  <div
+                    className="third"
+                    style={{ left: (meta.width * 2) / 3, top: 0, width: 1, height: meta.height }}
+                  />
+                  <div
+                    className="third"
+                    style={{ top: meta.height / 3, left: 0, height: 1, width: meta.width }}
+                  />
+                  <div
+                    className="third"
+                    style={{ top: (meta.height * 2) / 3, left: 0, height: 1, width: meta.width }}
+                  />
                 </>
               )}
               {overlays.copy &&

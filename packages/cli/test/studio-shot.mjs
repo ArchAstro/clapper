@@ -1,5 +1,6 @@
 // Screenshot the studio at a URL after optional key presses. Usage: node test/studio-shot.mjs <url> <out.png> [keys…]
 import { chromium } from "playwright";
+
 const [url, out, ...keys] = process.argv.slice(2);
 const b = await chromium.launch();
 const p = await b.newPage({ viewport: { width: 1400, height: 900 } });

@@ -1,9 +1,17 @@
 import fs from "node:fs";
-import path from "node:path";
 import { createRequire } from "node:module";
-import { build, createServer, preview, searchForWorkspaceRoot, type InlineConfig, type PreviewServer, type ViteDevServer } from "vite";
+import path from "node:path";
 import react from "@vitejs/plugin-react";
-import {musicAPI} from "./music-api.ts";
+import {
+  build,
+  createServer,
+  type InlineConfig,
+  type PreviewServer,
+  preview,
+  searchForWorkspaceRoot,
+  type ViteDevServer,
+} from "vite";
+import { musicAPI } from "./music-api.ts";
 
 const require = createRequire(import.meta.url);
 
@@ -29,7 +37,10 @@ export function writeHarnessDir({ entry, projectDir, mode }: BundleTarget, uniqu
   fs.mkdirSync(dir, { recursive: true });
   let rel = path.relative(dir, entry).split(path.sep).join("/");
   if (!rel.startsWith(".")) rel = "./" + rel;
-  const mount = mode === "harness" ? `import { mountHarness } from "@clapper/core/harness";\nmountHarness();` : `import { mountStudio } from "@clapper/core/player";\nmountStudio();`;
+  const mount =
+    mode === "harness"
+      ? `import { mountHarness } from "@clapper/core/harness";\nmountHarness();`
+      : `import { mountStudio } from "@clapper/core/player";\nmountStudio();`;
   fs.writeFileSync(path.join(dir, "entry.tsx"), `import ${JSON.stringify(rel)};\n${mount}\n`);
   fs.writeFileSync(
     path.join(dir, "index.html"),
@@ -46,7 +57,13 @@ function reactAliases(projectDir: string): { find: RegExp; replacement: string }
   } catch {
     const coreReq = createRequire(path.join(corePackageDir(), "package.json"));
     const out: { find: RegExp; replacement: string }[] = [];
-    for (const name of ["react/jsx-runtime", "react/jsx-dev-runtime", "react-dom/client", "react-dom", "react"]) {
+    for (const name of [
+      "react/jsx-runtime",
+      "react/jsx-dev-runtime",
+      "react-dom/client",
+      "react-dom",
+      "react",
+    ]) {
       try {
         out.push({ find: new RegExp(`^${name.replace("/", "\\/")}$`), replacement: coreReq.resolve(name) });
       } catch {
@@ -69,14 +86,34 @@ function baseConfig(t: BundleTarget, dir: string): InlineConfig {
     // dependency cache beneath node_modules also excludes it from React HMR.
     cacheDir: path.join(t.projectDir, ".clapper", "node_modules", ".vite"),
     plugins: [react()],
-    resolve: { dedupe: ["react", "react-dom", "react/jsx-runtime", "@clapper/core"], alias: reactAliases(t.projectDir) },
-    server: { fs: { allow: [workspaceRoot, t.projectDir, corePackageDir(), dir, ...(process.env.CLAPPER_RUNTIME ? [process.env.CLAPPER_RUNTIME] : [])] } },
+    resolve: {
+      dedupe: ["react", "react-dom", "react/jsx-runtime", "@clapper/core"],
+      alias: reactAliases(t.projectDir),
+    },
+    server: {
+      fs: {
+        allow: [
+          workspaceRoot,
+          t.projectDir,
+          corePackageDir(),
+          dir,
+          ...(process.env.CLAPPER_RUNTIME ? [process.env.CLAPPER_RUNTIME] : []),
+        ],
+      },
+    },
     // All core entrypoints must share the same timeline context. Prebundling
     // core and player as separate dependencies duplicates that context in a
     // regular npm-installed project (the workspace's linked sources hid this).
     optimizeDeps: {
       include: ["react", "react-dom", "react-dom/client", "react/jsx-runtime"],
-      exclude: ["@clapper/core", "@clapper/core/player", "@clapper/core/harness", "@clapper/core/rigs", "@clapper/core/latex", "@clapper/core/music"],
+      exclude: [
+        "@clapper/core",
+        "@clapper/core/player",
+        "@clapper/core/harness",
+        "@clapper/core/rigs",
+        "@clapper/core/latex",
+        "@clapper/core/music",
+      ],
     },
     define: { "process.env.NODE_ENV": JSON.stringify(t.mode === "harness" ? "production" : "development") },
   };
@@ -109,12 +146,16 @@ export async function buildHarness(t: BundleTarget): Promise<string> {
 
 /** Remove only the scratch directory owned by this invocation. */
 export function removeHarness(outDir: string) {
-  if (path.basename(outDir) !== "build" || !/^harness-/.test(path.basename(path.dirname(outDir)))) throw new Error("Not a Clapper harness scratch path");
+  if (path.basename(outDir) !== "build" || !/^harness-/.test(path.basename(path.dirname(outDir))))
+    throw new Error("Not a Clapper harness scratch path");
   fs.rmSync(path.dirname(outDir), { recursive: true, force: true });
 }
 
 /** Serve a built harness directory. */
-export async function serveBuilt(t: BundleTarget, outDir: string): Promise<{ url: string; close: () => Promise<void> }> {
+export async function serveBuilt(
+  t: BundleTarget,
+  outDir: string,
+): Promise<{ url: string; close: () => Promise<void> }> {
   const dir = path.dirname(outDir);
   const server: PreviewServer = await preview({
     ...baseConfig(t, dir),
@@ -127,21 +168,41 @@ export async function serveBuilt(t: BundleTarget, outDir: string): Promise<{ url
 }
 
 /** Start the studio dev server. */
-export async function startStudio(t: BundleTarget, opts: { port?: number; open?: boolean; scoreFile?:string; beforeReload?:()=>Promise<unknown> } = {}): Promise<{ url: string; server: ViteDevServer }> {
+export async function startStudio(
+  t: BundleTarget,
+  opts: { port?: number; open?: boolean; scoreFile?: string; beforeReload?: () => Promise<unknown> } = {},
+): Promise<{ url: string; server: ViteDevServer }> {
   const dir = writeHarnessDir({ ...t, mode: "studio" });
   const cfg = baseConfig({ ...t, mode: "studio" }, dir);
-  let rebuilding=Promise.resolve();
+  let rebuilding = Promise.resolve();
   const server = await createServer({
     ...cfg,
-    plugins:[...(cfg.plugins??[]),musicAPI(t.projectDir,opts.scoreFile),...(opts.beforeReload?[{name:"clapper-score-rebuild",async handleHotUpdate(ctx:{file:string;server:ViteDevServer}){
-      if(!/\.(tsx?|json)$/.test(ctx.file)||ctx.file.includes(`${path.sep}.clapper${path.sep}`))return;
-      rebuilding=rebuilding.catch(()=>{}).then(async()=>{await opts.beforeReload!();});
-      await rebuilding;
-      // This hook replaces normal HMR with a full reload. Invalidate the graph
-      // explicitly before telling the browser to fetch the newly scored source.
-      ctx.server.moduleGraph.invalidateAll();
-      ctx.server.ws.send({type:"full-reload"});return [];
-    }}]:[])],
+    plugins: [
+      ...(cfg.plugins ?? []),
+      musicAPI(t.projectDir, opts.scoreFile),
+      ...(opts.beforeReload
+        ? [
+            {
+              name: "clapper-score-rebuild",
+              async handleHotUpdate(ctx: { file: string; server: ViteDevServer }) {
+                if (!/\.(tsx?|json)$/.test(ctx.file) || ctx.file.includes(`${path.sep}.clapper${path.sep}`))
+                  return;
+                rebuilding = rebuilding
+                  .catch(() => {})
+                  .then(async () => {
+                    await opts.beforeReload!();
+                  });
+                await rebuilding;
+                // This hook replaces normal HMR with a full reload. Invalidate the graph
+                // explicitly before telling the browser to fetch the newly scored source.
+                ctx.server.moduleGraph.invalidateAll();
+                ctx.server.ws.send({ type: "full-reload" });
+                return [];
+              },
+            },
+          ]
+        : []),
+    ],
     server: { ...cfg.server, port: opts.port ?? 4321, host: "127.0.0.1", open: opts.open ?? false },
   });
   await server.listen();

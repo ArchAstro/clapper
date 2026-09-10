@@ -1,10 +1,10 @@
+import { once } from "node:events";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { once } from "node:events";
-import { chromium, type Browser, type Page } from "playwright";
 import type { AudioCue, CompositionMeta } from "@clapper/core";
 import type { HarnessApi } from "@clapper/core/harness";
+import { type Browser, chromium, type Page } from "playwright";
 import { mixAudio, muxAudio, startFrameEncoder } from "./ffmpeg.ts";
 
 declare global {
@@ -47,8 +47,18 @@ export const CHROME_ARGS = [
   "--enable-font-antialiasing",
 ];
 
-export async function openHarnessPage(browser: Browser, url: string, viewport: { width: number; height: number }, scale: number, log: (m: string) => void): Promise<Page> {
-  const context = await browser.newContext({ viewport, deviceScaleFactor: scale, reducedMotion: "no-preference" });
+export async function openHarnessPage(
+  browser: Browser,
+  url: string,
+  viewport: { width: number; height: number },
+  scale: number,
+  log: (m: string) => void,
+): Promise<Page> {
+  const context = await browser.newContext({
+    viewport,
+    deviceScaleFactor: scale,
+    reducedMotion: "no-preference",
+  });
   const page = await context.newPage();
   page.on("pageerror", (e) => log(`[page error] ${e.message}`));
   page.on("console", (m) => {
@@ -70,16 +80,24 @@ export async function probeCompositions(url: string): Promise<CompositionMeta[]>
 }
 
 /** Visit every frame in a throwaway page and return the merged audio cue list. */
-export async function collectCues(url: string, compositionId: string, props?: Record<string, unknown>): Promise<AudioCue[]> {
+export async function collectCues(
+  url: string,
+  compositionId: string,
+  props?: Record<string, unknown>,
+): Promise<AudioCue[]> {
   const browser = await chromium.launch({ args: CHROME_ARGS });
   try {
     const page = await openHarnessPage(browser, url, { width: 320, height: 180 }, 0.25, () => {});
-    const meta: CompositionMeta = await page.evaluate(({ id, p }) => window.__clapper!.select(id, p), { id: compositionId, p: props ?? {} });
+    const meta: CompositionMeta = await page.evaluate(({ id, p }) => window.__clapper!.select(id, p), {
+      id: compositionId,
+      p: props ?? {},
+    });
     // Cues register when their sequence is mounted; stepping every 4th frame is enough
     // because no cue is shorter than a sequence's mount window at that stride... except
     // one-frame sequences, so step every frame when the composition is short.
     const stride = meta.durationInFrames > 2400 ? 4 : 1;
-    for (let f = 0; f < meta.durationInFrames; f += stride) await page.evaluate((fr) => window.__clapper!.setFrame(fr), f);
+    for (let f = 0; f < meta.durationInFrames; f += stride)
+      await page.evaluate((fr) => window.__clapper!.setFrame(fr), f);
     const cues: AudioCue[] = await page.evaluate(() => window.__clapper!.collectAudio());
     return cues.sort((a, b) => a.startFrame - b.startFrame);
   } finally {
@@ -104,20 +122,36 @@ export async function renderComposition(o: RenderOptions): Promise<RenderResult>
   try {
     // Probe to learn the composition's size.
     const probe = await openHarnessPage(browser, o.url, { width: 800, height: 600 }, 1, log);
-    const meta: CompositionMeta = await probe.evaluate(({ id, props }) => window.__clapper!.select(id, props), { id: o.compositionId, props: o.props ?? {} });
+    const meta: CompositionMeta = await probe.evaluate(
+      ({ id, props }) => window.__clapper!.select(id, props),
+      { id: o.compositionId, props: o.props ?? {} },
+    );
     await probe.context().close();
 
-    const [start, end] = o.range ? [Math.max(0, o.range[0]), Math.min(meta.durationInFrames, o.range[1])] : [0, meta.durationInFrames];
+    const [start, end] = o.range
+      ? [Math.max(0, o.range[0]), Math.min(meta.durationInFrames, o.range[1])]
+      : [0, meta.durationInFrames];
     const total = end - start;
     if (total <= 0) throw new Error(`Empty frame range ${start}-${end}`);
-    log(`Rendering "${meta.id}" ${meta.width}x${meta.height}@${meta.fps}fps, frames ${start}-${end - 1} (${total}), ${concurrency} workers, scale ${scale}`);
+    log(
+      `Rendering "${meta.id}" ${meta.width}x${meta.height}@${meta.fps}fps, frames ${start}-${end - 1} (${total}), ${concurrency} workers, scale ${scale}`,
+    );
 
     fs.mkdirSync(path.dirname(path.resolve(o.out)), { recursive: true });
     const videoOnly = path.join(workDir, `video${path.extname(o.out) || ".mp4"}`);
     // JPEG capture by default: PNG-encoding a 1080p frame with grain or
     // gradients costs ~250 ms; JPEG q96 costs ~40 ms and is invisible after x264.
     const fmt = o.imageFormat ?? "jpeg";
-    const encoder = startFrameEncoder({ fps: meta.fps, width: meta.width * scale, height: meta.height * scale, out: videoOnly, codec: o.codec, crf: o.crf, preset: o.preset, imageFormat: fmt });
+    const encoder = startFrameEncoder({
+      fps: meta.fps,
+      width: meta.width * scale,
+      height: meta.height * scale,
+      out: videoOnly,
+      codec: o.codec,
+      crf: o.crf,
+      preset: o.preset,
+      imageFormat: fmt,
+    });
     const stdin = encoder.child.stdin!;
     let encoderFailed: Error | null = null;
     encoder.catch((e) => (encoderFailed = e));
@@ -149,14 +183,30 @@ export async function renderComposition(o: RenderOptions): Promise<RenderResult>
         const from = start + w * chunk;
         const to = Math.min(end, from + chunk);
         if (from >= to) return;
-        const page = await openHarnessPage(browser, o.url, { width: meta.width, height: meta.height }, scale, log);
-        await page.evaluate(({ id, props }) => window.__clapper!.select(id, props), { id: o.compositionId, props: o.props ?? {} });
+        const page = await openHarnessPage(
+          browser,
+          o.url,
+          { width: meta.width, height: meta.height },
+          scale,
+          log,
+        );
+        await page.evaluate(({ id, props }) => window.__clapper!.select(id, props), {
+          id: o.compositionId,
+          props: o.props ?? {},
+        });
         for (let f = from; f < to; f++) {
           if (encoderFailed) throw encoderFailed;
           // back-pressure: don't run far ahead of the writer
           while (f - next > workers * 6) await new Promise((r) => setTimeout(r, 5));
           await page.evaluate((frame) => window.__clapper!.setFrame(frame), f);
-          const buf = await page.screenshot({ type: fmt, quality: fmt === "jpeg" ? 96 : undefined, animations: "allow", caret: "hide", scale: "device", timeout: 60_000 });
+          const buf = await page.screenshot({
+            type: fmt,
+            quality: fmt === "jpeg" ? 96 : undefined,
+            animations: "allow",
+            caret: "hide",
+            scale: "device",
+            timeout: 60_000,
+          });
           pending.set(f, buf);
           done++;
           o.onProgress?.(done, total);
@@ -172,14 +222,24 @@ export async function renderComposition(o: RenderOptions): Promise<RenderResult>
     await flush();
     stdin.end();
     await encoder;
-    if (errors.length) log(`[clapper] ${errors.length} page error(s) during render:\n  ${[...new Set(errors)].join("\n  ")}`);
+    if (errors.length)
+      log(`[clapper] ${errors.length} page error(s) during render:\n  ${[...new Set(errors)].join("\n  ")}`);
 
     // Audio
-    const cues = [...cuesById.values()].filter((c) => c.endFrame > start && c.startFrame < end).map((c) => ({ ...c, startFrame: c.startFrame - start, endFrame: c.endFrame - start }));
+    const cues = [...cuesById.values()]
+      .filter((c) => c.endFrame > start && c.startFrame < end)
+      .map((c) => ({ ...c, startFrame: c.startFrame - start, endFrame: c.endFrame - start }));
     let mixed: string | null = null;
     if (!o.muteAudio && cues.length) {
       log(`Mixing ${cues.length} audio cue(s)…`);
-      mixed = await mixAudio({ cues, fps: meta.fps, durationInFrames: total, publicDir: o.publicDir, workDir, out: path.join(workDir, "mix.wav") });
+      mixed = await mixAudio({
+        cues,
+        fps: meta.fps,
+        durationInFrames: total,
+        publicDir: o.publicDir,
+        workDir,
+        out: path.join(workDir, "mix.wav"),
+      });
     }
     const out = path.resolve(o.out);
     if (mixed) await muxAudio(videoOnly, mixed, out, { loudnorm: o.loudnorm });
@@ -191,21 +251,51 @@ export async function renderComposition(o: RenderOptions): Promise<RenderResult>
   }
 }
 
-export async function renderStills(o: { url: string; compositionId: string; frames: number[]; outDir: string; scale?: number; props?: Record<string, unknown>; log?: (m: string) => void; format?: "png" | "jpeg" }): Promise<string[]> {
+export async function renderStills(o: {
+  url: string;
+  compositionId: string;
+  frames: number[];
+  outDir: string;
+  scale?: number;
+  props?: Record<string, unknown>;
+  log?: (m: string) => void;
+  format?: "png" | "jpeg";
+}): Promise<string[]> {
   const log = o.log ?? ((m) => console.error(m));
   const browser = await chromium.launch({ args: CHROME_ARGS });
   try {
     const probe = await openHarnessPage(browser, o.url, { width: 800, height: 600 }, 1, log);
-    const meta: CompositionMeta = await probe.evaluate(({ id, props }) => window.__clapper!.select(id, props), { id: o.compositionId, props: o.props ?? {} });
+    const meta: CompositionMeta = await probe.evaluate(
+      ({ id, props }) => window.__clapper!.select(id, props),
+      { id: o.compositionId, props: o.props ?? {} },
+    );
     await probe.context().close();
-    const page = await openHarnessPage(browser, o.url, { width: meta.width, height: meta.height }, o.scale ?? 1, log);
-    await page.evaluate(({ id, props }) => window.__clapper!.select(id, props), { id: o.compositionId, props: o.props ?? {} });
+    const page = await openHarnessPage(
+      browser,
+      o.url,
+      { width: meta.width, height: meta.height },
+      o.scale ?? 1,
+      log,
+    );
+    await page.evaluate(({ id, props }) => window.__clapper!.select(id, props), {
+      id: o.compositionId,
+      props: o.props ?? {},
+    });
     fs.mkdirSync(o.outDir, { recursive: true });
     const files: string[] = [];
     for (const f of o.frames) {
       await page.evaluate((frame) => window.__clapper!.setFrame(frame), f);
-      const file = path.join(o.outDir, `${o.compositionId}-${String(f).padStart(5, "0")}.${o.format === "jpeg" ? "jpg" : "png"}`);
-      await page.screenshot({ path: file, type: o.format ?? "png", animations: "allow", caret: "hide", scale: "device" });
+      const file = path.join(
+        o.outDir,
+        `${o.compositionId}-${String(f).padStart(5, "0")}.${o.format === "jpeg" ? "jpg" : "png"}`,
+      );
+      await page.screenshot({
+        path: file,
+        type: o.format ?? "png",
+        animations: "allow",
+        caret: "hide",
+        scale: "device",
+      });
       files.push(file);
     }
     return files;
@@ -214,9 +304,22 @@ export async function renderStills(o: { url: string; compositionId: string; fram
   }
 }
 
-export async function renderStill(o: { url: string; compositionId: string; frame: number; out: string; scale?: number; props?: Record<string, unknown>; log?: (m: string) => void }): Promise<string> {
+export async function renderStill(o: {
+  url: string;
+  compositionId: string;
+  frame: number;
+  out: string;
+  scale?: number;
+  props?: Record<string, unknown>;
+  log?: (m: string) => void;
+}): Promise<string> {
   const outDir = path.dirname(path.resolve(o.out));
-  const [file] = await renderStills({ ...o, frames: [o.frame], outDir, format: /\.jpe?g$/i.test(o.out) ? "jpeg" : "png" });
+  const [file] = await renderStills({
+    ...o,
+    frames: [o.frame],
+    outDir,
+    format: /\.jpe?g$/i.test(o.out) ? "jpeg" : "png",
+  });
   const target = path.resolve(o.out);
   if (file !== target) fs.renameSync(file, target);
   return target;

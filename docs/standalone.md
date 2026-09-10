@@ -4,14 +4,14 @@ Clapper ships as a native launcher plus a versioned runtime archive. The **end u
 
 ## Build and try locally
 
-Build-machine prerequisites: Node 24+, the repo's pinned pnpm, Go 1.24+, and tar. Build on the target OS/architecture; native dependencies and browser builds cannot simply be cross-compiled with the Go launcher. Apple Silicon is the first acceptance-tested target.
+Build-machine prerequisites: Node 24+, the repo's pinned pnpm, Go 1.24+, CMake, a C/C++ compiler, make, curl, pkg-config and tar. Stable builds require a clean committed checkout; see [the release runbook](releasing.md). Build on the target OS/architecture; native dependencies and browser builds cannot simply be cross-compiled with the Go launcher. Apple Silicon is the first acceptance-tested target.
 
 ```fish
 node scripts/build-release.mjs
 node scripts/test-standalone.mjs
 
 # Use the two local artifacts before a GitHub release is published.
-set -lx CLAPPER_RUNTIME_URL "file://$PWD/dist/clapper-runtime-0.2.0-dev.1-darwin-arm64.tar.gz"
+set -lx CLAPPER_RUNTIME_URL "file://$PWD/dist/clapper-runtime-0.3.0-darwin-arm64.tar.gz"
 ./dist/clapper-darwin-arm64 new /tmp/my-film --template comic
 cd /tmp/my-film
 /absolute/path/to/clapper-darwin-arm64 preview
@@ -21,7 +21,7 @@ cd /tmp/my-film
 
 Place the launcher on your PATH as `clapper` for everyday use. The Fish environment override can be removed after the runtime is cached. Default runtime cache: macOS `~/Library/Caches/clapper/<sha256>`; Linux `$XDG_CACHE_HOME/clapper/<sha256>` or `~/.cache/clapper/<sha256>`. `CLAPPER_HOME` selects another cache root. `clapper runtime path` prints the selected runtime; `clapper --version` and `--help` do not download it.
 
-The runtime includes Node 24.21.0 and npm, the installed locked workspace dependencies, React/core/CLI, matching Playwright Chromium and Headless Shell, ffmpeg-static, starter templates, and the Clapper skill. macOS launchers are ad-hoc signed by the build; Developer ID signing/notarization is a separate release step, not something the local build claims to provide.
+The runtime includes Node 24.21.0 and npm, the locked production dependencies, React/core/music/CLI, matching Playwright Chromium and Headless Shell, source-built FFmpeg/x264 and sfizz, starter templates, and the Clapper skill. Matching native source archives, build records and licenses are included. macOS launchers are ad-hoc signed by the build; Developer ID signing/notarization is a separate release step, not something the local build claims to provide.
 
 ## Projects
 
@@ -51,11 +51,11 @@ clapper doctor
 
 The builder writes a native executable, `clapper-runtime-<version>-<platform>.tar.gz`, and `manifest-<platform>.json` with their checksums. `CLAPPER_RELEASE_VERSION` selects a release version and `CLAPPER_RELEASE_BASE_URL` selects the download base; otherwise the executable points to the matching `ArchAstro/clapper` GitHub release. **Building does not publish anything.** Publish matching artifacts together; never replace a runtime archive behind an already-shipped launcher.
 
-For this private repository, users can provide `GH_TOKEN` with release-read access. The launcher resolves the GitHub asset API itself; it does not need `gh` installed. Alternatively download both artifacts while signed in and use a `file://` override for the runtime. `CLAPPER_RUNTIME_URL` can point to an HTTPS mirror or local file; the digest embedded in the launcher remains mandatory. HTTP is supported only on loopback for the acceptance harness.
+Public release assets require no token. For private builds, users can provide `GH_TOKEN` with release-read access. The launcher resolves the GitHub asset API itself; it does not need `gh` installed. Alternatively download both artifacts while signed in and use a `file://` override for the runtime. `CLAPPER_RUNTIME_URL` can point to an HTTPS mirror or local file; the digest embedded in the launcher remains mandatory. HTTP is supported only on loopback for the acceptance harness.
 
 Archive contents are verified before extraction; traversal, external symlinks, devices and writing through symlinks are rejected. Downloads/staging never become the active runtime until validation succeeds. Failed installs remove only their temporary directory. A damaged existing cache fails with its exact location rather than deleting it automatically.
 
-The archive retains third-party license files. ffmpeg-static's libx264-enabled builds include GPL components; complete the relevant binary/source distribution obligations before publishing externally. Signing/notarization credentials, a published release, and platform certification are not supplied by the build script. Linux also needs Playwright's supported OS libraries; `doctor` and an actual render should be part of each target's qualification. Windows is not implemented in the POSIX launcher.
+The FFmpeg/x264 encoder is GPL-2.0-or-later and explicitly excludes nonfree components. Matching sources, licenses, configure flags and the builder are included under `licenses/ffmpeg`; retain them with redistributed binaries. H.264/AAC and native ProRes are bundled; optional H.265/VP9 encoders require a custom FFmpeg. Signing/notarization credentials, a published release, and platform certification are not supplied by the build script. Linux also needs Playwright's supported OS libraries; `doctor` and an actual render should be part of each target's qualification. Windows is not implemented in the POSIX launcher.
 
 ## Verification
 

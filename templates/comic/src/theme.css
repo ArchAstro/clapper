@@ -1,1 +1,10 @@
-.comic { --ink: #24251f; --paper: #f4efdf; --red: #bd4736; --hand: Georgia, serif; --marker: Georgia, serif; background: var(--paper); color: var(--ink); font-family: Georgia, serif; }
+.comic {
+  --ink: #24251f;
+  --paper: #f4efdf;
+  --red: #bd4736;
+  --hand: Georgia, serif;
+  --marker: Georgia, serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: Georgia, serif;
+}

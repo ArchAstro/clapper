@@ -11,5 +11,12 @@
   color: var(--fg);
   background: var(--bg);
 }
-.spot .display { font-family: var(--display); font-weight: 600; letter-spacing: -0.02em; line-height: 1.05; }
-.spot .mono { font-family: var(--mono); }
+.spot .display {
+  font-family: var(--display);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+.spot .mono {
+  font-family: var(--mono);
+}

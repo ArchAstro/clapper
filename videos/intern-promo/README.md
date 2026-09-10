@@ -4,7 +4,7 @@
 
 "Send a site, not a deck." 1920×1080 @ 30 fps, ~57 s, eight scenes (`src/scenes/`), transitions between them, synthesized
 sound (pads per scene, chimes on beats, typewriter clicks). Brand tokens, fonts (Instrument Serif / Schibsted Grotesk /
-Fragment Mono) and copy come from `services/node/intern-fe` in the firstlanding repo and the live site.
+Fragment Mono) and copy were adapted from the product's public branding. This example is self-contained and does not require another repository or a live service.
 
 ```bash
 pnpm preview   # studio

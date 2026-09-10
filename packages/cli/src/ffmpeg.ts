@@ -1,30 +1,35 @@
 import { spawn, spawnSync } from "node:child_process";
-import { createRequire } from "node:module";
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const require = createRequire(import.meta.url);
-
-/** System ffmpeg if present, otherwise the ffmpeg-static binary. */
+/** Explicit override, local source build, or the user's own system encoder. */
 export function resolveFfmpeg(): string {
   if (process.env.CLAPPER_FFMPEG) return process.env.CLAPPER_FFMPEG;
+  const built = fileURLToPath(
+    new URL("../../../.clapper/toolchain/ffmpeg/install/bin/ffmpeg", import.meta.url),
+  );
+  if (fs.existsSync(built)) return built;
   const sys = spawnSync("ffmpeg", ["-version"], { encoding: "utf8" });
   if (sys.status === 0 && /libx264/.test(sys.stdout + sys.stderr)) return "ffmpeg";
-  try {
-    const p = require("ffmpeg-static") as string | null;
-    if (p && fs.existsSync(p)) return p;
-  } catch {
-    /* fallthrough */
-  }
-  throw new Error("No ffmpeg found. Install ffmpeg on PATH, or run `pnpm rebuild ffmpeg-static` to fetch the bundled binary.");
+  throw new Error(
+    "No ffmpeg found. Install FFmpeg with libx264, run `node scripts/build-ffmpeg.mjs` in the checkout, or set CLAPPER_FFMPEG.",
+  );
 }
 
-export function runFfmpeg(args: string[], opts: { stdin?: NodeJS.ReadableStream | null; quiet?: boolean } = {}): Promise<void> & { child: ReturnType<typeof spawn> } {
+export function runFfmpeg(
+  args: string[],
+  opts: { stdin?: NodeJS.ReadableStream | null; quiet?: boolean } = {},
+): Promise<void> & { child: ReturnType<typeof spawn> } {
   const bin = resolveFfmpeg();
-  const child = spawn(bin, ["-hide_banner", "-loglevel", opts.quiet === false ? "info" : "error", ...args], { stdio: [opts.stdin === undefined ? "ignore" : "pipe", "inherit", "inherit"] });
+  const child = spawn(bin, ["-hide_banner", "-loglevel", opts.quiet === false ? "info" : "error", ...args], {
+    stdio: [opts.stdin === undefined ? "ignore" : "pipe", "inherit", "inherit"],
+  });
   const p = new Promise<void>((resolve, reject) => {
     child.on("error", reject);
-    child.on("close", (code) => (code === 0 ? resolve() : reject(new Error(`ffmpeg exited with code ${code}`))));
+    child.on("close", (code) =>
+      code === 0 ? resolve() : reject(new Error(`ffmpeg exited with code ${code}`)),
+    );
   }) as Promise<void> & { child: typeof child };
   p.child = child;
   return p;
@@ -46,19 +51,51 @@ export interface VideoEncodeOptions {
 /** Spawn an ffmpeg that consumes PNG frames on stdin and writes a video file. */
 export function startFrameEncoder(o: VideoEncodeOptions) {
   const codec = o.codec ?? "h264";
-  const vcodec = codec === "h264" ? ["-c:v", "libx264", "-preset", o.preset ?? "medium", "-crf", String(o.crf ?? 17), "-profile:v", "high", "-movflags", "+faststart"]
-    : codec === "h265" ? ["-c:v", "libx265", "-preset", o.preset ?? "medium", "-crf", String(o.crf ?? 20), "-tag:v", "hvc1", "-movflags", "+faststart"]
-    : codec === "vp9" ? ["-c:v", "libvpx-vp9", "-crf", String(o.crf ?? 30), "-b:v", "0", "-row-mt", "1"]
-    : ["-c:v", "prores_ks", "-profile:v", "3"];
+  const vcodec =
+    codec === "h264"
+      ? [
+          "-c:v",
+          "libx264",
+          "-preset",
+          o.preset ?? "medium",
+          "-crf",
+          String(o.crf ?? 17),
+          "-profile:v",
+          "high",
+          "-movflags",
+          "+faststart",
+        ]
+      : codec === "h265"
+        ? [
+            "-c:v",
+            "libx265",
+            "-preset",
+            o.preset ?? "medium",
+            "-crf",
+            String(o.crf ?? 20),
+            "-tag:v",
+            "hvc1",
+            "-movflags",
+            "+faststart",
+          ]
+        : codec === "vp9"
+          ? ["-c:v", "libvpx-vp9", "-crf", String(o.crf ?? 30), "-b:v", "0", "-row-mt", "1"]
+          : ["-c:v", "prores_ks", "-profile:v", "3"];
   const args = [
     "-y",
-    "-f", "image2pipe",
-    "-framerate", String(o.fps),
-    "-vcodec", o.imageFormat === "jpeg" ? "mjpeg" : "png",
-    "-i", "pipe:0",
+    "-f",
+    "image2pipe",
+    "-framerate",
+    String(o.fps),
+    "-vcodec",
+    o.imageFormat === "jpeg" ? "mjpeg" : "png",
+    "-i",
+    "pipe:0",
     ...vcodec,
-    "-pix_fmt", o.pixFmt ?? (codec === "prores" ? "yuv422p10le" : "yuv420p"),
-    "-r", String(o.fps),
+    "-pix_fmt",
+    o.pixFmt ?? (codec === "prores" ? "yuv422p10le" : "yuv420p"),
+    "-r",
+    String(o.fps),
     "-an",
     o.out,
   ];
@@ -123,7 +160,10 @@ export async function mixAudio(o: MixOptions): Promise<string | null> {
     chain.push(`aformat=sample_fmts=fltp:sample_rates=${sr}:channel_layouts=stereo`);
     chain.push(`volume=${cue.volume.toFixed(4)}`);
     if (cue.fadeInFrames > 0) chain.push(`afade=t=in:st=0:d=${(cue.fadeInFrames / o.fps).toFixed(4)}`);
-    if (cue.fadeOutFrames > 0) chain.push(`afade=t=out:st=${Math.max(0, lenSec - cue.fadeOutFrames / o.fps).toFixed(4)}:d=${(cue.fadeOutFrames / o.fps).toFixed(4)}`);
+    if (cue.fadeOutFrames > 0)
+      chain.push(
+        `afade=t=out:st=${Math.max(0, lenSec - cue.fadeOutFrames / o.fps).toFixed(4)}:d=${(cue.fadeOutFrames / o.fps).toFixed(4)}`,
+      );
     const delayMs = Math.round(startSec * 1000);
     chain.push(`adelay=${delayMs}|${delayMs}`);
     if (busExpr) chain.push(`volume='${busExpr}':eval=frame`);
@@ -131,9 +171,22 @@ export async function mixAudio(o: MixOptions): Promise<string | null> {
   }
   if (idx === 0) return null;
   const mixIn = Array.from({ length: idx }, (_, i) => `[a${i}]`).join("");
-  const tail = idx === 1 ? `${mixIn}atrim=end=${total.toFixed(4)},apad=whole_dur=${total.toFixed(4)}[out]` : `${mixIn}amix=inputs=${idx}:normalize=0:dropout_transition=0,atrim=end=${total.toFixed(4)},apad=whole_dur=${total.toFixed(4)}[out]`;
+  const tail =
+    idx === 1
+      ? `${mixIn}atrim=end=${total.toFixed(4)},apad=whole_dur=${total.toFixed(4)}[out]`
+      : `${mixIn}amix=inputs=${idx}:normalize=0:dropout_transition=0,atrim=end=${total.toFixed(4)},apad=whole_dur=${total.toFixed(4)}[out]`;
   filters.push(tail);
-  const args = [...inputs, "-filter_complex", filters.join(";"), "-map", "[out]", "-ar", String(sr), "-y", o.out];
+  const args = [
+    ...inputs,
+    "-filter_complex",
+    filters.join(";"),
+    "-map",
+    "[out]",
+    "-ar",
+    String(sr),
+    "-y",
+    o.out,
+  ];
   await runFfmpeg(args);
   return o.out;
 }
@@ -159,7 +212,10 @@ export function busGainExpr(bus: AudioCue[], fps: number): string {
   for (let i = pts.length - 2; i >= 0; i--) {
     const [t0, g0] = pts[i];
     const [t1, g1] = pts[i + 1];
-    const seg = t1 > t0 ? `${g0.toFixed(4)}+(${(g1 - g0).toFixed(4)})*(t-${t0.toFixed(4)})/${(t1 - t0).toFixed(4)}` : g0.toFixed(4);
+    const seg =
+      t1 > t0
+        ? `${g0.toFixed(4)}+(${(g1 - g0).toFixed(4)})*(t-${t0.toFixed(4)})/${(t1 - t0).toFixed(4)}`
+        : g0.toFixed(4);
     expr = `if(lt(t,${t1.toFixed(4)}),${seg},${expr})`;
   }
   return `if(lt(t,${pts[0][0].toFixed(4)}),${pts[0][1].toFixed(4)},${expr})`;
@@ -180,7 +236,12 @@ function resolveSrc(src: string, publicDir: string): string {
 }
 
 /** Mux a silent video with an audio track. */
-export async function muxAudio(video: string, audio: string, out: string, opts: { audioBitrate?: string; codec?: string; loudnorm?: boolean | number } = {}) {
+export async function muxAudio(
+  video: string,
+  audio: string,
+  out: string,
+  opts: { audioBitrate?: string; codec?: string; loudnorm?: boolean | number } = {},
+) {
   const ext = path.extname(out).toLowerCase();
   const acodec = opts.codec ?? (ext === ".webm" ? "libopus" : "aac");
   // Normalise to a streaming-friendly integrated loudness (default -17 LUFS);
@@ -188,15 +249,47 @@ export async function muxAudio(video: string, audio: string, out: string, opts: 
   const lufs = opts.loudnorm === false ? null : typeof opts.loudnorm === "number" ? opts.loudnorm : -17;
   // The final limiter catches inter-sample/AAC overs that a single-pass
   // loudnorm estimate can miss on dense, transient-heavy soundtracks.
-  const af = lufs === null ? [] : ["-af", `loudnorm=I=${lufs}:TP=-2.5:LRA=16,alimiter=limit=0.70:level=false:attack=5:release=50`];
-  await runFfmpeg(["-y", "-i", video, "-i", audio, "-map", "0:v:0", "-map", "1:a:0", "-c:v", "copy", ...af, "-ar", "48000", "-c:a", acodec, "-b:a", opts.audioBitrate ?? "192k", "-shortest", "-movflags", "+faststart", out]);
+  const af =
+    lufs === null
+      ? []
+      : ["-af", `loudnorm=I=${lufs}:TP=-2.5:LRA=16,alimiter=limit=0.70:level=false:attack=5:release=50`];
+  await runFfmpeg([
+    "-y",
+    "-i",
+    video,
+    "-i",
+    audio,
+    "-map",
+    "0:v:0",
+    "-map",
+    "1:a:0",
+    "-c:v",
+    "copy",
+    ...af,
+    "-ar",
+    "48000",
+    "-c:a",
+    acodec,
+    "-b:a",
+    opts.audioBitrate ?? "192k",
+    "-shortest",
+    "-movflags",
+    "+faststart",
+    out,
+  ]);
 }
 
 /**
  * Sum every tone cue into one STEREO track of the full duration (volume, fades,
  * pan and reverb send applied), then run the reverb bus and soft-limit.
  */
-export function renderToneTrack(cues: AudioCue[], fps: number, durationInFrames: number, sr: number, bus: AudioCue[] = []): [Float32Array, Float32Array] {
+export function renderToneTrack(
+  cues: AudioCue[],
+  fps: number,
+  durationInFrames: number,
+  sr: number,
+  bus: AudioCue[] = [],
+): [Float32Array, Float32Array] {
   const n = Math.ceil((durationInFrames / fps) * sr);
   const L = new Float32Array(n);
   const R = new Float32Array(n);
@@ -321,7 +414,12 @@ export function renderToneSamples(cue: AudioCue, lenSec: number, sr: number): Fl
 }
 
 /** Synthesize one cue as a stereo pair (no cue volume applied). */
-export function renderToneStereo(cue: AudioCue, lenSec: number, sr: number, fps = 30): [Float32Array, Float32Array] {
+export function renderToneStereo(
+  cue: AudioCue,
+  lenSec: number,
+  sr: number,
+  fps = 30,
+): [Float32Array, Float32Array] {
   const spec = cue.tone!;
   const n = Math.ceil(lenSec * sr);
   const det = Math.pow(2, (spec.detune ?? 0) / 1200);
@@ -378,7 +476,14 @@ function adsr(spec: ToneSpec, t: number, lenSec: number): number {
   return env;
 }
 
-function renderVoice(spec: ToneSpec, n: number, sr: number, detune: number, seed0: number, fps = 30): Float32Array {
+function renderVoice(
+  spec: ToneSpec,
+  n: number,
+  sr: number,
+  detune: number,
+  seed0: number,
+  fps = 30,
+): Float32Array {
   const out = new Float32Array(n);
   const lenSec = n / sr;
   const f0 = spec.freq * detune;
@@ -412,7 +517,12 @@ function renderVoice(spec: ToneSpec, n: number, sr: number, detune: number, seed
       out[i] = cur * adsr(spec, i / sr, lenSec);
     }
   } else if (spec.wave === "mallet") {
-    const modes = [[1, 1, 1], [2.756, 0.38, 0.58], [5.404, 0.15, 0.33], [8.933, 0.055, 0.2]] as const;
+    const modes = [
+      [1, 1, 1],
+      [2.756, 0.38, 0.58],
+      [5.404, 0.15, 0.33],
+      [8.933, 0.055, 0.2],
+    ] as const;
     const phase = modes.map((_, i) => rnd() * Math.PI * 2 + i * 0.51);
     for (let i = 0; i < n; i++) {
       const t = i / sr;
@@ -426,12 +536,20 @@ function renderVoice(spec: ToneSpec, n: number, sr: number, detune: number, seed
       out[i] = v * softStrike * 0.72 * adsr(spec, t, lenSec);
     }
   } else if (spec.wave === "bowed") {
-    const modes = [[1, 1], [2, 0.31], [3, 0.18], [4, 0.09], [5, 0.045], [7, 0.018]] as const;
+    const modes = [
+      [1, 1],
+      [2, 0.31],
+      [3, 0.18],
+      [4, 0.09],
+      [5, 0.045],
+      [7, 0.018],
+    ] as const;
     const phase = modes.map((_, i) => i * 0.61);
     for (let i = 0; i < n; i++) {
       const t = i / sr;
       const vibrato = 1 + 0.0018 * Math.sin(2 * Math.PI * (4.7 + 0.13 * Math.sin(t * 0.41)) * t);
-      const bow = 0.9 + 0.06 * Math.sin(2 * Math.PI * 0.73 * t) + 0.035 * Math.sin(2 * Math.PI * 1.17 * t + 1.2);
+      const bow =
+        0.9 + 0.06 * Math.sin(2 * Math.PI * 0.73 * t) + 0.035 * Math.sin(2 * Math.PI * 1.17 * t + 1.2);
       let v = 0;
       for (let p = 0; p < modes.length; p++) {
         const [ratio, gain] = modes[p];
@@ -466,7 +584,7 @@ function renderVoice(spec: ToneSpec, n: number, sr: number, detune: number, seed
         const tone = p === 0 ? gain : gain * (0.45 + brightness * 1.25);
         v += Math.sin(phase[p]) * tone * modalDecay;
       }
-      hammer += hammerA * ((rnd() * 2 - 1) - hammer);
+      hammer += hammerA * (rnd() * 2 - 1 - hammer);
       const hammerEnv = Math.exp(-t / 0.018) * 0.035;
       const soundboard = 0.055 * Math.sin(phase[0] * 0.501) * Math.exp(-t / Math.max(0.2, ring * 0.8));
       out[i] = (v * 0.72 + hammer * hammerEnv + soundboard) * adsr(spec, t, lenSec);
@@ -485,16 +603,21 @@ function renderVoice(spec: ToneSpec, n: number, sr: number, detune: number, seed
       const bell = Math.exp(-t / 0.12) * 1.6;
       const body = Math.exp(-t / Math.max(0.2, ring / 3)) * 0.9 + 0.15;
       const amp = Math.exp((-6.9 * t) / Math.max(0.05, ring));
-      const v = Math.sin(ph + bell * Math.sin(phm)) * 0.7 + Math.sin(phb * 1.0 + body * Math.sin(phb * 1.0)) * 0.4 + Math.sin(ph * 2) * 0.06;
+      const v =
+        Math.sin(ph + bell * Math.sin(phm)) * 0.7 +
+        Math.sin(phb * 1.0 + body * Math.sin(phb * 1.0)) * 0.4 +
+        Math.sin(ph * 2) * 0.06;
       out[i] = v * amp * adsr(spec, t, lenSec);
     }
   } else if (spec.wave === "breath") {
     // Filtered noise whose 2-pole lowpass and level swell with a slow breathing LFO.
-    let seed = (seed0 >>> 0) || 1;
+    let seed = seed0 >>> 0 || 1;
     const rate = spec.lfo?.rate ?? 0.14;
     const depth = spec.lfo?.depth ?? 0.4;
     const base = spec.cutoff ?? 700;
-    let lp1 = 0, lp2 = 0, hp = 0;
+    let lp1 = 0,
+      lp2 = 0,
+      hp = 0;
     const hpk = 1 - Math.exp((-2 * Math.PI * 120) / sr);
     for (let i = 0; i < n; i++) {
       seed = (seed * 1664525 + 1013904223) >>> 0;

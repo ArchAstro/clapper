@@ -1,6 +1,13 @@
-import { useEffect, useLayoutEffect, useRef, type CSSProperties, type ImgHTMLAttributes, type VideoHTMLAttributes } from "react";
-import { continueRender, delayRender } from "./registry";
+import {
+  type CSSProperties,
+  type ImgHTMLAttributes,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  type VideoHTMLAttributes,
+} from "react";
 import { Audio } from "./audio";
+import { continueRender, delayRender } from "./registry";
 import { useFps, useFrame, useRenderMode } from "./timeline";
 
 /** Resolve a file in your project's `public/` folder. */
@@ -45,7 +52,17 @@ export interface VideoProps extends Omit<VideoHTMLAttributes<HTMLVideoElement>, 
  * <video> whose currentTime is a function of the frame, so renders are
  * deterministic. Audio of the video is NOT mixed; pair with <Audio src={sameFile}/>.
  */
-export function Video({ src, startFrom = 0, playbackRate = 1, audio = true, volume = 1, fadeIn = 0, fadeOut = 0, style, ...rest }: VideoProps) {
+export function Video({
+  src,
+  startFrom = 0,
+  playbackRate = 1,
+  audio = true,
+  volume = 1,
+  fadeIn = 0,
+  fadeOut = 0,
+  style,
+  ...rest
+}: VideoProps) {
   const ref = useRef<HTMLVideoElement>(null);
   const frame = useFrame();
   const fps = useFps();
@@ -72,7 +89,17 @@ export function Video({ src, startFrom = 0, playbackRate = 1, audio = true, volu
   }, [src, target, fps]);
   return (
     <>
-      {audio && <Audio src={src} startFrom={startFrom} playbackRate={playbackRate} volume={volume} fadeIn={fadeIn} fadeOut={fadeOut} name={`video ${src.split("/").pop()}`} />}
+      {audio && (
+        <Audio
+          src={src}
+          startFrom={startFrom}
+          playbackRate={playbackRate}
+          volume={volume}
+          fadeIn={fadeIn}
+          fadeOut={fadeOut}
+          name={`video ${src.split("/").pop()}`}
+        />
+      )}
       <video ref={ref} src={src} muted playsInline preload="auto" style={style} {...rest} />
     </>
   );
@@ -82,7 +109,12 @@ export function Video({ src, startFrom = 0, playbackRate = 1, audio = true, volu
 export function useFont(family: string, url: string, descriptors?: FontFaceDescriptors) {
   useEffect(() => {
     if (typeof document === "undefined") return;
-    const already = [...document.fonts].some((f) => f.family === family && (!descriptors?.weight || f.weight === descriptors.weight) && (!descriptors?.style || f.style === descriptors.style));
+    const already = [...document.fonts].some(
+      (f) =>
+        f.family === family &&
+        (!descriptors?.weight || f.weight === descriptors.weight) &&
+        (!descriptors?.style || f.style === descriptors.style),
+    );
     if (already) return;
     const h = delayRender(`font ${family}`);
     const face = new FontFace(family, `url(${url})`, descriptors);
@@ -99,4 +131,10 @@ export function useIsPreview(): boolean {
   return useRenderMode() === "preview";
 }
 
-export const fillStyle: CSSProperties = { position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" };
+export const fillStyle: CSSProperties = {
+  position: "absolute",
+  inset: 0,
+  width: "100%",
+  height: "100%",
+  objectFit: "cover",
+};

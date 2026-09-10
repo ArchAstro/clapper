@@ -1,6 +1,6 @@
+import type { AudioCue } from "@clapper/core";
 import { describe, expect, it } from "vitest";
 import { renderToneSamples, renderToneStereo, renderToneTrack } from "../src/ffmpeg.ts";
-import type { AudioCue } from "@clapper/core";
 
 const tone = (over: Partial<AudioCue> = {}): AudioCue => ({
   id: "t",
@@ -25,7 +25,11 @@ describe("tone synthesis", () => {
     expect(Math.abs(s[s.length - 1])).toBeLessThan(0.02); // released
   });
   it("noise wave is non-periodic and non-silent", () => {
-    const s = renderToneSamples(tone({ tone: { wave: "noise", freq: 2000, attack: 0, decay: 0, sustain: 1, release: 0 } }), 0.1, 8000);
+    const s = renderToneSamples(
+      tone({ tone: { wave: "noise", freq: 2000, attack: 0, decay: 0, sustain: 1, release: 0 } }),
+      0.1,
+      8000,
+    );
     const energy = s.reduce((a, v) => a + v * v, 0) / s.length;
     expect(energy).toBeGreaterThan(0.0001);
   });
@@ -49,34 +53,97 @@ describe("tone synthesis", () => {
   });
   it("master bus softens the brittle top octave without dulling the body", () => {
     const sr = 48000;
-    const body = tone({ id: "body", endFrame: 15, tone: { wave: "sine", freq: 500, attack: 0, decay: 0, sustain: 1, release: 0 } });
-    const fizz = tone({ id: "fizz", endFrame: 15, tone: { wave: "sine", freq: 12000, attack: 0, decay: 0, sustain: 1, release: 0 } });
+    const body = tone({
+      id: "body",
+      endFrame: 15,
+      tone: { wave: "sine", freq: 500, attack: 0, decay: 0, sustain: 1, release: 0 },
+    });
+    const fizz = tone({
+      id: "fizz",
+      endFrame: 15,
+      tone: { wave: "sine", freq: 12000, attack: 0, decay: 0, sustain: 1, release: 0 },
+    });
     const [bodyTrack] = renderToneTrack([body], 30, 15, sr);
     const [fizzTrack] = renderToneTrack([fizz], 30, 15, sr);
     expect(rmsOf(fizzTrack, sr / 10, sr / 2)).toBeLessThan(rmsOf(bodyTrack, sr / 10, sr / 2) * 0.35);
   });
   it("pluck and epiano ring down and pan", () => {
-    const pluck = tone({ id: "p", endFrame: 60, tone: { wave: "pluck", freq: 220, attack: 0.001, decay: 0.01, sustain: 1, release: 0.05, ring: 0.8, pan: -1 } });
+    const pluck = tone({
+      id: "p",
+      endFrame: 60,
+      tone: {
+        wave: "pluck",
+        freq: 220,
+        attack: 0.001,
+        decay: 0.01,
+        sustain: 1,
+        release: 0.05,
+        ring: 0.8,
+        pan: -1,
+      },
+    });
     const [l, r] = renderToneStereo(pluck, 2, 8000);
-    const rms = (a: Float32Array, from: number, to: number) => Math.sqrt(a.slice(from, to).reduce((s, v) => s + v * v, 0) / (to - from));
+    const rms = (a: Float32Array, from: number, to: number) =>
+      Math.sqrt(a.slice(from, to).reduce((s, v) => s + v * v, 0) / (to - from));
     expect(rms(l, 0, 800)).toBeGreaterThan(rms(l, 8000, 8800) * 3); // decays
     expect(rms(r, 0, 800)).toBeLessThan(0.01); // hard-left pan
-    const ep = tone({ id: "e", endFrame: 60, tone: { wave: "epiano", freq: 330, attack: 0.002, decay: 0.01, sustain: 1, release: 0.05, ring: 1.5, reverb: 0.5 } });
+    const ep = tone({
+      id: "e",
+      endFrame: 60,
+      tone: {
+        wave: "epiano",
+        freq: 330,
+        attack: 0.002,
+        decay: 0.01,
+        sustain: 1,
+        release: 0.05,
+        ring: 1.5,
+        reverb: 0.5,
+      },
+    });
     const [el] = renderToneStereo(ep, 2, 8000);
     expect(rms(el, 0, 800)).toBeGreaterThan(0.05);
   });
   it("felt piano has a rounded modal body, stereo movement, and a natural decay", () => {
-    const cue = tone({ id: "felt", endFrame: 90, tone: { wave: "feltpiano", freq: 261.63, attack: 0.009, decay: 0.12, sustain: 1, release: 0.42, ring: 2.4, brightness: 0.34, spread: 0.12 } });
+    const cue = tone({
+      id: "felt",
+      endFrame: 90,
+      tone: {
+        wave: "feltpiano",
+        freq: 261.63,
+        attack: 0.009,
+        decay: 0.12,
+        sustain: 1,
+        release: 0.42,
+        ring: 2.4,
+        brightness: 0.34,
+        spread: 0.12,
+      },
+    });
     const [l, r] = renderToneStereo(cue, 3, 16000);
     const early = rmsOf(l, 800, 4000);
     const late = rmsOf(l, 36000, 44000);
     expect(early).toBeGreaterThan(0.04);
     expect(late).toBeLessThan(early * 0.35);
-    expect(rmsOf(l.map((v, i) => v - r[i]), 800, 8000)).toBeGreaterThan(0.001);
+    expect(
+      rmsOf(
+        l.map((v, i) => v - r[i]),
+        800,
+        8000,
+      ),
+    ).toBeGreaterThan(0.001);
   });
   it("mallet decays while bowed strings sustain", () => {
-    const mallet = tone({ id: "mallet", endFrame: 60, tone: { wave: "mallet", freq: 220, attack: 0.006, decay: 0.08, sustain: 1, release: 0.18, ring: 1.2 } });
-    const bowed = tone({ id: "bowed", endFrame: 60, tone: { wave: "bowed", freq: 220, attack: 0.2, decay: 0.2, sustain: 0.82, release: 0.4 } });
+    const mallet = tone({
+      id: "mallet",
+      endFrame: 60,
+      tone: { wave: "mallet", freq: 220, attack: 0.006, decay: 0.08, sustain: 1, release: 0.18, ring: 1.2 },
+    });
+    const bowed = tone({
+      id: "bowed",
+      endFrame: 60,
+      tone: { wave: "bowed", freq: 220, attack: 0.2, decay: 0.2, sustain: 0.82, release: 0.4 },
+    });
     const [m] = renderToneStereo(mallet, 2, 16000);
     const [b] = renderToneStereo(bowed, 2, 16000);
     expect(rmsOf(m, 24000, 28000)).toBeLessThan(rmsOf(m, 800, 4800) * 0.2);
@@ -93,9 +160,35 @@ function rmsOf(a: Float32Array, from: number, to: number) {
 }
 
 it("bus (duck) cues scale the tone track and produce a volume expression", () => {
-  const fps = 30, sr = 8000;
-  const tone: AudioCue = { id: "t", kind: "tone", startFrame: 0, endFrame: 90, volume: 0.5, fadeInFrames: 0, fadeOutFrames: 0, tone: { wave: "sine", freq: 220, attack: 0, decay: 0, sustain: 1, release: 0 } };
-  const duck: AudioCue = { id: "d", kind: "bus", startFrame: 30, endFrame: 66, volume: 1, fadeInFrames: 0, fadeOutFrames: 0, automation: { volume: [[0, 1], [6, 0.25], [30, 0.25], [36, 1]] } };
+  const fps = 30,
+    sr = 8000;
+  const tone: AudioCue = {
+    id: "t",
+    kind: "tone",
+    startFrame: 0,
+    endFrame: 90,
+    volume: 0.5,
+    fadeInFrames: 0,
+    fadeOutFrames: 0,
+    tone: { wave: "sine", freq: 220, attack: 0, decay: 0, sustain: 1, release: 0 },
+  };
+  const duck: AudioCue = {
+    id: "d",
+    kind: "bus",
+    startFrame: 30,
+    endFrame: 66,
+    volume: 1,
+    fadeInFrames: 0,
+    fadeOutFrames: 0,
+    automation: {
+      volume: [
+        [0, 1],
+        [6, 0.25],
+        [30, 0.25],
+        [36, 1],
+      ],
+    },
+  };
   expect(busGainAt([duck], 10)).toBe(1);
   expect(busGainAt([duck], 45)).toBeCloseTo(0.25, 5);
   expect(busGainAt([duck, duck], 45)).toBeCloseTo(0.0625, 5);
@@ -109,7 +202,25 @@ it("bus (duck) cues scale the tone track and produce a volume expression", () =>
 });
 
 it("breath wave renders a non-silent, band-limited swell", () => {
-  const cue: AudioCue = { id: "b", kind: "tone", startFrame: 0, endFrame: 60, volume: 0.3, fadeInFrames: 0, fadeOutFrames: 0, tone: { wave: "breath", freq: 700, attack: 0.05, decay: 0, sustain: 1, release: 0.05, cutoff: 700, lfo: { rate: 1, depth: 0.6 } } };
+  const cue: AudioCue = {
+    id: "b",
+    kind: "tone",
+    startFrame: 0,
+    endFrame: 60,
+    volume: 0.3,
+    fadeInFrames: 0,
+    fadeOutFrames: 0,
+    tone: {
+      wave: "breath",
+      freq: 700,
+      attack: 0.05,
+      decay: 0,
+      sustain: 1,
+      release: 0.05,
+      cutoff: 700,
+      lfo: { rate: 1, depth: 0.6 },
+    },
+  };
   const [L, R] = renderToneStereo(cue, 2, 8000, 30);
   expect(rmsOf(L, 0, L.length)).toBeGreaterThan(0.005);
   expect(rmsOf(R, 0, R.length)).toBeGreaterThan(0.005);

@@ -1,6 +1,23 @@
 {
-  "name":"cat-ballet", "private":true,"type":"module",
-  "scripts":{"preview":"clapper preview","render":"clapper render --loudnorm off --crf 18 -o out/pas-de-chat.mp4","review":"clapper review --video out/pas-de-chat.mp4","score":"clapper score render src/score.ts -o out/score-final","typecheck":"tsc -p tsconfig.json --noEmit"},
-  "dependencies":{"@clapper/core":"workspace:*","@clapper/music":"workspace:*","@clapper/cli":"workspace:*","react":"^19.2.0","react-dom":"^19.2.0"},
-  "devDependencies":{"@types/react":"^19.0.0","@types/react-dom":"^19.0.0"}
+  "name": "cat-ballet",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "preview": "clapper preview",
+    "render": "clapper render --loudnorm off --crf 18 -o out/pas-de-chat.mp4",
+    "review": "clapper review --video out/pas-de-chat.mp4",
+    "score": "clapper score render src/score.ts -o out/score-final",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@clapper/core": "workspace:*",
+    "@clapper/music": "workspace:*",
+    "@clapper/cli": "workspace:*",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0"
+  }
 }

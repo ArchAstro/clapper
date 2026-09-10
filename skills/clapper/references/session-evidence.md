@@ -1,12 +1,12 @@
 # Provenance and superseded advice
 
-This skill was distilled on 2026-09-09 from local Claude Code records, checked against the current Clapper source. The repository began as `agenticvids`; searching only a `clapper` session directory misses its history. Raw transcripts stay local and are not bundled into the skill.
+This skill was distilled from Clapper's development and review iterations, checked against the implementation. The repository began as `agenticvids`. The reusable evidence is in the source, example documentation and Git history; private development transcripts are not distributed.
 
 ## Primary records
 
-1. Main session `eb7a0f0d-0892-49fc-8ffd-46e64552b083`, stored under `~/.claude/projects/-Users-calvin-projects-agenticvids/`. Relevant messages run 2026-09-02 through 2026-09-03 UTC. It records the original framework, showcase critique/fix rounds, audio audit, v2/v3, rename and move, then the v4 recut.
-2. Reviewer `agent-a7e7f88408d6c3bda`, in that session's `subagents/`: 2026-09-03 v4 intro/outro brief, independently rendered frames and final critique.
-3. Repository corroboration: `docs/friction-log.md`, `videos/showcase/README.md`, `videos/showcase/docs/archdev-audio-audit.md`, actual example source and CLI/runtime implementations.
+1. `docs/friction-log.md`: original framework development, showcase critique/fix rounds and the move to scene plans.
+2. `videos/showcase/README.md` and `videos/showcase/docs/archdev-audio-audit.md`: review outcomes, measured audio changes and the v4 recut.
+3. Example source and CLI/runtime implementations provide executable corroboration; dates below identify development iterations, not external sessions required to use this skill.
 
 ## Findings retained
 

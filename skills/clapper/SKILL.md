@@ -1,6 +1,6 @@
 ---
 name: clapper
-description: Create, edit, preview, render, and improve React videos with Clapper, including motion design, character animation, music and foley, and adversarial visual/audio review. Use for Clapper videos, animated product demos, brand films, or recuts made with @clapper/core. Not for ordinary website UI or unrelated video editors.
+description: Create, edit, preview, render, and improve Clapper React videos and original music-as-code scores. Covers sampled SFZ instruments, MIDI and stems, the studio Music/Code view, motion design, characters, foley, and adversarial visual/audio review. Use for Clapper films, original scores, animated demos, and recuts; not ordinary website UI or unrelated video editors.
 ---
 
 # Clapper: brief → picture + sound → reviewed MP4
@@ -11,11 +11,12 @@ Make the next useful artifact yourself: a scene plan, a few proof frames, a play
 
 For a standalone install, start with `clapper --version` and the project's `clapper.json`. Use `clapper new <directory> --template basic|comic`, then `clapper preview`, `clapper render`, or `clapper review` from the generated project. `clapper install` restores portable dependencies; `clapper add <package>` adds libraries using managed npm. No source checkout or system Node/pnpm is needed. The project pins a runtime version; use the matching launcher instead of silently migrating it. When working on the framework or an older workspace project, follow the checkout route below.
 
-1. Locate the Clapper checkout: use the current workspace if it contains `packages/core` and `packages/cli`; otherwise check `/Users/calvin/archastro/clapper`. Read its `CLAUDE.md`, project README, package scripts, and Git status. Preserve existing edits. Never assume a new checkout has the same APIs as the last session.
+1. Locate the Clapper checkout: use the current workspace if it contains `packages/core` and `packages/cli`; otherwise use the user-provided checkout or an installed `clapper` command. Read its `CLAUDE.md`, project README, package scripts, and Git status. Preserve existing edits. Never assume a new checkout has the same APIs as the last session.
 2. Choose the mode:
    - **New film:** start from `videos/_template`; choose one visual sibling from the table below.
    - **Recut:** preserve the previous composition ID; reuse exported scene components and make the new scene plan explicit. Review changed scenes and both joins, plus regressions in the full export.
    - **Audio pass:** keep picture timing fixed unless authorized to retime; read [audio.md](references/audio.md).
+   - **Original music / band / choreography:** read [music.md](references/music.md), then [audio.md](references/audio.md) for mix review. Music-only requests do not require creating a video.
    - **Preview/render only:** use the existing entry and composition; don't impose a redesign or full creative review.
    - **Polish/final production:** use [visuals.md](references/visuals.md), [audio.md](references/audio.md), and [review.md](references/review.md).
 3. Resolve the entry and composition with `clapper compositions`; never silently render the CLI's first composition. Root `pnpm preview` / `pnpm render` target intern-promo, not whichever film the user mentioned.
@@ -29,6 +30,7 @@ For a standalone install, start with `clapper --version` and the project's `clap
 | Character acting and continuous score | `videos/showcase/src/archdev/archdev2.tsx` |
 | Boiling-ink comic and reusable rig | `videos/showcase/src/archdev3/`, `@clapper/core/rigs` |
 | New opening/ending around approved scenes | `videos/showcase/src/archdev4/archdev4.tsx` |
+| Sampled original score, beat-driven choreography, Music inspector | `videos/cat-ballet/src/score.ts`, `src/index.tsx`, `clapper.json` |
 
 Use the existing primitive before inventing a replacement. Later local examples such as `archdev5` may contain useful new instruments; check exports and tests before relying on them. They are not automatically reviewed or shipped because their source exists.
 
@@ -37,7 +39,7 @@ Use the existing primitive before inventing a replacement. Later local examples 
 Commands below are Fish syntax. Set actual paths and IDs once; use the tool's `workdir` or `pnpm --dir` rather than relying on persistent `cd` state.
 
 ```fish
-set -l clapper_repo /Users/calvin/archastro/clapper
+set -l clapper_repo (pwd) # run from the Clapper checkout
 set -l clapper_project "$clapper_repo/videos/showcase"
 set -l clapper_id archdev4
 
@@ -48,15 +50,15 @@ pnpm --dir "$clapper_project" exec clapper still src/index.tsx -c "$clapper_id" 
 pnpm --dir "$clapper_project" exec clapper preview src/index.tsx --port 4321
 ```
 
-Preview is a long-running server. Use its printed URL (the port may change). Open the user handoff in their main Google Chrome profile; automated browser checks use an isolated profile. Space plays, arrows step, `[` / `]` jump cuts, `s` shows safe areas, `c` shows copy boxes, `i` / `o` set a loop range. Preview audio is an approximation; judge the exported mix.
+Preview is a long-running server. Use its printed URL (the port may change). Open the user handoff in their main Google Chrome profile; automated browser checks use an isolated profile. Space plays, arrows step, `[` / `]` jump cuts, `s` shows safe areas, `c` shows copy boxes, `i` / `o` set a loop range. ScoreAudio plays the actual prepared WAV; synthesized cue previews are approximations. Judge the exported combined mix.
 
-If setup is missing: Node 24+, pnpm, `pnpm install` at the repository root, then `pnpm --dir packages/cli exec playwright install chromium`. The workspace's `allowBuilds` must permit esbuild and ffmpeg-static. Run doctor against the actual video project. Clapper is a local workspace package: don't substitute an unrelated public npm package.
+If setup is missing: Node 24+, pnpm, `pnpm install` at the repository root, then `pnpm --dir packages/cli exec playwright install chromium`. Build the encoder with `node scripts/build-ffmpeg.mjs` or use system FFmpeg with libx264. Run doctor against the actual video project. Use the actual Clapper packages: don't substitute a similarly named unrelated npm package.
 
 For a new video, copy only the template's authored files (`package.json`, `tsconfig.json`, `src/`, and assets if present) into an unused `videos/<name>`; never copy `node_modules`, `.clapper`, or `out`. Set a unique package name and composition ID, then install workspace links. Keep useful `preview`, `still`, `review`, `render`, and `typecheck` scripts with explicit IDs.
 
 ## 3. Author picture and sound together
 
-For a full musical score, use `@clapper/music` and the sampled SFZ pipeline described in the checkout's `docs/music.md`. Start with `clapper instruments list --json`, choose explicit articulation presets and check their ranges, then compose `src/score.ts`. Add `score` to `clapper.json` and use `<ScoreAudio score={score}/>` from `@clapper/core/music`. `clapper score render` produces mastered audio, MIDI and stems; preview and export use the same prepared WAV. The `videos/cat-ballet` score is the working example. Use the existing synthesized cues for foley or when their timbre is desired, not as a substitute for a requested multi-instrument sampled score.
+For a full musical score, follow [music.md](references/music.md): compose with `@clapper/music`, select real SFZ presets, prepare through `clapper.json`, and place `ScoreAudio` in the film. The studio's Music tab exposes a clickable piano roll and exact source code. Use synthesized cues for foley or their intended timbre; use sampled instruments for a requested sampled score.
 
 1. Write a compact beat plan: audience, promise, duration, format, style reference, one action per scene, on-screen copy, and the intended sound/quiet beat. For a requested spec, use an HTML task UI. Otherwise a short scene table is enough; don't delay a simple edit with a spec.
 2. `defineScenes` owns durations and overlaps. Pass the plan to both `<Composition scenes={SCENES}>` and `<Scenes plan={SCENES}>`. Use `SCENES.start(name)` for global sound cues. Inside a scene, `useFrame()` is local. Numeric times are frames; `"0.4s"` is seconds. Recompute frame references after a retime.

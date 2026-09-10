@@ -1,7 +1,16 @@
-import { Children, isValidElement, useContext, useEffect, useMemo, type CSSProperties, type ReactElement, type ReactNode } from "react";
-import { TimelineContext, useFps, useTimeline, useVideoConfig, type TimelineState } from "./timeline";
-import { resolveFrames, type Frames } from "./frames";
+import {
+  Children,
+  type CSSProperties,
+  isValidElement,
+  type ReactElement,
+  type ReactNode,
+  useContext,
+  useEffect,
+  useMemo,
+} from "react";
+import { type Frames, resolveFrames } from "./frames";
 import { getRegistry, notifyRegistry } from "./registry";
+import { TimelineContext, type TimelineState, useFps, useTimeline, useVideoConfig } from "./timeline";
 
 export interface SequenceProps {
   /** Start relative to the parent sequence: frames or "1.2s". Default 0. */
@@ -64,7 +73,14 @@ export function Sequence({
     if (!name) return;
     const r = getRegistry();
     const existing = r.tracks.get(id);
-    const info = { id, name, path: state.path, startFrame: absStart, endFrame: absStart + duration, depth: parent.path.length - 1 };
+    const info = {
+      id,
+      name,
+      path: state.path,
+      startFrame: absStart,
+      endFrame: absStart + duration,
+      depth: parent.path.length - 1,
+    };
     if (!existing || existing.startFrame !== info.startFrame || existing.endFrame !== info.endFrame) {
       r.tracks.set(id, info);
       notifyRegistry();
@@ -93,7 +109,11 @@ export const absoluteFill: CSSProperties = {
 };
 
 /** A div that fills the composition. */
-export function AbsoluteFill({ style, children, ...rest }: { style?: CSSProperties; children?: ReactNode } & React.HTMLAttributes<HTMLDivElement>) {
+export function AbsoluteFill({
+  style,
+  children,
+  ...rest
+}: { style?: CSSProperties; children?: ReactNode } & React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div {...rest} style={{ ...absoluteFill, ...style }}>
       {children}
@@ -135,7 +155,12 @@ export function Series({ children }: { children: ReactNode }) {
         const from = cursor + offset;
         cursor = from + durationInFrames;
         return (
-          <Sequence key={item.key ?? i} from={from} durationInFrames={durationInFrames} name={name ?? `item ${i + 1}`}>
+          <Sequence
+            key={item.key ?? i}
+            from={from}
+            durationInFrames={durationInFrames}
+            name={name ?? `item ${i + 1}`}
+          >
             {c}
           </Sequence>
         );
@@ -148,13 +173,27 @@ Series.Item = SeriesItem;
 /* ---------------------------------- Loop ----------------------------------- */
 
 /** Repeats its children every `durationInFrames`, `times` times (default forever). */
-export function Loop({ durationInFrames: durProp, times = Infinity, name, children }: { durationInFrames: Frames; times?: number; name?: string; children?: ReactNode }) {
+export function Loop({
+  durationInFrames: durProp,
+  times = Infinity,
+  name,
+  children,
+}: {
+  durationInFrames: Frames;
+  times?: number;
+  name?: string;
+  children?: ReactNode;
+}) {
   const { frame } = useTimeline();
   const durationInFrames = resolveFrames(durProp, useFps());
   const iteration = Math.floor(frame / durationInFrames);
   if (frame < 0 || iteration >= times) return null;
   return (
-    <Sequence from={iteration * durationInFrames} durationInFrames={durationInFrames} name={name ? `${name} #${iteration + 1}` : undefined}>
+    <Sequence
+      from={iteration * durationInFrames}
+      durationInFrames={durationInFrames}
+      name={name ? `${name} #${iteration + 1}` : undefined}
+    >
       {children}
     </Sequence>
   );

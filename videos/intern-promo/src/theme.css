@@ -26,6 +26,14 @@
   -webkit-font-smoothing: antialiased;
   text-rendering: geometricPrecision;
 }
-.promo * { box-sizing: border-box; }
-.display { font-family: var(--font-display); font-weight: 400; letter-spacing: -0.01em; }
-.mono { font-family: var(--font-mono); }
+.promo * {
+  box-sizing: border-box;
+}
+.display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+.mono {
+  font-family: var(--font-mono);
+}

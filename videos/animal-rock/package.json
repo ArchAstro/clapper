@@ -1,0 +1,23 @@
+{
+  "name": "animal-rock",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "preview": "clapper preview",
+    "render": "clapper render --loudnorm off --crf 18 -o out/after-closing.mp4",
+    "score": "clapper score render src/score.ts -o out/score",
+    "review": "clapper review --video out/after-closing.mp4",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@clapper/core": "workspace:*",
+    "@clapper/music": "workspace:*",
+    "@clapper/cli": "workspace:*",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0"
+  }
+}

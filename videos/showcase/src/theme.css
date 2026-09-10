@@ -1,57 +1,164 @@
-* { box-sizing: border-box; }
-.vid { position: absolute; inset: 0; overflow: hidden; -webkit-font-smoothing: antialiased; text-rendering: geometricPrecision; }
+* {
+  box-sizing: border-box;
+}
+.vid {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
 
 /* Ledger: editorial fintech. Bone paper, ink, vermilion. */
 .ledger {
-  --bg: #efeae0; --ink: #101012; --accent: #ff4a1c; --muted: #7a746a; --line: #d6d0c3; --bone: #efeae0;
+  --bg: #efeae0;
+  --ink: #101012;
+  --accent: #ff4a1c;
+  --muted: #7a746a;
+  --line: #d6d0c3;
+  --bone: #efeae0;
   --display: "Fraunces", "Iowan Old Style", Georgia, serif;
   --mono: "JetBrains Mono", "SF Mono", monospace;
-  font-family: var(--display); color: var(--ink); background: var(--bg);
+  font-family: var(--display);
+  color: var(--ink);
+  background: var(--bg);
 }
-.ledger .display { font-family: var(--display); font-variation-settings: "opsz" 144, "wght" 380, "SOFT" 30; letter-spacing: -0.035em; line-height: 0.92; }
-.ledger .display-i { font-style: italic; font-variation-settings: "opsz" 144, "wght" 340, "SOFT" 60; }
-.ledger .mono { font-family: var(--mono); font-feature-settings: "tnum", "zero"; }
+.ledger .display {
+  font-family: var(--display);
+  font-variation-settings:
+    "opsz" 144,
+    "wght" 380,
+    "SOFT" 30;
+  letter-spacing: -0.035em;
+  line-height: 0.92;
+}
+.ledger .display-i {
+  font-style: italic;
+  font-variation-settings:
+    "opsz" 144,
+    "wght" 340,
+    "SOFT" 60;
+}
+.ledger .mono {
+  font-family: var(--mono);
+  font-feature-settings: "tnum", "zero";
+}
 
 /* Orbit: bold, playful blocks. */
 .orbit {
-  --coral: #ff5c39; --cream: #f4efe6; --blue: #2f5bff; --yellow: #ffd23f; --black: #141418; --mint: #9fe8c2; --lilac: #c9b8ff;
+  --coral: #ff5c39;
+  --cream: #f4efe6;
+  --blue: #2f5bff;
+  --yellow: #ffd23f;
+  --black: #141418;
+  --mint: #9fe8c2;
+  --lilac: #c9b8ff;
   --display: "Bricolage Grotesque", "Helvetica Neue", Arial, sans-serif;
   --body: "Space Grotesk", "Helvetica Neue", Arial, sans-serif;
-  font-family: var(--body); color: var(--black);
+  font-family: var(--body);
+  color: var(--black);
 }
-.orbit .display { font-family: var(--display); font-variation-settings: "opsz" 96, "wght" 800, "wdth" 100; letter-spacing: -0.045em; line-height: 0.88; }
-.orbit .display-light { font-family: var(--display); font-variation-settings: "opsz" 96, "wght" 400; letter-spacing: -0.02em; }
+.orbit .display {
+  font-family: var(--display);
+  font-variation-settings:
+    "opsz" 96,
+    "wght" 800,
+    "wdth" 100;
+  letter-spacing: -0.045em;
+  line-height: 0.88;
+}
+.orbit .display-light {
+  font-family: var(--display);
+  font-variation-settings:
+    "opsz" 96,
+    "wght" 400;
+  letter-spacing: -0.02em;
+}
 
 /* Nimbus: dark technical. */
 .nimbus {
-  --bg: #05070d; --ink: #e6f0ff; --cyan: #39d0ff; --magenta: #ff3ea5; --green: #3dff9a; --grid: #121c30; --muted: #6f7f9c; --panel: #0a0f1c;
+  --bg: #05070d;
+  --ink: #e6f0ff;
+  --cyan: #39d0ff;
+  --magenta: #ff3ea5;
+  --green: #3dff9a;
+  --grid: #121c30;
+  --muted: #6f7f9c;
+  --panel: #0a0f1c;
   --display: "Unbounded", "Space Grotesk", sans-serif;
   --body: "Space Grotesk", "Helvetica Neue", sans-serif;
   --mono: "JetBrains Mono", "SF Mono", monospace;
-  font-family: var(--body); color: var(--ink); background: var(--bg);
+  font-family: var(--body);
+  color: var(--ink);
+  background: var(--bg);
 }
-.nimbus .display { font-family: var(--display); font-weight: 500; letter-spacing: 0.06em; }
-.nimbus .mono { font-family: var(--mono); font-feature-settings: "tnum"; }
+.nimbus .display {
+  font-family: var(--display);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+}
+.nimbus .mono {
+  font-family: var(--mono);
+  font-feature-settings: "tnum";
+}
 
 /* ArchDev: Everforest terminal room. */
 .archdev {
-  --bg: #1e2326; --base: #272e33; --surface: #2d353b; --line: #3d484d; --fg: #d3c6aa; --muted: #859289; --dim: #56635f;
-  --green: #a7c080; --red: #e67e80; --yellow: #dbbc7f; --blue: #7fbbb3; --amber: #f0a04b; --aqua: #83c092;
+  --bg: #1e2326;
+  --base: #272e33;
+  --surface: #2d353b;
+  --line: #3d484d;
+  --fg: #d3c6aa;
+  --muted: #859289;
+  --dim: #56635f;
+  --green: #a7c080;
+  --red: #e67e80;
+  --yellow: #dbbc7f;
+  --blue: #7fbbb3;
+  --amber: #f0a04b;
+  --aqua: #83c092;
   --display: "Bricolage Grotesque", "Space Grotesk", sans-serif;
   --mono: "JetBrains Mono", "SF Mono", monospace;
-  font-family: var(--mono); color: var(--fg); background: var(--bg);
+  font-family: var(--mono);
+  color: var(--fg);
+  background: var(--bg);
 }
-.archdev .display { font-family: var(--display); font-variation-settings: "opsz" 96, "wght" 600; letter-spacing: -0.03em; line-height: 0.95; }
-.archdev .mono { font-family: var(--mono); font-feature-settings: "tnum"; }
+.archdev .display {
+  font-family: var(--display);
+  font-variation-settings:
+    "opsz" 96,
+    "wght" 600;
+  letter-spacing: -0.03em;
+  line-height: 0.95;
+}
+.archdev .mono {
+  font-family: var(--mono);
+  font-feature-settings: "tnum";
+}
 
 /* ArchDev v3: rage comic. Paper, ink, one red pencil. */
 .archdev3 {
-  --paper: #f5f3ee; --ink: #161616; --grey: #cfcdc7; --light: #e9e7e1; --red: #d2382c; --muted: #6f6c66;
+  --paper: #f5f3ee;
+  --ink: #161616;
+  --grey: #cfcdc7;
+  --light: #e9e7e1;
+  --red: #d2382c;
+  --muted: #6f6c66;
   --hand: "Patrick Hand", "Comic Sans MS", cursive;
   --marker: "Gochi Hand", "Patrick Hand", cursive;
   --script: "Caveat", "Patrick Hand", cursive;
-  font-family: var(--hand); color: var(--ink); background: var(--paper);
+  font-family: var(--hand);
+  color: var(--ink);
+  background: var(--paper);
 }
-.archdev3 .hand { font-family: var(--hand); }
-.archdev3 .marker { font-family: var(--marker); letter-spacing: 0.01em; }
-.archdev3 .script { font-family: var(--script); font-weight: 700; }
+.archdev3 .hand {
+  font-family: var(--hand);
+}
+.archdev3 .marker {
+  font-family: var(--marker);
+  letter-spacing: 0.01em;
+}
+.archdev3 .script {
+  font-family: var(--script);
+  font-weight: 700;
+}

@@ -1,14 +1,37 @@
-* { box-sizing: border-box; }
-.vid { position: absolute; inset: 0; overflow: hidden; -webkit-font-smoothing: antialiased; text-rendering: geometricPrecision; }
+* {
+  box-sizing: border-box;
+}
+.vid {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
 
 /* ArchDev site loops: the rage-comic paper of archdev3. Paper, ink, one red pencil. */
 .site {
-  --paper: #f5f3ee; --ink: #161616; --grey: #cfcdc7; --light: #e9e7e1; --red: #d2382c; --muted: #6f6c66;
+  --paper: #f5f3ee;
+  --ink: #161616;
+  --grey: #cfcdc7;
+  --light: #e9e7e1;
+  --red: #d2382c;
+  --muted: #6f6c66;
   --hand: "Patrick Hand", "Comic Sans MS", cursive;
   --marker: "Gochi Hand", "Patrick Hand", cursive;
   --script: "Caveat", "Patrick Hand", cursive;
-  font-family: var(--hand); color: var(--ink); background: var(--paper);
+  font-family: var(--hand);
+  color: var(--ink);
+  background: var(--paper);
 }
-.site .hand { font-family: var(--hand); }
-.site .marker { font-family: var(--marker); letter-spacing: 0.01em; }
-.site .script { font-family: var(--script); font-weight: 700; }
+.site .hand {
+  font-family: var(--hand);
+}
+.site .marker {
+  font-family: var(--marker);
+  letter-spacing: 0.01em;
+}
+.site .script {
+  font-family: var(--script);
+  font-weight: 700;
+}

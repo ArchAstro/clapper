@@ -2,7 +2,25 @@ import { Click, typedLength, useFps } from "@clapper/core";
 import { useMemo } from "react";
 
 /** Click per typed character (or every Nth), synced to <Typewriter> with the same props. */
-export function TypeClicks({ text, at = 0, cps = 30, duration, jitter = 0.35, every = 1, volume = 0.1, freq = 2200 }: { text: string; at?: number; cps?: number; duration?: number; jitter?: number; every?: number; volume?: number; freq?: number }) {
+export function TypeClicks({
+  text,
+  at = 0,
+  cps = 30,
+  duration,
+  jitter = 0.35,
+  every = 1,
+  volume = 0.1,
+  freq = 2200,
+}: {
+  text: string;
+  at?: number;
+  cps?: number;
+  duration?: number;
+  jitter?: number;
+  every?: number;
+  volume?: number;
+  freq?: number;
+}) {
   const fps = useFps();
   const frames = useMemo(() => {
     const total = duration ?? Math.ceil((text.length / cps) * fps);

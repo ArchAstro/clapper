@@ -1,7 +1,15 @@
-import { useMemo, type CSSProperties, type ReactNode } from "react";
-import { Easing, interpolate, progress, spring, SpringPresets, type EasingFn, type SpringConfig } from "./interpolate";
+import { type CSSProperties, type ReactNode, useMemo } from "react";
+import { type Frames, resolveFrames } from "./frames";
+import {
+  Easing,
+  type EasingFn,
+  interpolate,
+  progress,
+  type SpringConfig,
+  SpringPresets,
+  spring,
+} from "./interpolate";
 import { useFps, useFrame } from "./timeline";
-import { resolveFrames, type Frames } from "./frames";
 
 /* ------------------------------- useProgress ------------------------------- */
 
@@ -13,7 +21,15 @@ export function useProgress(start: Frames, duration: Frames, easing: EasingFn = 
 }
 
 /** Deterministic spring driven by the local frame. */
-export function useSpring(opts: { delay?: number; from?: number; to?: number; config?: SpringConfig | keyof typeof SpringPresets; durationInFrames?: number } = {}): number {
+export function useSpring(
+  opts: {
+    delay?: number;
+    from?: number;
+    to?: number;
+    config?: SpringConfig | keyof typeof SpringPresets;
+    durationInFrames?: number;
+  } = {},
+): number {
   const frame = useFrame();
   const fps = useFps();
   const config = typeof opts.config === "string" ? SpringPresets[opts.config] : opts.config;
@@ -38,7 +54,9 @@ export function evalKeyframes(frames: Keyframe[], frame: number, fps = 30): Reco
   const out: Record<string, StyleValue> = {};
   if (frames.length === 0) return out;
   type Resolved = Keyframe & { frame: number };
-  const sorted: Resolved[] = frames.map((k) => ({ ...k, frame: resolveFrames(k.frame, fps) }) as Resolved).sort((a, b) => a.frame - b.frame);
+  const sorted: Resolved[] = frames
+    .map((k) => ({ ...k, frame: resolveFrames(k.frame, fps) }) as Resolved)
+    .sort((a, b) => a.frame - b.frame);
   const props = new Set<string>();
   for (const k of sorted) for (const p of Object.keys(k)) if (p !== "frame" && p !== "easing") props.add(p);
   for (const p of props) {
@@ -68,7 +86,19 @@ export function evalKeyframes(frames: Keyframe[], frame: number, fps = 30): Reco
   return out;
 }
 
-const TRANSFORM_KEYS = ["x", "y", "z", "scale", "scaleX", "scaleY", "rotate", "rotateX", "rotateY", "skewX", "skewY"] as const;
+const TRANSFORM_KEYS = [
+  "x",
+  "y",
+  "z",
+  "scale",
+  "scaleX",
+  "scaleY",
+  "rotate",
+  "rotateX",
+  "rotateY",
+  "skewX",
+  "skewY",
+] as const;
 const FILTER_KEYS = ["blur", "brightness", "contrast", "saturate", "grayscale"] as const;
 
 /** Convert evaluated keyframe values into a CSS style object. */
@@ -113,7 +143,10 @@ export function toStyle(values: Record<string, StyleValue>): CSSProperties {
 export function useKeyframes(frames: Keyframe[], offset: Frames = 0): CSSProperties {
   const frame = useFrame();
   const fps = useFps();
-  return useMemo(() => toStyle(evalKeyframes(frames, frame - resolveFrames(offset, fps), fps)), [frames, frame, offset, fps]);
+  return useMemo(
+    () => toStyle(evalKeyframes(frames, frame - resolveFrames(offset, fps), fps)),
+    [frames, frame, offset, fps],
+  );
 }
 
 /* -------------------------------- <Animate> -------------------------------- */
@@ -198,7 +231,21 @@ export function Animate({
       }
     }
     return toStyle(values);
-  }, [keyframes, from, to, at, duration, easing, springCfg, exit, exitAt, exitDuration, exitEasing, frame, fps]);
+  }, [
+    keyframes,
+    from,
+    to,
+    at,
+    duration,
+    easing,
+    springCfg,
+    exit,
+    exitAt,
+    exitDuration,
+    exitEasing,
+    frame,
+    fps,
+  ]);
 
   if (mountAtStart && frame < at) return null;
   const Comp = Tag as any;
@@ -214,7 +261,16 @@ export function Animate({
 function identityFor(from: Record<string, StyleValue>): Record<string, StyleValue> {
   const out: Record<string, StyleValue> = {};
   for (const k of Object.keys(from)) {
-    if (k === "opacity" || k === "scale" || k === "scaleX" || k === "scaleY" || k === "brightness" || k === "contrast" || k === "saturate") out[k] = 1;
+    if (
+      k === "opacity" ||
+      k === "scale" ||
+      k === "scaleX" ||
+      k === "scaleY" ||
+      k === "brightness" ||
+      k === "contrast" ||
+      k === "saturate"
+    )
+      out[k] = 1;
     else if (typeof from[k] === "number") out[k] = 0;
     else out[k] = from[k];
   }
@@ -259,7 +315,18 @@ export function Stagger({
   return (
     <>
       {items.map((child, i) => (
-        <Animate key={i} from={from} to={to} at={atF + i * eachF} duration={duration} easing={easing} spring={springCfg} as={as} style={itemStyle} className={itemClassName}>
+        <Animate
+          key={i}
+          from={from}
+          to={to}
+          at={atF + i * eachF}
+          duration={duration}
+          easing={easing}
+          spring={springCfg}
+          as={as}
+          style={itemStyle}
+          className={itemClassName}
+        >
           {child}
         </Animate>
       ))}

@@ -4,9 +4,11 @@ Write videos in React. Render them to MP4. Review them like a studio would.
 
 **Music as code:** [`@clapper/music`](docs/music.md) adds typed scores, tempo maps, MIDI interchange and native SFZ rendering with 75 catalogued CC0 presets. See [`videos/cat-ballet`](videos/cat-ballet/README.md) for an original chamber waltz synchronized to a cat's ballet choreography.
 
+**Animal rock band:** [`After Closing`](videos/animal-rock/README.md) adds an original three-piece jam, note-driven performers and three curated CC0 guitar/bass/drum presets (78 presets total).
+
 **Standalone distribution:** the native launcher now supports `clapper new`, `clapper add`, and project-local `preview`, `render`, and `review` with a managed Node/Chromium/ffmpeg runtime. See [building and testing the standalone package](docs/standalone.md). Release artifacts are built locally; creating them does not publish a release.
 
-**npm distribution:** [the npm/npx package](docs/npm.md) uses that same launcher and runtime. `node scripts/pack-npm.mjs` creates publishable CLI, platform-launcher, and core tarballs; `node scripts/test-npm.mjs` verifies the actual npm installation. No npm publication is performed by these commands.
+**npm distribution:** [the npm/npx package](docs/npm.md) uses that same launcher and runtime. `node scripts/pack-npm.mjs` creates publishable CLI, platform-launcher, music, and core tarballs; `node scripts/test-npm.mjs` verifies the actual npm installation. No npm publication is performed by these commands.
 
 Every frame is a pure function of `useFrame()`. You compose scenes with ordinary React (hooks, context, CSS, SVG, any
 library, KaTeX), a scene plan positions them in time, sounds are React elements that register cues, and a headless
@@ -41,24 +43,32 @@ videos/<name>/src/index.tsx            packages/cli (Node)                      
 
 ## Install
 
-```bash
-pnpm install                                   # Node 24+, pnpm 11; allowBuilds lets ffmpeg-static and esbuild install
-cd packages/cli && pnpm exec playwright install chromium
-pnpm exec clapper doctor                       # Node, Chromium, ffmpeg (libx264, aac, filters), React resolution
-pnpm typecheck && pnpm test                    # 36 unit tests: math, scenes, rigs, sketch, offline synth, ducking
+For a published release, use the [npm/standalone installation guide](docs/npm.md). Until release assets and packages are published, build from source:
+
+```sh
+git clone https://github.com/ArchAstro/clapper.git
+cd clapper
+pnpm install --frozen-lockfile                 # Node 24+, pnpm 11.7.0
+pnpm --dir packages/cli exec playwright install chromium
+node scripts/build-ffmpeg.mjs                  # or use system FFmpeg with libx264
+pnpm --dir videos/_template exec clapper doctor src/index.tsx
+pnpm check && pnpm typecheck && pnpm test
 ```
 
-The repository is a pnpm workspace; nothing is published. Video projects depend on the packages with `workspace:*`.
+The source tree is a pnpm workspace. Video projects use `workspace:*`; generated public packages and standalone projects do not. See [CONTRIBUTING.md](CONTRIBUTING.md) for build prerequisites and [docs/releasing.md](docs/releasing.md) for exact publishing commands. Original code is [MIT licensed](LICENSE); third-party assets retain the licenses listed in [NOTICE.md](NOTICE.md).
 
 ## Your first video in ten minutes
 
 ```bash
-cp -r videos/_template videos/hello && cd videos/hello   # then set "name" in package.json
+mkdir videos/hello
+cp videos/_template/package.json videos/_template/tsconfig.json videos/hello/
+cp -R videos/_template/src videos/hello/
+cd videos/hello                                # then set "name" in package.json
 pnpm install
 pnpm preview                                   # studio at http://127.0.0.1:4321
 ```
 
-Open `src/index.tsx`. The template is the whole pattern in 90 lines:
+Open `src/index.tsx`. The template demonstrates the complete pattern:
 
 1. **`defineScenes`** owns time. `{ hook: { seconds: 2.5 }, proof: { seconds: 4, transition: { type: "fade", duration: "0.4s" } } }`
    gives `scenes.total`, `scenes.start("proof")`, `scenes.cuts()`. Pass it to `<Composition scenes={…}>` and render with
@@ -188,7 +198,7 @@ frame-referenced fixes, re-render, repeat. Two or three rounds is typical for sh
   Chromium tabs, each takes a contiguous frame chunk, calls `window.__clapper.setFrame(n)`, screenshots, and an ordered
   writer streams PNGs into `ffmpeg -f image2pipe … libx264 -pix_fmt yuv420p`. Audio is mixed after, then muxed (AAC).
 - A composition that throws makes the render fail with the error, not produce blank frames.
-- Uses system `ffmpeg` if it has libx264, otherwise the `ffmpeg-static` binary. `CLAPPER_FFMPEG` overrides.
+- Uses the managed/source-built FFmpeg or a system encoder with libx264. `CLAPPER_FFMPEG` overrides. Release bundles exclude nonfree builds and include corresponding encoder sources; see [release details](docs/releasing.md).
 - Speed: 15–25 fps at 1080p with 4 workers on an M-series laptop. Frames are captured as JPEG q96 by default; `--image-format png` is lossless but PNG-encoding grainy frames is ~5x slower (the screenshot encode, not the page, is the bottleneck).
 
 ## Review

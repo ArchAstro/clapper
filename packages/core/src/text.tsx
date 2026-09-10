@@ -1,6 +1,14 @@
-import { useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode, type SVGProps } from "react";
+import {
+  type CSSProperties,
+  type ReactNode,
+  type SVGProps,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Animate, type StyleValue } from "./animate";
-import { Easing, interpolate, progress, type EasingFn } from "./interpolate";
+import { Easing, type EasingFn, interpolate, progress } from "./interpolate";
 import { useFps, useFrame } from "./timeline";
 
 /* ------------------------------- Typewriter -------------------------------- */
@@ -25,7 +33,18 @@ export interface TypewriterProps {
 }
 
 /** Deterministic typewriter. Use `typedLength()` to sync sounds. */
-export function Typewriter({ text, at = 0, cps = 30, duration, cursor = true, cursorAfter = true, style, className, as: Tag = "span", jitter = 0.35 }: TypewriterProps) {
+export function Typewriter({
+  text,
+  at = 0,
+  cps = 30,
+  duration,
+  cursor = true,
+  cursorAfter = true,
+  style,
+  className,
+  as: Tag = "span",
+  jitter = 0.35,
+}: TypewriterProps) {
   const frame = useFrame();
   const fps = useFps();
   const n = typedLength({ text, frame, fps, at, cps, duration, jitter });
@@ -36,7 +55,18 @@ export function Typewriter({ text, at = 0, cps = 30, duration, cursor = true, cu
     <Comp className={className} style={{ whiteSpace: "pre-wrap", ...style }}>
       {text.slice(0, n)}
       {cursor && (
-        <span aria-hidden style={{ opacity: showCursor ? 1 : 0, display: "inline-block", width: "0.55em", marginLeft: "0.08em", borderBottom: "0.12em solid currentColor", verticalAlign: "-0.04em", height: "0.9em" }}>
+        <span
+          aria-hidden
+          style={{
+            opacity: showCursor ? 1 : 0,
+            display: "inline-block",
+            width: "0.55em",
+            marginLeft: "0.08em",
+            borderBottom: "0.12em solid currentColor",
+            verticalAlign: "-0.04em",
+            height: "0.9em",
+          }}
+        >
           {typeof cursor === "boolean" ? null : cursor}
         </span>
       )}
@@ -45,7 +75,23 @@ export function Typewriter({ text, at = 0, cps = 30, duration, cursor = true, cu
 }
 
 /** How many characters of `text` are typed at `frame`. Pure. */
-export function typedLength({ text, frame, fps, at = 0, cps = 30, duration, jitter = 0.35 }: { text: string; frame: number; fps: number; at?: number; cps?: number; duration?: number; jitter?: number }): number {
+export function typedLength({
+  text,
+  frame,
+  fps,
+  at = 0,
+  cps = 30,
+  duration,
+  jitter = 0.35,
+}: {
+  text: string;
+  frame: number;
+  fps: number;
+  at?: number;
+  cps?: number;
+  duration?: number;
+  jitter?: number;
+}): number {
   const total = duration ?? Math.ceil((text.length / cps) * fps);
   if (frame < at) return 0;
   if (frame >= at + total) return text.length;
@@ -91,7 +137,23 @@ export interface SplitTextProps {
 }
 
 /** Splits text into words/chars/lines and staggers an animation across them. */
-export function SplitText({ text, by = "word", at = 0, each = 3, duration = 18, from = { opacity: 0, y: 18 }, to, easing = Easing.outExpo, spring, style, className, unitStyle, exit, exitAt, exitDuration }: SplitTextProps) {
+export function SplitText({
+  text,
+  by = "word",
+  at = 0,
+  each = 3,
+  duration = 18,
+  from = { opacity: 0, y: 18 },
+  to,
+  easing = Easing.outExpo,
+  spring,
+  style,
+  className,
+  unitStyle,
+  exit,
+  exitAt,
+  exitDuration,
+}: SplitTextProps) {
   const units = useMemo(() => {
     if (by === "line") return text.split("\n");
     if (by === "char") return [...text];
@@ -103,7 +165,20 @@ export function SplitText({ text, by = "word", at = 0, each = 3, duration = 18, 
         const isSpace = /^\s+$/.test(u);
         if (isSpace && by === "word") return u.includes("\n") ? <br key={i} /> : <span key={i}>{u}</span>;
         return (
-          <Animate key={i} as="span" from={from} to={to} at={at + i * each} duration={duration} easing={easing} spring={spring} exit={exit} exitAt={exitAt} exitDuration={exitDuration} style={{ display: "inline-block", whiteSpace: "pre", ...unitStyle }}>
+          <Animate
+            key={i}
+            as="span"
+            from={from}
+            to={to}
+            at={at + i * each}
+            duration={duration}
+            easing={easing}
+            spring={spring}
+            exit={exit}
+            exitAt={exitAt}
+            exitDuration={exitDuration}
+            style={{ display: "inline-block", whiteSpace: "pre", ...unitStyle }}
+          >
             {u}
             {by === "line" && i < units.length - 1 ? <br /> : null}
           </Animate>
@@ -115,7 +190,27 @@ export function SplitText({ text, by = "word", at = 0, each = 3, duration = 18, 
 
 /* --------------------------------- Counter --------------------------------- */
 
-export function Counter({ from = 0, to, at = 0, duration = 30, easing = Easing.outExpo, format, decimals = 0, style, className }: { from?: number; to: number; at?: number; duration?: number; easing?: EasingFn; format?: (n: number) => string; decimals?: number; style?: CSSProperties; className?: string }) {
+export function Counter({
+  from = 0,
+  to,
+  at = 0,
+  duration = 30,
+  easing = Easing.outExpo,
+  format,
+  decimals = 0,
+  style,
+  className,
+}: {
+  from?: number;
+  to: number;
+  at?: number;
+  duration?: number;
+  easing?: EasingFn;
+  format?: (n: number) => string;
+  decimals?: number;
+  style?: CSSProperties;
+  className?: string;
+}) {
   const frame = useFrame();
   const v = interpolate(frame, [at, at + duration], [from, to], { easing });
   const text = format ? format(v) : v.toFixed(decimals);
@@ -132,7 +227,20 @@ export function Counter({ from = 0, to, at = 0, duration = 30, easing = Easing.o
  * Wrap SVG content; every path/line/polyline/circle/rect/ellipse inside is
  * drawn on with a stroke-dashoffset reveal, staggered by `each` frames.
  */
-export function Draw({ at = 0, duration = 30, each = 0, easing = Easing.inOutCubic, children, ...rest }: { at?: number; duration?: number; each?: number; easing?: EasingFn; children: ReactNode } & SVGProps<SVGGElement>) {
+export function Draw({
+  at = 0,
+  duration = 30,
+  each = 0,
+  easing = Easing.inOutCubic,
+  children,
+  ...rest
+}: {
+  at?: number;
+  duration?: number;
+  each?: number;
+  easing?: EasingFn;
+  children: ReactNode;
+} & SVGProps<SVGGElement>) {
   const ref = useRef<SVGGElement>(null);
   const frame = useFrame();
   const [lengths, setLengths] = useState<number[]>([]);
@@ -141,7 +249,9 @@ export function Draw({ at = 0, duration = 30, each = 0, easing = Easing.inOutCub
     if (!g) return;
     const shapes = g.querySelectorAll<SVGGeometryElement>("path,line,polyline,polygon,circle,rect,ellipse");
     const ls = [...shapes].map((s) => (typeof s.getTotalLength === "function" ? s.getTotalLength() : 0));
-    setLengths((prev) => (prev.length === ls.length && prev.every((v, i) => Math.abs(v - ls[i]) < 0.01) ? prev : ls));
+    setLengths((prev) =>
+      prev.length === ls.length && prev.every((v, i) => Math.abs(v - ls[i]) < 0.01) ? prev : ls,
+    );
   }, [children]);
   useLayoutEffect(() => {
     const g = ref.current;

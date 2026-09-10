@@ -50,7 +50,7 @@ Each entry: what happened → root cause → workaround → durable fix (DONE or
 ### 2.6 pnpm 11 silently skipped postinstall scripts
 - What: `ffmpeg-static` exported a path to a binary that did not exist; `[ERR_PNPM_IGNORED_BUILDS]` after every install.
 - Cause: pnpm 11 ignores build scripts unless allowed; neither `package.json#pnpm.onlyBuiltDependencies` nor `pnpm-workspace.yaml onlyBuiltDependencies` worked.
-- Fix DONE: `allowBuilds: { esbuild: true, ffmpeg-static: true }` in `pnpm-workspace.yaml`. Posted to the team room.
+- Fix DONE: `allowBuilds: { esbuild: true, ffmpeg-static: true }` in `pnpm-workspace.yaml`. The public release later replaced ffmpeg-static with a source-built encoder.
 
 ### 2.7 Shell cwd persistence and `cd` prompts
 - What: files "vanished" (a `cd dir && cat > file` chain skipped the first file because `cd` failed after the cwd had already persisted there); later a `cd /repo && python3 …` hung for 120 s on a permission prompt.
@@ -112,7 +112,7 @@ Each entry: what happened → root cause → workaround → durable fix (DONE or
 - Node 24+ type stripping runs `packages/cli/src/*.ts` directly (no build). Constraints: relative imports need `.ts` extensions, no enums/namespaces/parameter properties, and `import type` only from `@clapper/core` (browser code). This saved a build step but will surprise anyone who adds an enum.
 
 ### 2.17 Brand sourcing was manual
-- For tryintern.dev and ArchDev I grepped the monorepo for tokens (`--ink`, Everforest hexes), fonts (`next/font` names), logo SVG/PNG, and copy strings, then downloaded Google Fonts CSS and localized the woff2 files with a one-off script.
+- The early product demos adapted brand tokens, fonts, logos and copy, then localized Google Fonts files. The public repository includes the font license inventory and self-contained examples.
 - PROPOSED: `clapper brand <url-or-dir>` that emits `theme.css` (tokens), `fonts/` (localized), `public/` (logo, OG image), and `copy.json`; even a half-automated version removes 20 minutes per video.
 
 ### 2.18 Audio measurements (ArchDev, before the audio pass)
@@ -228,7 +228,7 @@ The harness can expose `document.elementsFromPoint` sampling or bounding boxes f
 5. Cadence that converged: my own still pass → round 1 (finds 6–12 issues) → fix → round 2 (SHIP or 1–3 nits) → round 3 only when a transition or beat changed.
 6. Things only the image review caught: elements drawn over the character, text clipped by a fixed line box, a headline cropped by a camera push, twelve-vs-twenty copy inconsistency, alert and recovery badges both fully visible, a stat that contradicted itself across scenes.
 7. Things the reviewer got wrong: a "asymmetric margins" claim that was symmetric; a "one-frame gap" that was the house style. Verify with math before applying.
-8. Post lessons to the team room as they land; three of this session's gotchas (pnpm allowBuilds, PNG capture cost, TransitionSeries overlaps) were worth more than the videos.
+8. Record lessons in the project documentation as they land; three of this session's gotchas (pnpm allowBuilds, PNG capture cost, TransitionSeries overlaps) were worth more than the videos.
 
 9. Review-round history (score per round): Ledger 6 → 6 → 9; Orbit 7 → 8; Nimbus 6 → 6 → 9; ArchDev 6 → 8 → 9. Round 2 usually still fails when round-1 fixes moved a problem instead of removing it (Nimbus camera push: side crop → top crop; Ledger roll: hard clip → soft clip).
 10. Give reviewers the ability to render their own frames. Every round they rendered 12–34 extra frames and the decisive findings came from those, not from the kit.

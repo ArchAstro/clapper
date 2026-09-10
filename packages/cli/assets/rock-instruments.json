@@ -1,0 +1,1430 @@
+{
+  "instruments": [
+    {
+      "id": "green-guitar",
+      "name": "Green hollowbody guitar · two round robins",
+      "family": "guitars",
+      "license": "CC0-1.0",
+      "range": [
+        40,
+        76
+      ],
+      "keys": [
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76
+      ],
+      "keyswitch": false,
+      "sfz": "Programs/clapper-green-guitar.sfz",
+      "sfzText": "// CC0 Karoryfer Black and Green Guitars: medium-layer, two-RR adaptation.\n<global> ampeg_attack=0.004 ampeg_release=0.13\n<region>\nsample=../Samples/green/ord/twang_e3_mf_rr2.wav\nlokey=40\nhikey=40\npitch_keycenter=40\nseq_length=2\nseq_position=2\n\n<region>\nsample=../Samples/green/ord/twang_e3_mf_rr1.wav\nlokey=40\nhikey=40\npitch_keycenter=40\nseq_length=2\nseq_position=1\n\n<region>\nsample=../Samples/green/ord/twang_f3_mf_rr2.wav\nlokey=41\nhikey=41\npitch_keycenter=41\nseq_length=2\nseq_position=2\n\n<region>\nsample=../Samples/green/ord/twang_f3_mf_rr1.wav\nlokey=41\nhikey=41\npitch_keycenter=41\nseq_length=2\nseq_position=1\n\n<region>\nsample=../Samples/green/ord/twang_gb3_mf_rr2.wav\nlokey=42\nhikey=42\npitch_keycenter=42\nseq_length=2\nseq_position=2\n\n<region>\nsample=../Samples/green/ord/twang_gb3_mf_rr1.wav\nlokey=42\nhikey=42\npitch_keycenter=42\nseq_length=2\nseq_position=1\n\n<region>\nsample=../Samples/green/ord/twang_g3_mf_rr2.wav\nlokey=43\nhikey=43\npitch_keycenter=43\nseq_length=2\nseq_position=2\n\n<region>\nsample=../Samples/green/ord/twang_g3_mf_rr1.wav\nlokey=43\nhikey=43\npitch_keycenter=43\nseq_length=2\nseq_position=1\n\n<region>\nsample=../Samples/green/ord/twang_ab3_mf_rr2.wav\nlokey=44\nhikey=44\npitch_keycenter=44\nseq_length=2\nseq_position=2\n\n<region>\nsample=../Samples/green/ord/twang_ab3_mf_rr1.wav\nlokey=44\nhikey=44\npitch_keycenter=44\nseq_length=2\nseq_position=1\n\n<region>\nsample=../Samples/green/ord/twang_a3_mf_rr2.wav\nlokey=45\nhikey=45\npitch_keycenter=45\nseq_length=2\nseq_position=2\n\n<region>\nsample=../Samples/green/ord/twang_a3_mf_rr1.wav\nlokey=45\nhikey=45\npitch_keycenter=45\nseq_length=2\nseq_position=1\n\n<region>\nsample=../Samples/green/ord/twang_bb3_mf_rr2.wav\nlokey=46\nhikey=46\npitch_keycenter=46\nseq_length=2\nseq_position=2\n\n<region>\nsample=../Samples/green/ord/twang_bb3_mf_rr1.wav\nlokey=46\nhikey=46\npitch_keycenter=46\nseq_length=2\nseq_position=1\n\n<region>\nsample=../Samples/green/ord/twang_b3_mf_rr2.wav\nlokey=47\nhikey=47\npitch_keycenter=47\nseq_length=2\nseq_position=2\n\n<region>\nsample=../Samples/green/ord/twang_b3_mf_rr1.wav\nlokey=47\nhikey=47\npitch_keycenter=47\nseq_length=2\nseq_position=1\n\n<region>\nsample=../Samples/green/ord/twang_c4_mf_rr2.wav\nlokey=48\nhikey=48\npitch_keycenter=48\nseq_length=2\nseq_position=2\n\n<region>\nsample=../Samples/green/ord/twang_c4_mf_rr1.wav\nlokey=48\nhikey=48\npitch_keycenter=48\nseq_length=2\nseq_position=1\n\n<region>\nsample=../Samples/green/ord/twang_db4_mf_rr2.wav\nlokey=49\nhikey=49\npitch_keycenter=49\nseq_length=2\nseq_position=2\n\n<region>\nsample=../Samples/green/ord/twang_db4_mf_rr1.wav\nlokey=49\nhikey=49\npitch_keycenter=49\nseq_length=2\nseq_position=1\n\n<region>\nsample=../Samples/green/ord/twang_d4_mf_rr2.wav\nlokey=50\nhikey=50\npitch_keycenter=50\nseq_length=2\nseq_position=2\n\n<region>\nsample=../Samples/green/ord/twang_d4_mf_rr1.wav\nlokey=50\nhikey=50\npitch_keycenter=50\nseq_length=2\nseq_position=1\n\n<region>\nsample=../Samples/green/ord/twang_eb4_mf_rr2.wav\nlokey=51\nhikey=51\npitch_keycenter=51\nseq_length=2\nseq_position=2\n\n<region>\nsample=../Samples/green/ord/twang_eb4_mf_rr1.wav\nlokey=51\nhikey=51\npitch_keycenter=51\nseq_length=2\nseq_position=1\n\n<region>\nsample=../Samples/green/ord/twang_e4_mf_rr2.wav\nlokey=52\nhikey=52\npitch_keycenter=52\nseq_length=2\nseq_position=2\n\n<region>\nsample=../Samples/green/ord/twang_e4_mf_rr1.wav\nlokey=52\nhikey=52\npitch_keycenter=52\nseq_length=2\nseq_position=1\n\n<region>\nsample=../Samples/green/ord/twang_f4_mf_rr2.wav\nlokey=53\nhikey=53\npitch_keycenter=53\nseq_length=2\nseq_position=2\n\n<region>\nsample=../Samples/green/ord/twang_f4_mf_rr1.wav\nlokey=53\nhikey=53\npitch_keycenter=53\nseq_length=2\nseq_position=1\n\n<region>\nsample=../Samples/green/ord/twang_gb4_mf_rr2.wav\nlokey=54\nhikey=54\npitch_keycenter=54\nseq_length=2\nseq_position=2\n\n<region>\nsample=../Samples/green/ord/twang_gb4_mf_rr1.wav\nlokey=54\nhikey=54\npitch_keycenter=54\nseq_length=2\nseq_position=1\n\n<region>\nsample=../Samples/green/ord/twang_g4_mf_rr2.wav\nlokey=55\nhikey=55\npitch_keycenter=55\nseq_length=2\nseq_position=2\n\n<region>\nsample=../Samples/green/ord/twang_g4_mf_rr1.wav\nlokey=55\nhikey=55\npitch_keycenter=55\nseq_length=2\nseq_position=1\n\n<region>\nsample=../Samples/green/ord/twang_ab4_mf_rr2.wav\nlokey=56\nhikey=56\npitch_keycenter=56\nseq_length=2\nseq_position=2\n\n<region>\nsample=../Samples/green/ord/twang_ab4_mf_rr1.wav\nlokey=56\nhikey=56\npitch_keycenter=56\nseq_length=2\nseq_position=1\n\n<region>\nsample=../Samples/green/ord/twang_a4_mf_rr2.wav\nlokey=57\nhikey=57\npitch_keycenter=57\nseq_length=2\nseq_position=2\n\n<region>\nsample=../Samples/green/ord/twang_a4_mf_rr1.wav\nlokey=57\nhikey=57\npitch_keycenter=57\nseq_length=2\nseq_position=1\n\n<region>\nsample=../Samples/green/ord/twang_bb4_mf_rr2.wav\nlokey=58\nhikey=58\npitch_keycenter=58\nseq_length=2\nseq_position=2\n\n<region>\nsample=../Samples/green/ord/twang_bb4_mf_rr1.wav\nlokey=58\nhikey=58\npitch_keycenter=58\nseq_length=2\nseq_position=1\n\n<region>\nsample=../Samples/green/ord/twang_b4_mf_rr2.wav\nlokey=59\nhikey=60\npitch_keycenter=59\nseq_length=2\nseq_position=2\n\n<region>\nsample=../Samples/green/ord/twang_b4_mf_rr1.wav\nlokey=59\nhikey=60\npitch_keycenter=59\nseq_length=2\nseq_position=1\n\n<region>\nsample=../Samples/green/ord/twang_db5_mf_rr2.wav\nlokey=61\nhikey=61\npitch_keycenter=61\nseq_length=2\nseq_position=2\n\n<region>\nsample=../Samples/green/ord/twang_db5_mf_rr1.wav\nlokey=61\nhikey=61\npitch_keycenter=61\nseq_length=2\nseq_position=1\n\n<region>\nsample=../Samples/green/ord/twang_d5_mf_rr2.wav\nlokey=62\nhikey=62\npitch_keycenter=62\nseq_length=2\nseq_position=2\n\n<region>\nsample=../Samples/green/ord/twang_d5_mf_rr1.wav\nlokey=62\nhikey=62\npitch_keycenter=62\nseq_length=2\nseq_position=1\n\n<region>\nsample=../Samples/green/ord/twang_eb5_mf_rr2.wav\nlokey=63\nhikey=63\npitch_keycenter=63\nseq_length=2\nseq_position=2\n\n<region>\nsample=../Samples/green/ord/twang_eb5_mf_rr1.wav\nlokey=63\nhikey=63\npitch_keycenter=63\nseq_length=2\nseq_position=1\n\n<region>\nsample=../Samples/green/ord/twang_e5_mf_rr2.wav\nlokey=64\nhikey=64\npitch_keycenter=64\nseq_length=2\nseq_position=2\n\n<region>\nsample=../Samples/green/ord/twang_e5_mf_rr1.wav\nlokey=64\nhikey=64\npitch_keycenter=64\nseq_length=2\nseq_position=1\n\n<region>\nsample=../Samples/green/ord/twang_f5_mf_rr2.wav\nlokey=65\nhikey=65\npitch_keycenter=65\nseq_length=2\nseq_position=2\n\n<region>\nsample=../Samples/green/ord/twang_f5_mf_rr1.wav\nlokey=65\nhikey=65\npitch_keycenter=65\nseq_length=2\nseq_position=1\n\n<region>\nsample=../Samples/green/ord/twang_gb5_mf_rr2.wav\nlokey=66\nhikey=66\npitch_keycenter=66\nseq_length=2\nseq_position=2\n\n<region>\nsample=../Samples/green/ord/twang_gb5_mf_rr1.wav\nlokey=66\nhikey=66\npitch_keycenter=66\nseq_length=2\nseq_position=1\n\n<region>\nsample=../Samples/green/ord/twang_g5_mf_rr2.wav\nlokey=67\nhikey=67\npitch_keycenter=67\nseq_length=2\nseq_position=2\n\n<region>\nsample=../Samples/green/ord/twang_g5_mf_rr1.wav\nlokey=67\nhikey=67\npitch_keycenter=67\nseq_length=2\nseq_position=1\n\n<region>\nsample=../Samples/green/ord/twang_ab5_mf_rr2.wav\nlokey=68\nhikey=68\npitch_keycenter=68\nseq_length=2\nseq_position=2\n\n<region>\nsample=../Samples/green/ord/twang_ab5_mf_rr1.wav\nlokey=68\nhikey=68\npitch_keycenter=68\nseq_length=2\nseq_position=1\n\n<region>\nsample=../Samples/green/ord/twang_a5_mf_rr2.wav\nlokey=69\nhikey=69\npitch_keycenter=69\nseq_length=2\nseq_position=2\n\n<region>\nsample=../Samples/green/ord/twang_a5_mf_rr1.wav\nlokey=69\nhikey=69\npitch_keycenter=69\nseq_length=2\nseq_position=1\n\n<region>\nsample=../Samples/green/ord/twang_bb5_mf_rr2.wav\nlokey=70\nhikey=70\npitch_keycenter=70\nseq_length=2\nseq_position=2\n\n<region>\nsample=../Samples/green/ord/twang_bb5_mf_rr1.wav\nlokey=70\nhikey=70\npitch_keycenter=70\nseq_length=2\nseq_position=1\n\n<region>\nsample=../Samples/green/ord/twang_b5_mf_rr2.wav\nlokey=71\nhikey=71\npitch_keycenter=71\nseq_length=2\nseq_position=2\n\n<region>\nsample=../Samples/green/ord/twang_b5_mf_rr1.wav\nlokey=71\nhikey=71\npitch_keycenter=71\nseq_length=2\nseq_position=1\n\n<region>\nsample=../Samples/green/ord/twang_c6_mf_rr2.wav\nlokey=72\nhikey=72\npitch_keycenter=72\nseq_length=2\nseq_position=2\n\n<region>\nsample=../Samples/green/ord/twang_c6_mf_rr1.wav\nlokey=72\nhikey=72\npitch_keycenter=72\nseq_length=2\nseq_position=1\n\n<region>\nsample=../Samples/green/ord/twang_db6_mf_rr2.wav\nlokey=73\nhikey=73\npitch_keycenter=73\nseq_length=2\nseq_position=2\n\n<region>\nsample=../Samples/green/ord/twang_db6_mf_rr1.wav\nlokey=73\nhikey=73\npitch_keycenter=73\nseq_length=2\nseq_position=1\n\n<region>\nsample=../Samples/green/ord/twang_d6_mf_rr2.wav\nlokey=74\nhikey=74\npitch_keycenter=74\nseq_length=2\nseq_position=2\n\n<region>\nsample=../Samples/green/ord/twang_d6_mf_rr1.wav\nlokey=74\nhikey=74\npitch_keycenter=74\nseq_length=2\nseq_position=1\n\n<region>\nsample=../Samples/green/ord/twang_eb6_mf_rr2.wav\nlokey=75\nhikey=75\npitch_keycenter=75\nseq_length=2\nseq_position=2\n\n<region>\nsample=../Samples/green/ord/twang_eb6_mf_rr1.wav\nlokey=75\nhikey=75\npitch_keycenter=75\nseq_length=2\nseq_position=1\n\n<region>\nsample=../Samples/green/ord/twang_e6_mf_rr2.wav\nlokey=76\nhikey=76\npitch_keycenter=76\nseq_length=2\nseq_position=2\n\n<region>\nsample=../Samples/green/ord/twang_e6_mf_rr1.wav\nlokey=76\nhikey=76\npitch_keycenter=76\nseq_length=2\nseq_position=1\n",
+      "sha1": "5a54b4260f4ad843e2e4c54e81e6db5c1a4643d4",
+      "assets": [
+        {
+          "path": "Programs/modules/maps_green/ord.sfz",
+          "sha1": "694b05d3f6e2cf75abe7e023b2eb927a4dd95821",
+          "bytes": 83265
+        },
+        {
+          "path": "Samples/green/ord/twang_e3_mf_rr2.wav",
+          "sha1": "8723ba68d1ff2eb52af5e5f3a90183a832951542",
+          "bytes": 643164
+        },
+        {
+          "path": "Samples/green/ord/twang_e3_mf_rr1.wav",
+          "sha1": "624691b675f495816d2cf55e1b846c5158ab3924",
+          "bytes": 637898
+        },
+        {
+          "path": "Samples/green/ord/twang_f3_mf_rr2.wav",
+          "sha1": "2b1a9c7ce87bf674eff29e5dbe7dc1ed6688faaf",
+          "bytes": 605354
+        },
+        {
+          "path": "Samples/green/ord/twang_f3_mf_rr1.wav",
+          "sha1": "a3cab4b1c04168c016342e0cefa414783784402d",
+          "bytes": 619772
+        },
+        {
+          "path": "Samples/green/ord/twang_gb3_mf_rr2.wav",
+          "sha1": "7ad4345f7764525a2dda8f907ed135a6f2b8befb",
+          "bytes": 548376
+        },
+        {
+          "path": "Samples/green/ord/twang_gb3_mf_rr1.wav",
+          "sha1": "27f02e010fc571cf128635b818e3dcbc27154fe8",
+          "bytes": 609054
+        },
+        {
+          "path": "Samples/green/ord/twang_g3_mf_rr2.wav",
+          "sha1": "45f84f4df61f5a0824e51b20961cc86361f9cc29",
+          "bytes": 638636
+        },
+        {
+          "path": "Samples/green/ord/twang_g3_mf_rr1.wav",
+          "sha1": "1bb3f08930c2ae5ebf3b4003668b8d384bc8a2c5",
+          "bytes": 622044
+        },
+        {
+          "path": "Samples/green/ord/twang_ab3_mf_rr2.wav",
+          "sha1": "fe4cdb89a25b9bc15fb05c19dee6fb81248b737f",
+          "bytes": 688554
+        },
+        {
+          "path": "Samples/green/ord/twang_ab3_mf_rr1.wav",
+          "sha1": "b414d7430e13283ae051fbf8a4cf66b97e56a397",
+          "bytes": 700250
+        },
+        {
+          "path": "Samples/green/ord/twang_a3_mf_rr2.wav",
+          "sha1": "cef4545b9b87c36e36decc5fbf3448ba6c171193",
+          "bytes": 767184
+        },
+        {
+          "path": "Samples/green/ord/twang_a3_mf_rr1.wav",
+          "sha1": "0b0f7ea077616554c565ab30ecda95fa5d926ef5",
+          "bytes": 752046
+        },
+        {
+          "path": "Samples/green/ord/twang_bb3_mf_rr2.wav",
+          "sha1": "c49f584f5bf86b8fbcfa685d2c54890c74f4cf1f",
+          "bytes": 781320
+        },
+        {
+          "path": "Samples/green/ord/twang_bb3_mf_rr1.wav",
+          "sha1": "da4057e7beda1754339b9ad07cbd78aef0674e4f",
+          "bytes": 731580
+        },
+        {
+          "path": "Samples/green/ord/twang_b3_mf_rr2.wav",
+          "sha1": "ea3a1cf9f148ab8757461dafa225ebe08011cd22",
+          "bytes": 674688
+        },
+        {
+          "path": "Samples/green/ord/twang_b3_mf_rr1.wav",
+          "sha1": "c4f2d99fd3258f80673f6e506989f66f5d6a81fd",
+          "bytes": 666528
+        },
+        {
+          "path": "Samples/green/ord/twang_c4_mf_rr2.wav",
+          "sha1": "89b41647004ba5742679534736606ab835822553",
+          "bytes": 684380
+        },
+        {
+          "path": "Samples/green/ord/twang_c4_mf_rr1.wav",
+          "sha1": "efdba6a6b45ef06bdc4138335a1334be323f1a10",
+          "bytes": 628568
+        },
+        {
+          "path": "Samples/green/ord/twang_db4_mf_rr2.wav",
+          "sha1": "d86c1a857a26d7046ea38d21750b4c774e0965e2",
+          "bytes": 739188
+        },
+        {
+          "path": "Samples/green/ord/twang_db4_mf_rr1.wav",
+          "sha1": "5cfc95d77d2d55bc1d7726972c3b8e01222966ea",
+          "bytes": 712386
+        },
+        {
+          "path": "Samples/green/ord/twang_d4_mf_rr2.wav",
+          "sha1": "fe37b2255f6bae620457580432613743e7a9266d",
+          "bytes": 818462
+        },
+        {
+          "path": "Samples/green/ord/twang_d4_mf_rr1.wav",
+          "sha1": "0c8e6a3e599199ffa8caa0d9acf0d276634f8c25",
+          "bytes": 731178
+        },
+        {
+          "path": "Samples/green/ord/twang_eb4_mf_rr2.wav",
+          "sha1": "f9253a88e015309ba3b0d1968400d6c41f69ed9a",
+          "bytes": 755120
+        },
+        {
+          "path": "Samples/green/ord/twang_eb4_mf_rr1.wav",
+          "sha1": "d0cc87e0cee4fba2fe3397ba0d0829cd2f3c4d64",
+          "bytes": 765974
+        },
+        {
+          "path": "Samples/green/ord/twang_e4_mf_rr2.wav",
+          "sha1": "93d7f9de7e48fe137e8327a762424d286781b26d",
+          "bytes": 792518
+        },
+        {
+          "path": "Samples/green/ord/twang_e4_mf_rr1.wav",
+          "sha1": "470dbbce0b4838e9c4a5407d20c433b3fd6c4420",
+          "bytes": 784362
+        },
+        {
+          "path": "Samples/green/ord/twang_f4_mf_rr2.wav",
+          "sha1": "6cc39040dd522242e381287a34ad7e7c6668efef",
+          "bytes": 783402
+        },
+        {
+          "path": "Samples/green/ord/twang_f4_mf_rr1.wav",
+          "sha1": "c76488865eb87dbe598d105fc7440cff962780ca",
+          "bytes": 767312
+        },
+        {
+          "path": "Samples/green/ord/twang_gb4_mf_rr2.wav",
+          "sha1": "62f7ccdfc78868b5c0d586ab172cb0d86c9aa0f5",
+          "bytes": 722912
+        },
+        {
+          "path": "Samples/green/ord/twang_gb4_mf_rr1.wav",
+          "sha1": "55858598dad5207f1d7ac031708547adad981314",
+          "bytes": 719580
+        },
+        {
+          "path": "Samples/green/ord/twang_g4_mf_rr2.wav",
+          "sha1": "aacea3c315c57edcf709bd6e6e010848a97feab4",
+          "bytes": 697728
+        },
+        {
+          "path": "Samples/green/ord/twang_g4_mf_rr1.wav",
+          "sha1": "283c38725c3ee2aa7c722e2be55633a4d54b310a",
+          "bytes": 759152
+        },
+        {
+          "path": "Samples/green/ord/twang_ab4_mf_rr2.wav",
+          "sha1": "08ac7fb2ac5549e7a9cacb348c0c35ac6d9b0da4",
+          "bytes": 659456
+        },
+        {
+          "path": "Samples/green/ord/twang_ab4_mf_rr1.wav",
+          "sha1": "b1e4bc158d4cc64d0b0ccc25b67693a41e504f3a",
+          "bytes": 710124
+        },
+        {
+          "path": "Samples/green/ord/twang_a4_mf_rr2.wav",
+          "sha1": "e314d9d74411a6fa8718e3370c1946bb43577dd0",
+          "bytes": 768200
+        },
+        {
+          "path": "Samples/green/ord/twang_a4_mf_rr1.wav",
+          "sha1": "375a27cb83acb67d78f88dbe6f0ca318c8d81673",
+          "bytes": 762278
+        },
+        {
+          "path": "Samples/green/ord/twang_bb4_mf_rr2.wav",
+          "sha1": "b1ecdfc8a5551fc7c63ae054d5bdd41cef3a3e1d",
+          "bytes": 716472
+        },
+        {
+          "path": "Samples/green/ord/twang_bb4_mf_rr1.wav",
+          "sha1": "17d9543629f80d97ae901fbbbaf75591d6019856",
+          "bytes": 656012
+        },
+        {
+          "path": "Samples/green/ord/twang_b4_mf_rr2.wav",
+          "sha1": "a57bb83dc4b494b3b67ebdf47bf2a64beeeb4d34",
+          "bytes": 696290
+        },
+        {
+          "path": "Samples/green/ord/twang_b4_mf_rr1.wav",
+          "sha1": "66ddc626a26672947f20bbbfa0269d1d1ae44296",
+          "bytes": 726492
+        },
+        {
+          "path": "Samples/green/ord/twang_db5_mf_rr2.wav",
+          "sha1": "afc5086663680f7d640114ec857aebc701e3e663",
+          "bytes": 650924
+        },
+        {
+          "path": "Samples/green/ord/twang_db5_mf_rr1.wav",
+          "sha1": "0164b0acd6697de7271c8e05776c6f915674e482",
+          "bytes": 578724
+        },
+        {
+          "path": "Samples/green/ord/twang_d5_mf_rr2.wav",
+          "sha1": "3317e28d2c1c9812009b63d626d68cf5b8db34b9",
+          "bytes": 606818
+        },
+        {
+          "path": "Samples/green/ord/twang_d5_mf_rr1.wav",
+          "sha1": "c28f0ba41c68b9bdc845f22eaa46c3e1ab9355ce",
+          "bytes": 652412
+        },
+        {
+          "path": "Samples/green/ord/twang_eb5_mf_rr2.wav",
+          "sha1": "7aca3621f553b50df04fc04fa53025b5813ce492",
+          "bytes": 657294
+        },
+        {
+          "path": "Samples/green/ord/twang_eb5_mf_rr1.wav",
+          "sha1": "174e8b82a53e0bbb26f93f015698437d5977d9d1",
+          "bytes": 677418
+        },
+        {
+          "path": "Samples/green/ord/twang_e5_mf_rr2.wav",
+          "sha1": "768c543cfdebefd9026f57e4ef00533a435a41e6",
+          "bytes": 627938
+        },
+        {
+          "path": "Samples/green/ord/twang_e5_mf_rr1.wav",
+          "sha1": "124a0adfafec7db8cf6ec05fad549c71b9faec61",
+          "bytes": 678110
+        },
+        {
+          "path": "Samples/green/ord/twang_f5_mf_rr2.wav",
+          "sha1": "5807d1908c710f545e6e4c7ce4d90273e8b3e143",
+          "bytes": 647162
+        },
+        {
+          "path": "Samples/green/ord/twang_f5_mf_rr1.wav",
+          "sha1": "212455511378e4217eabbecdbb73f924a0957ac9",
+          "bytes": 669210
+        },
+        {
+          "path": "Samples/green/ord/twang_gb5_mf_rr2.wav",
+          "sha1": "537f7b7278e7b336c38fa94223b478a7dde79e50",
+          "bytes": 604152
+        },
+        {
+          "path": "Samples/green/ord/twang_gb5_mf_rr1.wav",
+          "sha1": "9d65e382d094557285e24d0b3517c8d942c21063",
+          "bytes": 612468
+        },
+        {
+          "path": "Samples/green/ord/twang_g5_mf_rr2.wav",
+          "sha1": "1b03236c5f0b4ea39fca0dac9f98432c64f409dc",
+          "bytes": 609624
+        },
+        {
+          "path": "Samples/green/ord/twang_g5_mf_rr1.wav",
+          "sha1": "9d73bb4651a696563f1dc8338e4148d03a436c21",
+          "bytes": 626844
+        },
+        {
+          "path": "Samples/green/ord/twang_ab5_mf_rr2.wav",
+          "sha1": "0abc4ed2b4922540f038fcbda29bb5efeb1f5a93",
+          "bytes": 572640
+        },
+        {
+          "path": "Samples/green/ord/twang_ab5_mf_rr1.wav",
+          "sha1": "eed5b81b1ce29e12ed4e94b88535b9c5360f358d",
+          "bytes": 612834
+        },
+        {
+          "path": "Samples/green/ord/twang_a5_mf_rr2.wav",
+          "sha1": "7f7a32bb617c62449672b32b180d1883946268b7",
+          "bytes": 575562
+        },
+        {
+          "path": "Samples/green/ord/twang_a5_mf_rr1.wav",
+          "sha1": "5f9c2bcc40f521279b46b4822793267724f151b4",
+          "bytes": 586956
+        },
+        {
+          "path": "Samples/green/ord/twang_bb5_mf_rr2.wav",
+          "sha1": "b185247d392a3283a4a2a71fb75badca0c321573",
+          "bytes": 525936
+        },
+        {
+          "path": "Samples/green/ord/twang_bb5_mf_rr1.wav",
+          "sha1": "c262a7e92befde328d1b3d9f843d348cf833c75f",
+          "bytes": 586610
+        },
+        {
+          "path": "Samples/green/ord/twang_b5_mf_rr2.wav",
+          "sha1": "fd37d091800f32c58a61f8c633439bc2cad44321",
+          "bytes": 633590
+        },
+        {
+          "path": "Samples/green/ord/twang_b5_mf_rr1.wav",
+          "sha1": "4109d0c859484df196809d9d389f53d05d83db29",
+          "bytes": 652664
+        },
+        {
+          "path": "Samples/green/ord/twang_c6_mf_rr2.wav",
+          "sha1": "c3a0586e0eb9162894975bc00d6aae6d201af843",
+          "bytes": 576498
+        },
+        {
+          "path": "Samples/green/ord/twang_c6_mf_rr1.wav",
+          "sha1": "f88a651c94415e691945b336e6fd8188e8f5fcfc",
+          "bytes": 607994
+        },
+        {
+          "path": "Samples/green/ord/twang_db6_mf_rr2.wav",
+          "sha1": "6cfbab0270203cb6d429a7be436f508ae79cfa51",
+          "bytes": 567056
+        },
+        {
+          "path": "Samples/green/ord/twang_db6_mf_rr1.wav",
+          "sha1": "013eb813a4d9a9c806403379229e4bfb3944be85",
+          "bytes": 559794
+        },
+        {
+          "path": "Samples/green/ord/twang_d6_mf_rr2.wav",
+          "sha1": "24ff9553d42aa281a38342e368326a6dac67cb3a",
+          "bytes": 656808
+        },
+        {
+          "path": "Samples/green/ord/twang_d6_mf_rr1.wav",
+          "sha1": "ac9335c1019373a829d2504a107e1bf608326c27",
+          "bytes": 650688
+        },
+        {
+          "path": "Samples/green/ord/twang_eb6_mf_rr2.wav",
+          "sha1": "8c85c8934a7bd69fdcb1d63bbe104a2d36e1d54d",
+          "bytes": 592808
+        },
+        {
+          "path": "Samples/green/ord/twang_eb6_mf_rr1.wav",
+          "sha1": "88d067b8ef41c3c7af4b4e9481a207708e62fabf",
+          "bytes": 692616
+        },
+        {
+          "path": "Samples/green/ord/twang_e6_mf_rr2.wav",
+          "sha1": "f78613a3368c80450c7fa513ee0c03c382d11b1f",
+          "bytes": 530618
+        },
+        {
+          "path": "Samples/green/ord/twang_e6_mf_rr1.wav",
+          "sha1": "e17437a1234b2887624c38c301c13fdfef25056d",
+          "bytes": 527580
+        }
+      ],
+      "bytes": 47935609,
+      "pack": "green-guitar",
+      "version": "b3b3249d37dc977a1a297bd2dc053e6d9b6b805c-clapper1",
+      "baseURL": "https://raw.githubusercontent.com/sfzinstruments/karoryfer.black-and-green-guitars/b3b3249d37dc977a1a297bd2dc053e6d9b6b805c/",
+      "source": "https://github.com/sfzinstruments/karoryfer.black-and-green-guitars",
+      "licenseFile": {
+        "path": "LICENSE",
+        "sha1": "0e259d42c996742e9e3cba14c677129b2c1b6311"
+      }
+    },
+    {
+      "id": "little-bass",
+      "name": "Big Little Bass · plucked",
+      "family": "bass",
+      "license": "CC0-1.0",
+      "range": [
+        35,
+        60
+      ],
+      "keys": [
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60
+      ],
+      "keyswitch": false,
+      "sfz": "Programs/clapper-little-bass.sfz",
+      "sfzText": "// CC0 Karoryfer Big Little Bass: plucked two-RR adaptation.\n<global> ampeg_attack=0.003 ampeg_release=0.12\n<region>\nsample=..\\Samples\\big_little_pluck_b1_p_rr2.wav\nlokey=35\nhikey=35\npitch_keycenter=35\nseq_length=2\nseq_position=2\n\n<region>\nsample=..\\Samples\\big_little_pluck_b1_p_rr1.wav\nlokey=35\nhikey=35\npitch_keycenter=35\nseq_length=2\nseq_position=1\n\n<region>\nsample=..\\Samples\\big_little_pluck_c2_p_rr2.wav\nlokey=36\nhikey=36\npitch_keycenter=36\nseq_length=2\nseq_position=2\n\n<region>\nsample=..\\Samples\\big_little_pluck_c2_p_rr1.wav\nlokey=36\nhikey=36\npitch_keycenter=36\nseq_length=2\nseq_position=1\n\n<region>\nsample=..\\Samples\\big_little_pluck_db2_p_rr2.wav\nlokey=37\nhikey=37\npitch_keycenter=37\nseq_length=2\nseq_position=2\n\n<region>\nsample=..\\Samples\\big_little_pluck_db2_p_rr1.wav\nlokey=37\nhikey=37\npitch_keycenter=37\nseq_length=2\nseq_position=1\n\n<region>\nsample=..\\Samples\\big_little_pluck_d2_p_rr2.wav\nlokey=38\nhikey=38\npitch_keycenter=38\nseq_length=2\nseq_position=2\n\n<region>\nsample=..\\Samples\\big_little_pluck_d2_p_rr1.wav\nlokey=38\nhikey=38\npitch_keycenter=38\nseq_length=2\nseq_position=1\n\n<region>\nsample=..\\Samples\\big_little_pluck_eb2_p_rr2.wav\nlokey=39\nhikey=39\npitch_keycenter=39\nseq_length=2\nseq_position=2\n\n<region>\nsample=..\\Samples\\big_little_pluck_eb2_p_rr1.wav\nlokey=39\nhikey=39\npitch_keycenter=39\nseq_length=2\nseq_position=1\n\n<region>\nsample=..\\Samples\\big_little_pluck_e2_p_rr2.wav\nlokey=40\nhikey=40\npitch_keycenter=40\nseq_length=2\nseq_position=2\n\n<region>\nsample=..\\Samples\\big_little_pluck_e2_p_rr1.wav\nlokey=40\nhikey=40\npitch_keycenter=40\nseq_length=2\nseq_position=1\n\n<region>\nsample=..\\Samples\\big_little_pluck_f2_p_rr2.wav\nlokey=41\nhikey=41\npitch_keycenter=41\nseq_length=2\nseq_position=2\n\n<region>\nsample=..\\Samples\\big_little_pluck_f2_p_rr1.wav\nlokey=41\nhikey=41\npitch_keycenter=41\nseq_length=2\nseq_position=1\n\n<region>\nsample=..\\Samples\\big_little_pluck_gb2_p_rr2.wav\nlokey=42\nhikey=42\npitch_keycenter=42\nseq_length=2\nseq_position=2\n\n<region>\nsample=..\\Samples\\big_little_pluck_gb2_p_rr1.wav\nlokey=42\nhikey=42\npitch_keycenter=42\nseq_length=2\nseq_position=1\n\n<region>\nsample=..\\Samples\\big_little_pluck_g2_p_rr2.wav\nlokey=43\nhikey=43\npitch_keycenter=43\nseq_length=2\nseq_position=2\n\n<region>\nsample=..\\Samples\\big_little_pluck_g2_p_rr1.wav\nlokey=43\nhikey=43\npitch_keycenter=43\nseq_length=2\nseq_position=1\n\n<region>\nsample=..\\Samples\\big_little_pluck_ab2_p_rr2.wav\nlokey=44\nhikey=44\npitch_keycenter=44\nseq_length=2\nseq_position=2\n\n<region>\nsample=..\\Samples\\big_little_pluck_ab2_p_rr1.wav\nlokey=44\nhikey=44\npitch_keycenter=44\nseq_length=2\nseq_position=1\n\n<region>\nsample=..\\Samples\\big_little_pluck_a2_p_rr2.wav\nlokey=45\nhikey=45\npitch_keycenter=45\nseq_length=2\nseq_position=2\n\n<region>\nsample=..\\Samples\\big_little_pluck_a2_p_rr1.wav\nlokey=45\nhikey=45\npitch_keycenter=45\nseq_length=2\nseq_position=1\n\n<region>\nsample=..\\Samples\\big_little_pluck_bb2_p_rr2.wav\nlokey=46\nhikey=46\npitch_keycenter=46\nseq_length=2\nseq_position=2\n\n<region>\nsample=..\\Samples\\big_little_pluck_bb2_p_rr1.wav\nlokey=46\nhikey=46\npitch_keycenter=46\nseq_length=2\nseq_position=1\n\n<region>\nsample=..\\Samples\\big_little_pluck_b2_p_rr2.wav\nlokey=47\nhikey=47\npitch_keycenter=47\nseq_length=2\nseq_position=2\n\n<region>\nsample=..\\Samples\\big_little_pluck_b2_p_rr1.wav\nlokey=47\nhikey=47\npitch_keycenter=47\nseq_length=2\nseq_position=1\n\n<region>\nsample=..\\Samples\\big_little_pluck_c3_p_rr2.wav\nlokey=48\nhikey=48\npitch_keycenter=48\nseq_length=2\nseq_position=2\n\n<region>\nsample=..\\Samples\\big_little_pluck_c3_p_rr1.wav\nlokey=48\nhikey=48\npitch_keycenter=48\nseq_length=2\nseq_position=1\n\n<region>\nsample=..\\Samples\\big_little_pluck_db3_p_rr2.wav\nlokey=49\nhikey=49\npitch_keycenter=49\nseq_length=2\nseq_position=2\n\n<region>\nsample=..\\Samples\\big_little_pluck_db3_p_rr1.wav\nlokey=49\nhikey=49\npitch_keycenter=49\nseq_length=2\nseq_position=1\n\n<region>\nsample=..\\Samples\\big_little_pluck_d3_p_rr2.wav\nlokey=50\nhikey=50\npitch_keycenter=50\nseq_length=2\nseq_position=2\n\n<region>\nsample=..\\Samples\\big_little_pluck_d3_p_rr1.wav\nlokey=50\nhikey=50\npitch_keycenter=50\nseq_length=2\nseq_position=1\n\n<region>\nsample=..\\Samples\\big_little_pluck_eb3_p_rr2.wav\nlokey=51\nhikey=51\npitch_keycenter=51\nseq_length=2\nseq_position=2\n\n<region>\nsample=..\\Samples\\big_little_pluck_eb3_p_rr1.wav\nlokey=51\nhikey=51\npitch_keycenter=51\nseq_length=2\nseq_position=1\n\n<region>\nsample=..\\Samples\\big_little_pluck_e3_p_rr2.wav\nlokey=52\nhikey=52\npitch_keycenter=52\nseq_length=2\nseq_position=2\n\n<region>\nsample=..\\Samples\\big_little_pluck_e3_p_rr1.wav\nlokey=52\nhikey=52\npitch_keycenter=52\nseq_length=2\nseq_position=1\n\n<region>\nsample=..\\Samples\\big_little_pluck_f3_p_rr2.wav\nlokey=53\nhikey=53\npitch_keycenter=53\nseq_length=2\nseq_position=2\n\n<region>\nsample=..\\Samples\\big_little_pluck_f3_p_rr1.wav\nlokey=53\nhikey=53\npitch_keycenter=53\nseq_length=2\nseq_position=1\n\n<region>\nsample=..\\Samples\\big_little_pluck_gb3_p_rr2.wav\nlokey=54\nhikey=54\npitch_keycenter=54\nseq_length=2\nseq_position=2\n\n<region>\nsample=..\\Samples\\big_little_pluck_gb3_p_rr1.wav\nlokey=54\nhikey=54\npitch_keycenter=54\nseq_length=2\nseq_position=1\n\n<region>\nsample=..\\Samples\\big_little_pluck_g3_p_rr2.wav\nlokey=55\nhikey=55\npitch_keycenter=55\nseq_length=2\nseq_position=2\n\n<region>\nsample=..\\Samples\\big_little_pluck_g3_p_rr1.wav\nlokey=55\nhikey=55\npitch_keycenter=55\nseq_length=2\nseq_position=1\n\n<region>\nsample=..\\Samples\\big_little_pluck_ab3_p_rr2.wav\nlokey=56\nhikey=56\npitch_keycenter=56\nseq_length=2\nseq_position=2\n\n<region>\nsample=..\\Samples\\big_little_pluck_ab3_p_rr1.wav\nlokey=56\nhikey=56\npitch_keycenter=56\nseq_length=2\nseq_position=1\n\n<region>\nsample=..\\Samples\\big_little_pluck_a3_p_rr2.wav\nlokey=57\nhikey=57\npitch_keycenter=57\nseq_length=2\nseq_position=2\n\n<region>\nsample=..\\Samples\\big_little_pluck_a3_p_rr1.wav\nlokey=57\nhikey=57\npitch_keycenter=57\nseq_length=2\nseq_position=1\n\n<region>\nsample=..\\Samples\\big_little_pluck_bb3_p_rr2.wav\nlokey=58\nhikey=58\npitch_keycenter=58\nseq_length=2\nseq_position=2\n\n<region>\nsample=..\\Samples\\big_little_pluck_bb3_p_rr1.wav\nlokey=58\nhikey=58\npitch_keycenter=58\nseq_length=2\nseq_position=1\n\n<region>\nsample=..\\Samples\\big_little_pluck_b3_p_rr2.wav\nlokey=59\nhikey=60\npitch_keycenter=59\nseq_length=2\nseq_position=2\n\n<region>\nsample=..\\Samples\\big_little_pluck_b3_p_rr1.wav\nlokey=59\nhikey=60\npitch_keycenter=59\nseq_length=2\nseq_position=1\n",
+      "sha1": "dd753e38ae6328741973bc0900fba187779050b0",
+      "assets": [
+        {
+          "path": "Programs/maps/p_map.sfz",
+          "sha1": "97476f178080a32f033b305c24a2d8704bee6d3e",
+          "bytes": 25515
+        },
+        {
+          "path": "Samples/big_little_pluck_b1_p_rr2.wav",
+          "sha1": "128a4c552070d086a4767cb42fbe2e17c6421954",
+          "bytes": 1284812
+        },
+        {
+          "path": "Samples/big_little_pluck_b1_p_rr1.wav",
+          "sha1": "c104b04fb295633aa2e1501d4bf2c909aee64ca5",
+          "bytes": 1327824
+        },
+        {
+          "path": "Samples/big_little_pluck_c2_p_rr2.wav",
+          "sha1": "a792556de5363da06912e1acbec91710b157e2d5",
+          "bytes": 1108340
+        },
+        {
+          "path": "Samples/big_little_pluck_c2_p_rr1.wav",
+          "sha1": "0daa5ce9e374ef3422815690fc10d87cd68f30d8",
+          "bytes": 1177838
+        },
+        {
+          "path": "Samples/big_little_pluck_db2_p_rr2.wav",
+          "sha1": "896b2aa91d4948680605910872e5ae844938acc3",
+          "bytes": 1176318
+        },
+        {
+          "path": "Samples/big_little_pluck_db2_p_rr1.wav",
+          "sha1": "3a939aaedbfc2b4d7cdc48c5fd7a86f236660bfe",
+          "bytes": 1154918
+        },
+        {
+          "path": "Samples/big_little_pluck_d2_p_rr2.wav",
+          "sha1": "6b3731785c5783d2eb950f8f46468d7761375afb",
+          "bytes": 1052154
+        },
+        {
+          "path": "Samples/big_little_pluck_d2_p_rr1.wav",
+          "sha1": "26bdaebd67300fb655e4104f838bda2a510dc885",
+          "bytes": 1057922
+        },
+        {
+          "path": "Samples/big_little_pluck_eb2_p_rr2.wav",
+          "sha1": "609452b875fc446bee63340a6b7f485bda23dbdc",
+          "bytes": 698304
+        },
+        {
+          "path": "Samples/big_little_pluck_eb2_p_rr1.wav",
+          "sha1": "3b3939b0d25123c1400f39ebe7fd7afe683d5f0a",
+          "bytes": 682368
+        },
+        {
+          "path": "Samples/big_little_pluck_e2_p_rr2.wav",
+          "sha1": "eb3d4cab9b707e7508d09c5d067d53a807feea93",
+          "bytes": 435804
+        },
+        {
+          "path": "Samples/big_little_pluck_e2_p_rr1.wav",
+          "sha1": "0142cacad565e4b0c10c182248eeafa0c0b9b2bc",
+          "bytes": 433824
+        },
+        {
+          "path": "Samples/big_little_pluck_f2_p_rr2.wav",
+          "sha1": "85057013c037593c4d11465ad7fb76c9aa266fe0",
+          "bytes": 629166
+        },
+        {
+          "path": "Samples/big_little_pluck_f2_p_rr1.wav",
+          "sha1": "4e3b81474a071ba70ae4441ce5ba9348821eacb3",
+          "bytes": 552456
+        },
+        {
+          "path": "Samples/big_little_pluck_gb2_p_rr2.wav",
+          "sha1": "16df643abe67b55474716fb7dafce1fd56d39dba",
+          "bytes": 743366
+        },
+        {
+          "path": "Samples/big_little_pluck_gb2_p_rr1.wav",
+          "sha1": "a2df049648115bc991d2fced43a63d5a272df4ed",
+          "bytes": 772946
+        },
+        {
+          "path": "Samples/big_little_pluck_g2_p_rr2.wav",
+          "sha1": "d3fa49feb2a36ac69be624ea3563cfe38b57b971",
+          "bytes": 710444
+        },
+        {
+          "path": "Samples/big_little_pluck_g2_p_rr1.wav",
+          "sha1": "4ba432f1b30905519e29a10a06dcb4343df57004",
+          "bytes": 701190
+        },
+        {
+          "path": "Samples/big_little_pluck_ab2_p_rr2.wav",
+          "sha1": "dc271353e0db010237f764a48de744ddd266007f",
+          "bytes": 678048
+        },
+        {
+          "path": "Samples/big_little_pluck_ab2_p_rr1.wav",
+          "sha1": "51b5eaec15036e0777d7cc19975e7f24cd76efc7",
+          "bytes": 721928
+        },
+        {
+          "path": "Samples/big_little_pluck_a2_p_rr2.wav",
+          "sha1": "7ddef36aa9f8896c1a1756f994097a7fe897dece",
+          "bytes": 469244
+        },
+        {
+          "path": "Samples/big_little_pluck_a2_p_rr1.wav",
+          "sha1": "51f329ee187c9db628f76b05e78846ef9489f5f0",
+          "bytes": 534612
+        },
+        {
+          "path": "Samples/big_little_pluck_bb2_p_rr2.wav",
+          "sha1": "8b2b824d30b3ee883b87703ee54f6d19a7c3a375",
+          "bytes": 564428
+        },
+        {
+          "path": "Samples/big_little_pluck_bb2_p_rr1.wav",
+          "sha1": "f0a4a2da6b5c35f10e77580f4f6c06f09046ddf6",
+          "bytes": 563384
+        },
+        {
+          "path": "Samples/big_little_pluck_b2_p_rr2.wav",
+          "sha1": "3b58cc81c079122fb5f20a3c5481fb5a8cf0b476",
+          "bytes": 614298
+        },
+        {
+          "path": "Samples/big_little_pluck_b2_p_rr1.wav",
+          "sha1": "083063ba229b072538e041664d033acadaa8532b",
+          "bytes": 621494
+        },
+        {
+          "path": "Samples/big_little_pluck_c3_p_rr2.wav",
+          "sha1": "cd84a75d4ce667a5a78d6e8492a6829587b295a3",
+          "bytes": 747750
+        },
+        {
+          "path": "Samples/big_little_pluck_c3_p_rr1.wav",
+          "sha1": "dcce3c60dfd7584a6acf8af3e1b33d5473c65281",
+          "bytes": 724602
+        },
+        {
+          "path": "Samples/big_little_pluck_db3_p_rr2.wav",
+          "sha1": "2596404147763c2f921e1836490740feb3e7afee",
+          "bytes": 710466
+        },
+        {
+          "path": "Samples/big_little_pluck_db3_p_rr1.wav",
+          "sha1": "864d172b52473fe70f42651bc9905ff95d06c2a6",
+          "bytes": 756548
+        },
+        {
+          "path": "Samples/big_little_pluck_d3_p_rr2.wav",
+          "sha1": "ea5042254ba345347bb413b3d3767eac419a4cc6",
+          "bytes": 640836
+        },
+        {
+          "path": "Samples/big_little_pluck_d3_p_rr1.wav",
+          "sha1": "21b40d60c9fed3b556ea7f8baf05c8a6accea8a5",
+          "bytes": 641994
+        },
+        {
+          "path": "Samples/big_little_pluck_eb3_p_rr2.wav",
+          "sha1": "d61304770ce8927df7f923935b6ae99194d576c1",
+          "bytes": 632966
+        },
+        {
+          "path": "Samples/big_little_pluck_eb3_p_rr1.wav",
+          "sha1": "8f456bf6a2525571e338ebff1c758111cf4c67da",
+          "bytes": 613406
+        },
+        {
+          "path": "Samples/big_little_pluck_e3_p_rr2.wav",
+          "sha1": "8c0b85253bb7267128443e637943b7e3057f10b8",
+          "bytes": 692420
+        },
+        {
+          "path": "Samples/big_little_pluck_e3_p_rr1.wav",
+          "sha1": "685b3b5c7d1bc03c1a28f940f0f33a52c586afdc",
+          "bytes": 721412
+        },
+        {
+          "path": "Samples/big_little_pluck_f3_p_rr2.wav",
+          "sha1": "9d96b444527446c9f718e9498c4cc0b8aef94a77",
+          "bytes": 615974
+        },
+        {
+          "path": "Samples/big_little_pluck_f3_p_rr1.wav",
+          "sha1": "05454ac11c7f73abeeea7a5d0656def58d4cd051",
+          "bytes": 633782
+        },
+        {
+          "path": "Samples/big_little_pluck_gb3_p_rr2.wav",
+          "sha1": "e22509103d887002ab1f30e3b2af8e087f002dfd",
+          "bytes": 660908
+        },
+        {
+          "path": "Samples/big_little_pluck_gb3_p_rr1.wav",
+          "sha1": "99044c209868b5ef700b5e99a4ddc92765bc4ef9",
+          "bytes": 621354
+        },
+        {
+          "path": "Samples/big_little_pluck_g3_p_rr2.wav",
+          "sha1": "6347b7e16ae7d9b07a42ec478c12e5d0bd7057d5",
+          "bytes": 962004
+        },
+        {
+          "path": "Samples/big_little_pluck_g3_p_rr1.wav",
+          "sha1": "322fff0da756ba4e45efff188191ac475496c4bf",
+          "bytes": 956852
+        },
+        {
+          "path": "Samples/big_little_pluck_ab3_p_rr2.wav",
+          "sha1": "3d1cb1cbb8b6e7fe2d775a507c342688550757aa",
+          "bytes": 865134
+        },
+        {
+          "path": "Samples/big_little_pluck_ab3_p_rr1.wav",
+          "sha1": "8d11276d1834c941aa9c680ccaad467df24e2fda",
+          "bytes": 918534
+        },
+        {
+          "path": "Samples/big_little_pluck_a3_p_rr2.wav",
+          "sha1": "7d1cea24724923aec76883d26957e9ae694a5d72",
+          "bytes": 851930
+        },
+        {
+          "path": "Samples/big_little_pluck_a3_p_rr1.wav",
+          "sha1": "f189ca5da233b0f8f43c941d1703e5f4fcf6d194",
+          "bytes": 868052
+        },
+        {
+          "path": "Samples/big_little_pluck_bb3_p_rr2.wav",
+          "sha1": "bfb52955e6d3117fc6282267fea7a34d27f7e200",
+          "bytes": 918558
+        },
+        {
+          "path": "Samples/big_little_pluck_bb3_p_rr1.wav",
+          "sha1": "0f9424ea2c22ba4957dce77994d761b98068d31a",
+          "bytes": 905114
+        },
+        {
+          "path": "Samples/big_little_pluck_b3_p_rr2.wav",
+          "sha1": "8c749a52bc5e45d9c25e1de4e88b3b51c7ef2f93",
+          "bytes": 973032
+        },
+        {
+          "path": "Samples/big_little_pluck_b3_p_rr1.wav",
+          "sha1": "a19515515037f5fb814a06703dbf26e7dc5cfb3e",
+          "bytes": 1028370
+        }
+      ],
+      "bytes": 39154943,
+      "pack": "little-bass",
+      "version": "4e92bdf54dcd2d6cfad968cc90542d5461c9b9fc-clapper1",
+      "baseURL": "https://raw.githubusercontent.com/sfzinstruments/karoryfer.big-little-bass/4e92bdf54dcd2d6cfad968cc90542d5461c9b9fc/",
+      "source": "https://github.com/sfzinstruments/karoryfer.big-little-bass",
+      "licenseFile": {
+        "path": "LICENSE",
+        "sha1": "0e259d42c996742e9e3cba14c677129b2c1b6311"
+      }
+    },
+    {
+      "id": "club-drums",
+      "name": "Virtuosity club kit · overhead",
+      "family": "drums",
+      "license": "CC0-1.0",
+      "range": [
+        36,
+        49
+      ],
+      "keys": [
+        36,
+        38,
+        42,
+        46,
+        45,
+        47,
+        49
+      ],
+      "keyswitch": false,
+      "sfz": "Programs/clapper-club-drums.sfz",
+      "sfzText": "// CC0 Virtuosity Drums: overhead kit with GM note mapping.\n<global> loop_mode=one_shot ampeg_release=0.02\n\n<group> key=36\n\n<region>\nsample=../Samples/oh/kick/oh_kick_snoff_vl1_rr1.flac\nhivel=31\nseq_length=4\namp_velcurve_31=1\n\n<region>\nsample=../Samples/oh/kick/oh_kick_snoff_vl1_rr2.flac\nhivel=31\nseq_length=4\nseq_position=2\namp_velcurve_31=1\n\n<region>\nsample=../Samples/oh/kick/oh_kick_snoff_vl1_rr3.flac\nhivel=31\nseq_length=4\nseq_position=3\namp_velcurve_31=1\n\n<region>\nsample=../Samples/oh/kick/oh_kick_snoff_vl1_rr4.flac\nhivel=31\nseq_length=4\nseq_position=4\namp_velcurve_31=1\n\n<region>\nsample=../Samples/oh/kick/oh_kick_snoff_vl2_rr1.flac\nlovel=32\nhivel=63\nseq_length=4\namp_velcurve_63=1\n\n<region>\nsample=../Samples/oh/kick/oh_kick_snoff_vl2_rr2.flac\nlovel=32\nhivel=63\nseq_length=4\nseq_position=2\namp_velcurve_63=1\n\n<region>\nsample=../Samples/oh/kick/oh_kick_snoff_vl2_rr3.flac\nlovel=32\nhivel=63\nseq_length=4\nseq_position=3\namp_velcurve_63=1\n\n<region>\nsample=../Samples/oh/kick/oh_kick_snoff_vl2_rr4.flac\nlovel=32\nhivel=63\nseq_length=4\nseq_position=4\namp_velcurve_63=1\n\n<region>\nsample=../Samples/oh/kick/oh_kick_snoff_vl3_rr1.flac\nlovel=64\nhivel=95\nseq_length=4\namp_velcurve_95=1\n\n<region>\nsample=../Samples/oh/kick/oh_kick_snoff_vl3_rr2.flac\nlovel=64\nhivel=95\nseq_length=4\nseq_position=2\namp_velcurve_95=1\n\n<region>\nsample=../Samples/oh/kick/oh_kick_snoff_vl3_rr3.flac\nlovel=64\nhivel=95\nseq_length=4\nseq_position=3\namp_velcurve_95=1\n\n<region>\nsample=../Samples/oh/kick/oh_kick_snoff_vl3_rr4.flac\nlovel=64\nhivel=95\nseq_length=4\nseq_position=4\namp_velcurve_95=1\n\n<region>\nsample=../Samples/oh/kick/oh_kick_snoff_vl4_rr1.flac\nlovel=96\nseq_length=4\n\n<region>\nsample=../Samples/oh/kick/oh_kick_snoff_vl4_rr2.flac\nlovel=96\nseq_length=4\nseq_position=2\n\n<region>\nsample=../Samples/oh/kick/oh_kick_snoff_vl4_rr3.flac\nlovel=96\nseq_length=4\nseq_position=3\n\n<region>\nsample=../Samples/oh/kick/oh_kick_snoff_vl4_rr4.flac\nlovel=96\nseq_length=4\nseq_position=4\n\n<group> key=38\n\n<region>\nsample=../Samples/oh/snare/oh_snare_center_vl1.flac\nhivel=3\n\n<region>\nsample=../Samples/oh/snare/oh_snare_center_vl2.flac\nlovel=4\nhivel=7\n\n<region>\nsample=../Samples/oh/snare/oh_snare_center_vl3.flac\nlovel=8\nhivel=10\n\n<region>\nsample=../Samples/oh/snare/oh_snare_center_vl4.flac\nlovel=11\nhivel=14\n\n<region>\nsample=../Samples/oh/snare/oh_snare_center_vl5.flac\nlovel=15\nhivel=17\n\n<region>\nsample=../Samples/oh/snare/oh_snare_center_vl6.flac\nlovel=18\nhivel=21\n\n<region>\nsample=../Samples/oh/snare/oh_snare_center_vl7.flac\nlovel=22\nhivel=24\n\n<region>\nsample=../Samples/oh/snare/oh_snare_center_vl8.flac\nlovel=25\nhivel=27\n\n<region>\nsample=../Samples/oh/snare/oh_snare_center_vl9.flac\nlovel=28\nhivel=31\n\n<region>\nsample=../Samples/oh/snare/oh_snare_center_vl10.flac\nlovel=32\nhivel=34\n\n<region>\nsample=../Samples/oh/snare/oh_snare_center_vl11.flac\nlovel=35\nhivel=38\n\n<region>\nsample=../Samples/oh/snare/oh_snare_center_vl12.flac\nlovel=39\nhivel=41\n\n<region>\nsample=../Samples/oh/snare/oh_snare_center_vl13.flac\nlovel=42\nhivel=45\n\n<region>\nsample=../Samples/oh/snare/oh_snare_center_vl14.flac\nlovel=46\nhivel=48\n\n<region>\nsample=../Samples/oh/snare/oh_snare_center_vl15.flac\nlovel=49\nhivel=52\n\n<region>\nsample=../Samples/oh/snare/oh_snare_center_vl16.flac\nlovel=53\nhivel=55\n\n<region>\nsample=../Samples/oh/snare/oh_snare_center_vl17.flac\nlovel=56\nhivel=59\n\n<region>\nsample=../Samples/oh/snare/oh_snare_center_vl18.flac\nlovel=60\nhivel=63\n\n<region>\nsample=../Samples/oh/snare/oh_snare_center_vl19.flac\nlovel=64\nhivel=66\n\n<region>\nsample=../Samples/oh/snare/oh_snare_center_vl20.flac\nlovel=67\nhivel=70\n\n<region>\nsample=../Samples/oh/snare/oh_snare_center_vl21.flac\nlovel=71\nhivel=73\n\n<region>\nsample=../Samples/oh/snare/oh_snare_center_vl22.flac\nlovel=74\nhivel=77\n\n<region>\nsample=../Samples/oh/snare/oh_snare_center_vl23.flac\nlovel=78\nhivel=80\n\n<region>\nsample=../Samples/oh/snare/oh_snare_center_vl24.flac\nlovel=81\nhivel=84\n\n<region>\nsample=../Samples/oh/snare/oh_snare_center_vl25.flac\nlovel=85\nhivel=87\n\n<region>\nsample=../Samples/oh/snare/oh_snare_center_vl26.flac\nlovel=88\nhivel=91\n\n<region>\nsample=../Samples/oh/snare/oh_snare_center_vl27.flac\nlovel=92\nhivel=95\n\n<region>\nsample=../Samples/oh/snare/oh_snare_center_vl28.flac\nlovel=96\nhivel=98\n\n<region>\nsample=../Samples/oh/snare/oh_snare_center_vl29.flac\nlovel=99\nhivel=102\n\n<region>\nsample=../Samples/oh/snare/oh_snare_center_vl30.flac\nlovel=103\nhivel=105\n\n<region>\nsample=../Samples/oh/snare/oh_snare_center_vl31.flac\nlovel=106\nhivel=109\n\n<region>\nsample=../Samples/oh/snare/oh_snare_center_vl32.flac\nlovel=110\nhivel=112\n\n<region>\nsample=../Samples/oh/snare/oh_snare_center_vl33.flac\nlovel=113\nhivel=116\n\n<region>\nsample=../Samples/oh/snare/oh_snare_center_vl34.flac\nlovel=117\nhivel=119\n\n<region>\nsample=../Samples/oh/snare/oh_snare_center_vl35.flac\nlovel=120\nhivel=123\n\n<region>\nsample=../Samples/oh/snare/oh_snare_center_vl36.flac\nlovel=124\n\n<group> key=42 group=1 off_by=1\n\n<region>\nsample=../Samples/oh/hh/oh_hh_closed_vl1_rr1.flac\nhivel=31\nseq_length=4\namp_velcurve_31=1\n\n<region>\nsample=../Samples/oh/hh/oh_hh_closed_vl1_rr2.flac\nhivel=31\nseq_length=4\nseq_position=2\namp_velcurve_31=1\n\n<region>\nsample=../Samples/oh/hh/oh_hh_closed_vl1_rr3.flac\nhivel=31\nseq_length=4\nseq_position=3\namp_velcurve_31=1\n\n<region>\nsample=../Samples/oh/hh/oh_hh_closed_vl1_rr4.flac\nhivel=31\nseq_length=4\nseq_position=4\namp_velcurve_31=1\n\n<region>\nsample=../Samples/oh/hh/oh_hh_closed_vl2_rr1.flac\nlovel=32\nhivel=63\nseq_length=4\namp_velcurve_63=1\n\n<region>\nsample=../Samples/oh/hh/oh_hh_closed_vl2_rr2.flac\nlovel=32\nhivel=63\nseq_length=4\nseq_position=2\namp_velcurve_63=1\n\n<region>\nsample=../Samples/oh/hh/oh_hh_closed_vl2_rr3.flac\nlovel=32\nhivel=63\nseq_length=4\nseq_position=3\namp_velcurve_63=1\n\n<region>\nsample=../Samples/oh/hh/oh_hh_closed_vl2_rr4.flac\nlovel=32\nhivel=63\nseq_length=4\nseq_position=4\namp_velcurve_63=1\n\n<region>\nsample=../Samples/oh/hh/oh_hh_closed_vl3_rr1.flac\nlovel=64\nhivel=95\nseq_length=4\namp_velcurve_95=1\n\n<region>\nsample=../Samples/oh/hh/oh_hh_closed_vl3_rr2.flac\nlovel=64\nhivel=95\nseq_length=4\nseq_position=2\namp_velcurve_95=1\n\n<region>\nsample=../Samples/oh/hh/oh_hh_closed_vl3_rr3.flac\nlovel=64\nhivel=95\nseq_length=4\nseq_position=3\namp_velcurve_95=1\n\n<region>\nsample=../Samples/oh/hh/oh_hh_closed_vl3_rr4.flac\nlovel=64\nhivel=95\nseq_length=4\nseq_position=4\namp_velcurve_95=1\n\n<region>\nsample=../Samples/oh/hh/oh_hh_closed_vl4_rr1.flac\nlovel=96\nseq_length=4\n\n<region>\nsample=../Samples/oh/hh/oh_hh_closed_vl4_rr2.flac\nlovel=96\nseq_length=4\nseq_position=2\n\n<region>\nsample=../Samples/oh/hh/oh_hh_closed_vl4_rr3.flac\nlovel=96\nseq_length=4\nseq_position=3\n\n<region>\nsample=../Samples/oh/hh/oh_hh_closed_vl4_rr4.flac\nlovel=96\nseq_length=4\nseq_position=4\n\n<group> key=46 group=1 off_by=1\n\n<region>\nsample=../Samples/oh/hh/oh_hh_open_vl1_rr1.flac\nhivel=31\nseq_length=3\namp_velcurve_31=1\n\n<region>\nsample=../Samples/oh/hh/oh_hh_open_vl1_rr2.flac\nhivel=31\nseq_length=3\nseq_position=2\namp_velcurve_31=1\n\n<region>\nsample=../Samples/oh/hh/oh_hh_open_vl1_rr3.flac\nhivel=31\nseq_length=3\nseq_position=3\namp_velcurve_31=1\n\n<region>\nsample=../Samples/oh/hh/oh_hh_open_vl2_rr1.flac\nlovel=32\nhivel=63\nseq_length=3\namp_velcurve_63=1\n\n<region>\nsample=../Samples/oh/hh/oh_hh_open_vl2_rr2.flac\nlovel=32\nhivel=63\nseq_length=3\nseq_position=2\namp_velcurve_63=1\n\n<region>\nsample=../Samples/oh/hh/oh_hh_open_vl2_rr3.flac\nlovel=32\nhivel=63\nseq_length=3\nseq_position=3\namp_velcurve_63=1\n\n<region>\nsample=../Samples/oh/hh/oh_hh_open_vl3_rr1.flac\nlovel=64\nhivel=95\nseq_length=3\namp_velcurve_95=1\n\n<region>\nsample=../Samples/oh/hh/oh_hh_open_vl3_rr2.flac\nlovel=64\nhivel=95\nseq_length=3\nseq_position=2\namp_velcurve_95=1\n\n<region>\nsample=../Samples/oh/hh/oh_hh_open_vl3_rr3.flac\nlovel=64\nhivel=95\nseq_length=3\nseq_position=3\namp_velcurve_95=1\n\n<region>\nsample=../Samples/oh/hh/oh_hh_open_vl4_rr1.flac\nlovel=96\nseq_length=3\n\n<region>\nsample=../Samples/oh/hh/oh_hh_open_vl4_rr2.flac\nlovel=96\nseq_length=3\nseq_position=2\n\n<region>\nsample=../Samples/oh/hh/oh_hh_open_vl4_rr3.flac\nlovel=96\nseq_length=3\nseq_position=3\n\n\n<group> key=45\n\n<region>\nsample=../Samples/oh/ltom/oh_ltom_center_vl1.flac\nhivel=7\n\n<region>\nsample=../Samples/oh/ltom/oh_ltom_center_vl2.flac\nlovel=8\nhivel=15\n\n<region>\nsample=../Samples/oh/ltom/oh_ltom_center_vl3.flac\nlovel=16\nhivel=23\n\n<region>\nsample=../Samples/oh/ltom/oh_ltom_center_vl4.flac\nlovel=24\nhivel=31\n\n<region>\nsample=../Samples/oh/ltom/oh_ltom_center_vl5.flac\nlovel=32\nhivel=39\n\n<region>\nsample=../Samples/oh/ltom/oh_ltom_center_vl6.flac\nlovel=40\nhivel=47\n\n<region>\nsample=../Samples/oh/ltom/oh_ltom_center_vl7.flac\nlovel=48\nhivel=55\n\n<region>\nsample=../Samples/oh/ltom/oh_ltom_center_vl8.flac\nlovel=56\nhivel=63\n\n<region>\nsample=../Samples/oh/ltom/oh_ltom_center_vl9.flac\nlovel=64\nhivel=71\n\n<region>\nsample=../Samples/oh/ltom/oh_ltom_center_vl10.flac\nlovel=72\nhivel=79\n\n<region>\nsample=../Samples/oh/ltom/oh_ltom_center_vl11.flac\nlovel=80\nhivel=87\n\n<region>\nsample=../Samples/oh/ltom/oh_ltom_center_vl12.flac\nlovel=88\nhivel=95\n\n<region>\nsample=../Samples/oh/ltom/oh_ltom_center_vl13.flac\nlovel=96\nhivel=103\n\n<region>\nsample=../Samples/oh/ltom/oh_ltom_center_vl14.flac\nlovel=104\nhivel=111\n\n<region>\nsample=../Samples/oh/ltom/oh_ltom_center_vl15.flac\nlovel=112\nhivel=119\n\n<region>\nsample=../Samples/oh/ltom/oh_ltom_center_vl16.flac\nlovel=120\n<group> key=47\n\n<region>\nsample=../Samples/oh/htom/oh_htom_center_vl1.flac\nhivel=7\n\n<region>\nsample=../Samples/oh/htom/oh_htom_center_vl2.flac\nlovel=8\nhivel=15\n\n<region>\nsample=../Samples/oh/htom/oh_htom_center_vl3.flac\nlovel=16\nhivel=23\n\n<region>\nsample=../Samples/oh/htom/oh_htom_center_vl4.flac\nlovel=24\nhivel=31\n\n<region>\nsample=../Samples/oh/htom/oh_htom_center_vl5.flac\nlovel=32\nhivel=39\n\n<region>\nsample=../Samples/oh/htom/oh_htom_center_vl6.flac\nlovel=40\nhivel=47\n\n<region>\nsample=../Samples/oh/htom/oh_htom_center_vl7.flac\nlovel=48\nhivel=55\n\n<region>\nsample=../Samples/oh/htom/oh_htom_center_vl8.flac\nlovel=56\nhivel=63\n\n<region>\nsample=../Samples/oh/htom/oh_htom_center_vl9.flac\nlovel=64\nhivel=71\n\n<region>\nsample=../Samples/oh/htom/oh_htom_center_vl10.flac\nlovel=72\nhivel=79\n\n<region>\nsample=../Samples/oh/htom/oh_htom_center_vl11.flac\nlovel=80\nhivel=87\n\n<region>\nsample=../Samples/oh/htom/oh_htom_center_vl12.flac\nlovel=88\nhivel=95\n\n<region>\nsample=../Samples/oh/htom/oh_htom_center_vl13.flac\nlovel=96\nhivel=103\n\n<region>\nsample=../Samples/oh/htom/oh_htom_center_vl14.flac\nlovel=104\nhivel=111\n\n<region>\nsample=../Samples/oh/htom/oh_htom_center_vl15.flac\nlovel=112\nhivel=119\n\n<region>\nsample=../Samples/oh/htom/oh_htom_center_vl16.flac\nlovel=120\n<group> key=49\n\r\n<region>\r\nsample=../Samples/oh/crash/oh_crash_crash_vl1_rr1.flac\r\nhivel=42\r\nseq_length=4\r\namp_velcurve_42=1\r\n\r\n<region>\r\nsample=../Samples/oh/crash/oh_crash_crash_vl1_rr2.flac\r\nhivel=42\r\nseq_length=4\r\nseq_position=2\r\namp_velcurve_42=1\r\n\r\n<region>\r\nsample=../Samples/oh/crash/oh_crash_crash_vl1_rr3.flac\r\nhivel=42\r\nseq_length=4\r\nseq_position=3\r\namp_velcurve_42=1\r\n\r\n<region>\r\nsample=../Samples/oh/crash/oh_crash_crash_vl1_rr4.flac\r\nhivel=42\r\nseq_length=4\r\nseq_position=4\r\namp_velcurve_42=1\r\n\r\n<region>\r\nsample=../Samples/oh/crash/oh_crash_crash_vl2_rr1.flac\r\nlovel=43\r\nhivel=85\r\nseq_length=4\r\namp_velcurve_85=1\r\n\r\n<region>\r\nsample=../Samples/oh/crash/oh_crash_crash_vl2_rr2.flac\r\nlovel=43\r\nhivel=85\r\nseq_length=4\r\nseq_position=2\r\namp_velcurve_85=1\r\n\r\n<region>\r\nsample=../Samples/oh/crash/oh_crash_crash_vl2_rr3.flac\r\nlovel=43\r\nhivel=85\r\nseq_length=4\r\nseq_position=3\r\namp_velcurve_85=1\r\n\r\n<region>\r\nsample=../Samples/oh/crash/oh_crash_crash_vl2_rr4.flac\r\nlovel=43\r\nhivel=85\r\nseq_length=4\r\nseq_position=4\r\namp_velcurve_85=1\r\n\r\n<region>\r\nsample=../Samples/oh/crash/oh_crash_crash_vl3_rr1.flac\r\nlovel=86\r\nseq_length=4\r\namp_velcurve_95=1\r\n\r\n<region>\r\nsample=../Samples/oh/crash/oh_crash_crash_vl3_rr2.flac\r\nlovel=86\r\nseq_length=4\r\nseq_position=2\r\namp_velcurve_95=1\r\n\r\n<region>\r\nsample=../Samples/oh/crash/oh_crash_crash_vl3_rr3.flac\r\nlovel=86\r\nseq_length=4\r\nseq_position=3\r\namp_velcurve_95=1\r\n\r\n<region>\r\nsample=../Samples/oh/crash/oh_crash_crash_vl3_rr4.flac\r\nlovel=86\r\nseq_length=4\r\nseq_position=4\r\n",
+      "sha1": "eeae307f4540b7513f433742fa1ec2e252b852ed",
+      "assets": [
+        {
+          "path": "Programs/mappings/oh/kick_snoff_map.sfz",
+          "sha1": "4603e44ec8bef2de1ac7f5a2248388b956c0a2f2",
+          "bytes": 1828
+        },
+        {
+          "path": "Programs/mappings/oh/snare_center_map.sfz",
+          "sha1": "4f0572feb20f6a5095d70b4e31a15407cca5113c",
+          "bytes": 2899
+        },
+        {
+          "path": "Programs/mappings/oh/hh_closed_map.sfz",
+          "sha1": "c085d17c32198f34beabb797142f3171268e0541",
+          "bytes": 1780
+        },
+        {
+          "path": "Programs/mappings/oh/hh_open_map.sfz",
+          "sha1": "8be673942f5a4efed398da80957cde266367aba8",
+          "bytes": 1297
+        },
+        {
+          "path": "Programs/mappings/oh/ltom_center_map.sfz",
+          "sha1": "bedb5d5a93c87cf31611d6fbde16b40e202ba1b3",
+          "bytes": 1240
+        },
+        {
+          "path": "Programs/mappings/oh/htom_center_map.sfz",
+          "sha1": "d62c7e7578bdeaaed34fd89c5dfc5c75e626fa0e",
+          "bytes": 1240
+        },
+        {
+          "path": "Programs/mappings/oh/crash_crash_map.sfz",
+          "sha1": "db7c88a4f507469859837b2bb00779078ab1ce5d",
+          "bytes": 1497
+        },
+        {
+          "path": "Samples/oh/kick/oh_kick_snoff_vl1_rr1.flac",
+          "sha1": "bd91c532ccf583bbc722ff7df5e383a3a97e2ebe",
+          "bytes": 195898
+        },
+        {
+          "path": "Samples/oh/kick/oh_kick_snoff_vl1_rr2.flac",
+          "sha1": "d463ce1790f3cb5fe90f5ae5f54480b9b8585bf4",
+          "bytes": 182415
+        },
+        {
+          "path": "Samples/oh/kick/oh_kick_snoff_vl1_rr3.flac",
+          "sha1": "504c472f3755bf7688315ecfe10f50c9bec44a09",
+          "bytes": 161619
+        },
+        {
+          "path": "Samples/oh/kick/oh_kick_snoff_vl1_rr4.flac",
+          "sha1": "2271fe4365f0f29f387e74b39a418e454f313465",
+          "bytes": 192196
+        },
+        {
+          "path": "Samples/oh/kick/oh_kick_snoff_vl2_rr1.flac",
+          "sha1": "3e67988e20ae18466b248a632b96392c62bb9c26",
+          "bytes": 198857
+        },
+        {
+          "path": "Samples/oh/kick/oh_kick_snoff_vl2_rr2.flac",
+          "sha1": "96239ec10f39e433f725c3cb00d792f584115fdd",
+          "bytes": 194136
+        },
+        {
+          "path": "Samples/oh/kick/oh_kick_snoff_vl2_rr3.flac",
+          "sha1": "f951aef8f03199a57fd70921ec9dd3f2a6074505",
+          "bytes": 183022
+        },
+        {
+          "path": "Samples/oh/kick/oh_kick_snoff_vl2_rr4.flac",
+          "sha1": "35b59073c8c632e2f444231ee9555e54dc21f71b",
+          "bytes": 166482
+        },
+        {
+          "path": "Samples/oh/kick/oh_kick_snoff_vl3_rr1.flac",
+          "sha1": "0af461a8c4f8a09328200f1ceea3b9713f55eee3",
+          "bytes": 211589
+        },
+        {
+          "path": "Samples/oh/kick/oh_kick_snoff_vl3_rr2.flac",
+          "sha1": "879c22dd06cdc7d7c4d80ef87b84c37012362985",
+          "bytes": 208095
+        },
+        {
+          "path": "Samples/oh/kick/oh_kick_snoff_vl3_rr3.flac",
+          "sha1": "60b193f4b089d0c3c4661997b97ebb5071c8732a",
+          "bytes": 216634
+        },
+        {
+          "path": "Samples/oh/kick/oh_kick_snoff_vl3_rr4.flac",
+          "sha1": "a96b258c6c2bc3798648e2445edaab184bf4d537",
+          "bytes": 232787
+        },
+        {
+          "path": "Samples/oh/kick/oh_kick_snoff_vl4_rr1.flac",
+          "sha1": "0e3789ff77bfe040a368c474fe890f905182884d",
+          "bytes": 313491
+        },
+        {
+          "path": "Samples/oh/kick/oh_kick_snoff_vl4_rr2.flac",
+          "sha1": "6f7d3db6088da5a335f0a693d5938f52993164a3",
+          "bytes": 299344
+        },
+        {
+          "path": "Samples/oh/kick/oh_kick_snoff_vl4_rr3.flac",
+          "sha1": "a0df436375ec49484fa06f63b9914bf8ca1149af",
+          "bytes": 310607
+        },
+        {
+          "path": "Samples/oh/kick/oh_kick_snoff_vl4_rr4.flac",
+          "sha1": "883a1f80d183ce4066c80c016fde65d36db55c66",
+          "bytes": 277278
+        },
+        {
+          "path": "Samples/oh/snare/oh_snare_center_vl1.flac",
+          "sha1": "bdcb995e81b4b0b25ca19a37f2fa6a8564790abf",
+          "bytes": 192483
+        },
+        {
+          "path": "Samples/oh/snare/oh_snare_center_vl2.flac",
+          "sha1": "c3939b7a9f5ff87ea326a08d95fc8c52e33ef177",
+          "bytes": 161851
+        },
+        {
+          "path": "Samples/oh/snare/oh_snare_center_vl3.flac",
+          "sha1": "b72ddae8bb4697c97a0cae387605207de6c6462f",
+          "bytes": 203053
+        },
+        {
+          "path": "Samples/oh/snare/oh_snare_center_vl4.flac",
+          "sha1": "02c454f85a64772beb9e1b24d15f7e408e2be45f",
+          "bytes": 155769
+        },
+        {
+          "path": "Samples/oh/snare/oh_snare_center_vl5.flac",
+          "sha1": "96e192141df35b04fc5db8aae6c48d97a543942b",
+          "bytes": 162776
+        },
+        {
+          "path": "Samples/oh/snare/oh_snare_center_vl6.flac",
+          "sha1": "164c00d72af0d17e6169d4e0536146443e4777e3",
+          "bytes": 157180
+        },
+        {
+          "path": "Samples/oh/snare/oh_snare_center_vl7.flac",
+          "sha1": "faf0dd6f054ba99b74c45bb0cd8c1a635c3ae924",
+          "bytes": 165980
+        },
+        {
+          "path": "Samples/oh/snare/oh_snare_center_vl8.flac",
+          "sha1": "fc4497dcb4a915594e680ea39042ed8996b91a22",
+          "bytes": 193270
+        },
+        {
+          "path": "Samples/oh/snare/oh_snare_center_vl9.flac",
+          "sha1": "a720872a343c1e9b929e804f751b70d47d897d14",
+          "bytes": 174373
+        },
+        {
+          "path": "Samples/oh/snare/oh_snare_center_vl10.flac",
+          "sha1": "86cdd7e1f78aaabd052cce73aca6b09aba56604f",
+          "bytes": 200657
+        },
+        {
+          "path": "Samples/oh/snare/oh_snare_center_vl11.flac",
+          "sha1": "83b305ed9bc7b58f9075c138862d76493aa1ef24",
+          "bytes": 184719
+        },
+        {
+          "path": "Samples/oh/snare/oh_snare_center_vl12.flac",
+          "sha1": "1e1f989a355ad0e68daf3bef9f2c61e4bab40d7d",
+          "bytes": 170682
+        },
+        {
+          "path": "Samples/oh/snare/oh_snare_center_vl13.flac",
+          "sha1": "6d663cfc38efd061e9992aa9d261218115adde50",
+          "bytes": 177896
+        },
+        {
+          "path": "Samples/oh/snare/oh_snare_center_vl14.flac",
+          "sha1": "732b70fdad78f595e1f102c5a0dcc0be3c6e9a06",
+          "bytes": 205102
+        },
+        {
+          "path": "Samples/oh/snare/oh_snare_center_vl15.flac",
+          "sha1": "434bcdee85a2dbee7735639d9477e07e4cff3405",
+          "bytes": 181608
+        },
+        {
+          "path": "Samples/oh/snare/oh_snare_center_vl16.flac",
+          "sha1": "9727695ab63a4cd9691b6d5763d3522a5d0cecdd",
+          "bytes": 180951
+        },
+        {
+          "path": "Samples/oh/snare/oh_snare_center_vl17.flac",
+          "sha1": "840cda25e12f7007921107ca65ae47cda5143917",
+          "bytes": 177325
+        },
+        {
+          "path": "Samples/oh/snare/oh_snare_center_vl18.flac",
+          "sha1": "b63be13d12081dee2f0fe8ef12a2b508ce9f7346",
+          "bytes": 186566
+        },
+        {
+          "path": "Samples/oh/snare/oh_snare_center_vl19.flac",
+          "sha1": "0410e2f7e9a9c6030cf8f7ec75e31653c6e645f3",
+          "bytes": 182186
+        },
+        {
+          "path": "Samples/oh/snare/oh_snare_center_vl20.flac",
+          "sha1": "919809a31f24f5ee9bdb1a237a10a7ba324a46b9",
+          "bytes": 202766
+        },
+        {
+          "path": "Samples/oh/snare/oh_snare_center_vl21.flac",
+          "sha1": "85f7452b456b9df7a35d2bc290b6c13d655413c2",
+          "bytes": 169631
+        },
+        {
+          "path": "Samples/oh/snare/oh_snare_center_vl22.flac",
+          "sha1": "9814ba877ea993ff07d149cfb669287d37f52855",
+          "bytes": 195187
+        },
+        {
+          "path": "Samples/oh/snare/oh_snare_center_vl23.flac",
+          "sha1": "0f1d69e7e83ef24b9122a6ac6aecd2607bff4df5",
+          "bytes": 214209
+        },
+        {
+          "path": "Samples/oh/snare/oh_snare_center_vl24.flac",
+          "sha1": "5aa37634dda8316e16b65b54db65f4861133f6cd",
+          "bytes": 188744
+        },
+        {
+          "path": "Samples/oh/snare/oh_snare_center_vl25.flac",
+          "sha1": "250a8bfbfe310bd8cad0ffef036403d142541ab7",
+          "bytes": 218291
+        },
+        {
+          "path": "Samples/oh/snare/oh_snare_center_vl26.flac",
+          "sha1": "db39451417bbd5b2230025f3416974ee6b57b21a",
+          "bytes": 197526
+        },
+        {
+          "path": "Samples/oh/snare/oh_snare_center_vl27.flac",
+          "sha1": "4a0ba29a46a2c64fa16b59b5ffc727055bf6dfaf",
+          "bytes": 179794
+        },
+        {
+          "path": "Samples/oh/snare/oh_snare_center_vl28.flac",
+          "sha1": "b98a88711d2be5f4183d0ae1999e3856c319b3d8",
+          "bytes": 214082
+        },
+        {
+          "path": "Samples/oh/snare/oh_snare_center_vl29.flac",
+          "sha1": "123a0afd09a01623f315f2f0c64bdb01d68942bd",
+          "bytes": 220524
+        },
+        {
+          "path": "Samples/oh/snare/oh_snare_center_vl30.flac",
+          "sha1": "2203d5f3920fefcec2fc6872978c1f4decae0590",
+          "bytes": 229733
+        },
+        {
+          "path": "Samples/oh/snare/oh_snare_center_vl31.flac",
+          "sha1": "10718438af2d6b1f8c168d5a6f848d0f9ab3d670",
+          "bytes": 222623
+        },
+        {
+          "path": "Samples/oh/snare/oh_snare_center_vl32.flac",
+          "sha1": "cc3b0c19455e1938e53f6218a78cc458e47ff7c7",
+          "bytes": 235214
+        },
+        {
+          "path": "Samples/oh/snare/oh_snare_center_vl33.flac",
+          "sha1": "84e79a404b8f16a34ec3fc4fac62a0c6b5009cf0",
+          "bytes": 237081
+        },
+        {
+          "path": "Samples/oh/snare/oh_snare_center_vl34.flac",
+          "sha1": "df63fba7a1c444121b94a4d15371005eee250489",
+          "bytes": 228017
+        },
+        {
+          "path": "Samples/oh/snare/oh_snare_center_vl35.flac",
+          "sha1": "a040f7888cc27efcd58d928c1b2f3e756f94dd6c",
+          "bytes": 218676
+        },
+        {
+          "path": "Samples/oh/snare/oh_snare_center_vl36.flac",
+          "sha1": "a515221413f221229605be4735c8ddcafcfe19d3",
+          "bytes": 223974
+        },
+        {
+          "path": "Samples/oh/hh/oh_hh_closed_vl1_rr1.flac",
+          "sha1": "7b98abd01698cfd114c60fff058e55e7cc6e63fb",
+          "bytes": 79433
+        },
+        {
+          "path": "Samples/oh/hh/oh_hh_closed_vl1_rr2.flac",
+          "sha1": "0cfca98b443cbe3d653bf0e185969b83ee6528fc",
+          "bytes": 60762
+        },
+        {
+          "path": "Samples/oh/hh/oh_hh_closed_vl1_rr3.flac",
+          "sha1": "9eefc603b73440437aee33f7d12425655cfa5826",
+          "bytes": 69966
+        },
+        {
+          "path": "Samples/oh/hh/oh_hh_closed_vl1_rr4.flac",
+          "sha1": "2c760483463ddc504e401cf65aaf9fafed677d06",
+          "bytes": 66375
+        },
+        {
+          "path": "Samples/oh/hh/oh_hh_closed_vl2_rr1.flac",
+          "sha1": "0dd2c1a05176140352a6fb18cbc8cac86f94a5e0",
+          "bytes": 73755
+        },
+        {
+          "path": "Samples/oh/hh/oh_hh_closed_vl2_rr2.flac",
+          "sha1": "c31f6fcba85968e8174c1668bde67fe17d80fcb5",
+          "bytes": 69306
+        },
+        {
+          "path": "Samples/oh/hh/oh_hh_closed_vl2_rr3.flac",
+          "sha1": "2a4f1da5a4157244c9ee0116940cb45bdaba6b71",
+          "bytes": 83231
+        },
+        {
+          "path": "Samples/oh/hh/oh_hh_closed_vl2_rr4.flac",
+          "sha1": "0a7cfedd1094de17c85723aad38f48513542bb5f",
+          "bytes": 77734
+        },
+        {
+          "path": "Samples/oh/hh/oh_hh_closed_vl3_rr1.flac",
+          "sha1": "c7f1ee86c09041eeaf3e374b74877e07f30d225c",
+          "bytes": 85639
+        },
+        {
+          "path": "Samples/oh/hh/oh_hh_closed_vl3_rr2.flac",
+          "sha1": "bf1ae12c2f96bac086509ed8139afc1949f7fbb7",
+          "bytes": 85482
+        },
+        {
+          "path": "Samples/oh/hh/oh_hh_closed_vl3_rr3.flac",
+          "sha1": "219f572818fc646ac067a2e0d7458cd8ec135f24",
+          "bytes": 88975
+        },
+        {
+          "path": "Samples/oh/hh/oh_hh_closed_vl3_rr4.flac",
+          "sha1": "0589e187a3afa4e0f277db4e22913cc5ae187c37",
+          "bytes": 90049
+        },
+        {
+          "path": "Samples/oh/hh/oh_hh_closed_vl4_rr1.flac",
+          "sha1": "bc44dee816193be60e66dc631e7db126d29bd748",
+          "bytes": 111711
+        },
+        {
+          "path": "Samples/oh/hh/oh_hh_closed_vl4_rr2.flac",
+          "sha1": "51f22f67572841dc5b15034a6e6e975598b9e18d",
+          "bytes": 109478
+        },
+        {
+          "path": "Samples/oh/hh/oh_hh_closed_vl4_rr3.flac",
+          "sha1": "3964643c13017f890d34ebcf72b8291dc3e09c18",
+          "bytes": 105145
+        },
+        {
+          "path": "Samples/oh/hh/oh_hh_closed_vl4_rr4.flac",
+          "sha1": "5fc1bdda967e77baeb8accb908b7a2a87948b0fc",
+          "bytes": 109289
+        },
+        {
+          "path": "Samples/oh/hh/oh_hh_open_vl1_rr1.flac",
+          "sha1": "530c565d8821e88fa05bb92bae249eca51729d8b",
+          "bytes": 911893
+        },
+        {
+          "path": "Samples/oh/hh/oh_hh_open_vl1_rr2.flac",
+          "sha1": "ef14a8efcc1a1044b1420fc0d317d3d328f27d6c",
+          "bytes": 786585
+        },
+        {
+          "path": "Samples/oh/hh/oh_hh_open_vl1_rr3.flac",
+          "sha1": "e721e6f7be099b56baa7e3700921d0bfcec101e0",
+          "bytes": 808310
+        },
+        {
+          "path": "Samples/oh/hh/oh_hh_open_vl2_rr1.flac",
+          "sha1": "5bf1aa91c0a148c6f41d492c7c70dfafae77631a",
+          "bytes": 851427
+        },
+        {
+          "path": "Samples/oh/hh/oh_hh_open_vl2_rr2.flac",
+          "sha1": "362b3662725f89c1bfed1bd58b79897cc5a75f83",
+          "bytes": 787826
+        },
+        {
+          "path": "Samples/oh/hh/oh_hh_open_vl2_rr3.flac",
+          "sha1": "30ddd31fb7f85d4e54e0da6fd52661fa1e0fcc7d",
+          "bytes": 876441
+        },
+        {
+          "path": "Samples/oh/hh/oh_hh_open_vl3_rr1.flac",
+          "sha1": "9194935cb0a4641ddc5095ac1ae414708652a2ca",
+          "bytes": 1050271
+        },
+        {
+          "path": "Samples/oh/hh/oh_hh_open_vl3_rr2.flac",
+          "sha1": "d3b8074d785c30143f7236289ad9365ea0eca0dc",
+          "bytes": 1124639
+        },
+        {
+          "path": "Samples/oh/hh/oh_hh_open_vl3_rr3.flac",
+          "sha1": "b28a961985ffe740f7076244370ccbdc65d515de",
+          "bytes": 1130101
+        },
+        {
+          "path": "Samples/oh/hh/oh_hh_open_vl4_rr1.flac",
+          "sha1": "effd72ef941529b3c253e40f3da30543a496c4e2",
+          "bytes": 1350021
+        },
+        {
+          "path": "Samples/oh/hh/oh_hh_open_vl4_rr2.flac",
+          "sha1": "7f753025311f0c1f10dd276bbd5149275535f84f",
+          "bytes": 1446299
+        },
+        {
+          "path": "Samples/oh/hh/oh_hh_open_vl4_rr3.flac",
+          "sha1": "1c158e0619747a2645bf4e9bf236ac299e3f6462",
+          "bytes": 1371912
+        },
+        {
+          "path": "Samples/oh/ltom/oh_ltom_center_vl1.flac",
+          "sha1": "e17511a75cb9b1c89b2153a60cd86267934b1684",
+          "bytes": 301471
+        },
+        {
+          "path": "Samples/oh/ltom/oh_ltom_center_vl2.flac",
+          "sha1": "25defd1feef2b4bb87d6b7359a89feb3bf0786c0",
+          "bytes": 281857
+        },
+        {
+          "path": "Samples/oh/ltom/oh_ltom_center_vl3.flac",
+          "sha1": "fdba450713772bb9446d792fa06ca56c7584ed30",
+          "bytes": 291139
+        },
+        {
+          "path": "Samples/oh/ltom/oh_ltom_center_vl4.flac",
+          "sha1": "da1b5504789de2f4caef0f129c9a4c6efc9b5daf",
+          "bytes": 240008
+        },
+        {
+          "path": "Samples/oh/ltom/oh_ltom_center_vl5.flac",
+          "sha1": "a5219339852336be5b1c7034cd4c9d91b1d1d421",
+          "bytes": 348893
+        },
+        {
+          "path": "Samples/oh/ltom/oh_ltom_center_vl6.flac",
+          "sha1": "24b0810318fed359ee9f44e261c54e19dab88dc5",
+          "bytes": 430968
+        },
+        {
+          "path": "Samples/oh/ltom/oh_ltom_center_vl7.flac",
+          "sha1": "3daa6e12d291a3a7c8c5fec68ce55352c7f6a9f6",
+          "bytes": 420377
+        },
+        {
+          "path": "Samples/oh/ltom/oh_ltom_center_vl8.flac",
+          "sha1": "cc56d19a8330546cc7eacc60fbdd02e0ef1e589a",
+          "bytes": 488698
+        },
+        {
+          "path": "Samples/oh/ltom/oh_ltom_center_vl9.flac",
+          "sha1": "c4ab3aa78c0f2ece1a1f907bfefa1c51bdab7726",
+          "bytes": 352181
+        },
+        {
+          "path": "Samples/oh/ltom/oh_ltom_center_vl10.flac",
+          "sha1": "7ee61009bf0cc55ca0c1306d064f8207ac997b1c",
+          "bytes": 392718
+        },
+        {
+          "path": "Samples/oh/ltom/oh_ltom_center_vl11.flac",
+          "sha1": "243087c9c8fc5544c8da0dc3d80f1861c1571236",
+          "bytes": 441301
+        },
+        {
+          "path": "Samples/oh/ltom/oh_ltom_center_vl12.flac",
+          "sha1": "5ef5765e5acb2137f5e5a08d0a3f6a637b0b25ad",
+          "bytes": 485609
+        },
+        {
+          "path": "Samples/oh/ltom/oh_ltom_center_vl13.flac",
+          "sha1": "8b8841cc7767eaea10d8b17070ff9eb7a608b211",
+          "bytes": 449402
+        },
+        {
+          "path": "Samples/oh/ltom/oh_ltom_center_vl14.flac",
+          "sha1": "158cbaee5aeb12ba06582b702c11b6daead85fc1",
+          "bytes": 498526
+        },
+        {
+          "path": "Samples/oh/ltom/oh_ltom_center_vl15.flac",
+          "sha1": "d019a09528d63b63ad08d01d0fa4ec5d506be622",
+          "bytes": 482861
+        },
+        {
+          "path": "Samples/oh/ltom/oh_ltom_center_vl16.flac",
+          "sha1": "ad69018068e47b6df0529d94a30e2947d84f0bb1",
+          "bytes": 435742
+        },
+        {
+          "path": "Samples/oh/htom/oh_htom_center_vl1.flac",
+          "sha1": "2199d05869960ba81384697d1d5bfd278c6cf43e",
+          "bytes": 198825
+        },
+        {
+          "path": "Samples/oh/htom/oh_htom_center_vl2.flac",
+          "sha1": "bf13917d3e64e015f432410764686fd38d0232b8",
+          "bytes": 173207
+        },
+        {
+          "path": "Samples/oh/htom/oh_htom_center_vl3.flac",
+          "sha1": "bc9afb2a00003e847f67088359a0f80363230ac2",
+          "bytes": 221612
+        },
+        {
+          "path": "Samples/oh/htom/oh_htom_center_vl4.flac",
+          "sha1": "b8ef9313bfcee872642df87b2dda17d2c9d2a51f",
+          "bytes": 186999
+        },
+        {
+          "path": "Samples/oh/htom/oh_htom_center_vl5.flac",
+          "sha1": "55bf268d8e5fc758e1a37c186871c7cc75bd3675",
+          "bytes": 204850
+        },
+        {
+          "path": "Samples/oh/htom/oh_htom_center_vl6.flac",
+          "sha1": "8f5ce84f785e7dab7815cbf4af03b5f8edb5ef05",
+          "bytes": 226627
+        },
+        {
+          "path": "Samples/oh/htom/oh_htom_center_vl7.flac",
+          "sha1": "14930060a02a2f58f907d2c04adfa6fac40a0ac7",
+          "bytes": 230323
+        },
+        {
+          "path": "Samples/oh/htom/oh_htom_center_vl8.flac",
+          "sha1": "f41cb6c351a2a166cebb45a976e30ff6297c07f8",
+          "bytes": 206749
+        },
+        {
+          "path": "Samples/oh/htom/oh_htom_center_vl9.flac",
+          "sha1": "56132b2c0f58ecff36eecec9f4a44530feef3a1b",
+          "bytes": 172417
+        },
+        {
+          "path": "Samples/oh/htom/oh_htom_center_vl10.flac",
+          "sha1": "fa2c71bb12c57b2afca2d6f7bcbaa1fc8c867e88",
+          "bytes": 214464
+        },
+        {
+          "path": "Samples/oh/htom/oh_htom_center_vl11.flac",
+          "sha1": "0badb420ef8b04f1d63d86b26a9a3aa128fc3ac3",
+          "bytes": 206510
+        },
+        {
+          "path": "Samples/oh/htom/oh_htom_center_vl12.flac",
+          "sha1": "fd7fde846d1b0987dd2b080da74c54a72bd31131",
+          "bytes": 194373
+        },
+        {
+          "path": "Samples/oh/htom/oh_htom_center_vl13.flac",
+          "sha1": "d162346fbebd0e901b8445af258445b9728e7e5b",
+          "bytes": 208696
+        },
+        {
+          "path": "Samples/oh/htom/oh_htom_center_vl14.flac",
+          "sha1": "73d624cdc1eb7c731dd0d232450730ec4c6f4ee7",
+          "bytes": 225790
+        },
+        {
+          "path": "Samples/oh/htom/oh_htom_center_vl15.flac",
+          "sha1": "a172ddfc39c79aa78f770f07a08996ad83d82bc1",
+          "bytes": 234029
+        },
+        {
+          "path": "Samples/oh/htom/oh_htom_center_vl16.flac",
+          "sha1": "ea1c84960a9e53d1a598ed77f36a74540c9e3284",
+          "bytes": 246151
+        },
+        {
+          "path": "Samples/oh/crash/oh_crash_crash_vl1_rr1.flac",
+          "sha1": "8cbe9cb0bc2d8d42703148c18828bd1b8b58f5d0",
+          "bytes": 1264401
+        },
+        {
+          "path": "Samples/oh/crash/oh_crash_crash_vl1_rr2.flac",
+          "sha1": "c24484922e87b16234b38b5d786440e281e055d4",
+          "bytes": 1312381
+        },
+        {
+          "path": "Samples/oh/crash/oh_crash_crash_vl1_rr3.flac",
+          "sha1": "b914c66cb01098cc4de3e8670cb1cdc029bb6f24",
+          "bytes": 1217885
+        },
+        {
+          "path": "Samples/oh/crash/oh_crash_crash_vl1_rr4.flac",
+          "sha1": "ed0304fa10fa901b05160a6a253a2b4e3c9d4117",
+          "bytes": 1311159
+        },
+        {
+          "path": "Samples/oh/crash/oh_crash_crash_vl2_rr1.flac",
+          "sha1": "b6af432414327be04e97d23bc6c5dd3cc1c3e439",
+          "bytes": 1426940
+        },
+        {
+          "path": "Samples/oh/crash/oh_crash_crash_vl2_rr2.flac",
+          "sha1": "c9cb2131b03410a6ecc38f495d96c20a6e41b61d",
+          "bytes": 1311650
+        },
+        {
+          "path": "Samples/oh/crash/oh_crash_crash_vl2_rr3.flac",
+          "sha1": "8218a9652d32dd650b33c1f40aae26b96c9ad515",
+          "bytes": 1253370
+        },
+        {
+          "path": "Samples/oh/crash/oh_crash_crash_vl2_rr4.flac",
+          "sha1": "31f2a00c816d86a60caa2506320d833463c0191e",
+          "bytes": 1456525
+        },
+        {
+          "path": "Samples/oh/crash/oh_crash_crash_vl3_rr1.flac",
+          "sha1": "464020e19ae66f3c6b1bedcb87877590f705cdff",
+          "bytes": 1628049
+        },
+        {
+          "path": "Samples/oh/crash/oh_crash_crash_vl3_rr2.flac",
+          "sha1": "f80c919d56e5a7229b6eec4a06a8a5b5b4739ba7",
+          "bytes": 1585868
+        },
+        {
+          "path": "Samples/oh/crash/oh_crash_crash_vl3_rr3.flac",
+          "sha1": "28eac522cce5b49d12e6940ce25af633c266df04",
+          "bytes": 1511281
+        },
+        {
+          "path": "Samples/oh/crash/oh_crash_crash_vl3_rr4.flac",
+          "sha1": "b50d5541a7af1b0be0a7ba8657d8562977cd161b",
+          "bytes": 1547110
+        }
+      ],
+      "bytes": 50948777,
+      "pack": "club-drums",
+      "version": "9f04cf9a734527edfbb0a4eee1f674e45bbf71bc-clapper1",
+      "baseURL": "https://raw.githubusercontent.com/sfzinstruments/virtuosity_drums/9f04cf9a734527edfbb0a4eee1f674e45bbf71bc/",
+      "source": "https://github.com/sfzinstruments/virtuosity_drums",
+      "licenseFile": {
+        "path": "LICENSE",
+        "sha1": "0e259d42c996742e9e3cba14c677129b2c1b6311"
+      }
+    }
+  ]
+}

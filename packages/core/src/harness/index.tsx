@@ -13,9 +13,9 @@
 import { createElement, type ReactElement } from "react";
 import { flushSync } from "react-dom";
 import { createRoot, type Root } from "react-dom/client";
-import { ensureRootMounted, getComposition, listCompositions } from "../composition";
 import { collectAudioCues } from "../audio";
-import { getRegistry, pendingDelays, type AudioCue, type CompositionMeta, type TrackInfo } from "../registry";
+import { ensureRootMounted, getComposition, listCompositions } from "../composition";
+import { type AudioCue, type CompositionMeta, getRegistry, pendingDelays, type TrackInfo } from "../registry";
 import { TimelineProvider } from "../timeline";
 
 export interface HarnessApi {
@@ -105,7 +105,8 @@ async function settle(clock: Clock, timeoutMs = 30_000) {
   const realNow = () => new Date().getTime();
   // 1) delayRender handles
   while (pendingDelays().length > 0) {
-    if (realNow() - t0 > timeoutMs) throw new Error(`Frame did not settle within ${timeoutMs}ms; pending: ${pendingDelays().join(", ")}`);
+    if (realNow() - t0 > timeoutMs)
+      throw new Error(`Frame did not settle within ${timeoutMs}ms; pending: ${pendingDelays().join(", ")}`);
     await new Promise((r) => setTimeout(r, 5));
   }
   // 2) fonts
@@ -132,7 +133,9 @@ async function settle(clock: Clock, timeoutMs = 30_000) {
 export function mountHarness(options: { virtualClock?: boolean; syncAnimations?: boolean } = {}) {
   const { virtualClock = true, syncAnimations: doSync = true } = options;
   ensureRootMounted();
-  const container = document.getElementById("root") ?? document.body.appendChild(Object.assign(document.createElement("div"), { id: "root" }));
+  const container =
+    document.getElementById("root") ??
+    document.body.appendChild(Object.assign(document.createElement("div"), { id: "root" }));
   const clock: Clock = virtualClock
     ? installVirtualClock()
     : { set() {}, flushRaf() {}, nativeRaf: window.requestAnimationFrame.bind(window) };
@@ -153,7 +156,17 @@ export function mountHarness(options: { virtualClock?: boolean; syncAnimations?:
       { config: meta, frame, mode: "render" },
       createElement(
         "div",
-        { style: { position: "absolute", left: 0, top: 0, width: meta.width, height: meta.height, overflow: "hidden", background: "transparent" } },
+        {
+          style: {
+            position: "absolute",
+            left: 0,
+            top: 0,
+            width: meta.width,
+            height: meta.height,
+            overflow: "hidden",
+            background: "transparent",
+          },
+        },
         createElement(Comp, { ...(meta.defaultProps ?? {}), ...props }),
       ),
     );
@@ -169,7 +182,8 @@ export function mountHarness(options: { virtualClock?: boolean; syncAnimations?:
     const scene = current?.scenes?.find((s) => n >= s.start && n < s.end);
     const parts: string[] = [];
     if (scene) parts.push(`scene "${scene.name}" (local frame ${n - scene.start})`);
-    if (best && best.name !== scene?.name) parts.push(`sequence "${best.name}" (local frame ${n - best.startFrame})`);
+    if (best && best.name !== scene?.name)
+      parts.push(`sequence "${best.name}" (local frame ${n - best.startFrame})`);
     return parts.length ? ` in ${parts.join(", ")}` : "";
   }
 
@@ -184,7 +198,14 @@ export function mountHarness(options: { virtualClock?: boolean; syncAnimations?:
     listCompositions,
     select(id, p) {
       const comp = getComposition(id);
-      if (!comp) throw new Error(`Unknown composition "${id}". Known: ${listCompositions().map((c) => c.id).join(", ") || "(none)"}`);
+      if (!comp)
+        throw new Error(
+          `Unknown composition "${id}". Known: ${
+            listCompositions()
+              .map((c) => c.id)
+              .join(", ") || "(none)"
+          }`,
+        );
       current = comp;
       props = p ?? {};
       frame = 0;
@@ -206,7 +227,10 @@ export function mountHarness(options: { virtualClock?: boolean; syncAnimations?:
       clock.set((n / current.fps) * 1000);
       const errorsBefore = errors.length;
       render();
-      if (errors.length > errorsBefore) throw new Error(`Composition threw while rendering frame ${n}${whereIs(n)}:\n${errors.slice(errorsBefore).join("\n")}`);
+      if (errors.length > errorsBefore)
+        throw new Error(
+          `Composition threw while rendering frame ${n}${whereIs(n)}:\n${errors.slice(errorsBefore).join("\n")}`,
+        );
       clock.flushRaf();
       if (doSync) syncAnimations((n / current.fps) * 1000);
       await settle(clock);

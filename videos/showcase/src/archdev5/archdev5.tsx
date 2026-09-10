@@ -1,18 +1,46 @@
 import { AbsoluteFill, DeskTap, FeltPiano, Scenes, Sequence } from "@clapper/core";
-import { Grain } from "../kit";
 import { Agents, Blank, Open, Plan, Review } from "../archdev3/archdev3";
 import { Intro, Outro, SCENES } from "../archdev4/archdev4";
+import { Grain } from "../kit";
 
 export { SCENES };
 
 /** One recurring idea, played with a loose hand and overlapping pedal. */
-function FeltPhrase({ at, notes, step = 16, volume = 0.12, ring = 2.7, length, name }: { at: number; notes: string[]; step?: number; volume?: number; ring?: number; length?: number; name: string }) {
+function FeltPhrase({
+  at,
+  notes,
+  step = 16,
+  volume = 0.12,
+  ring = 2.7,
+  length,
+  name,
+}: {
+  at: number;
+  notes: string[];
+  step?: number;
+  volume?: number;
+  ring?: number;
+  length?: number;
+  name: string;
+}) {
   const timing = [0, 1, -1, 2];
   const velocity = [0.82, 1, 0.91, 0.74];
   return (
     <>
       {notes.map((note, i) => (
-        <FeltPiano key={`${note}-${i}`} note={note} at={at + i * step + timing[i % 4]} length={length} ring={ring + i * 0.08} volume={volume * velocity[i % 4]} pan={-0.16 + (0.32 * i) / Math.max(1, notes.length - 1)} spread={0.08} reverb={0.5} detune={[-1.5, 0.8, -0.4, 1.1][i % 4]} name={`${name}-${i}`} />
+        <FeltPiano
+          key={`${note}-${i}`}
+          note={note}
+          at={at + i * step + timing[i % 4]}
+          length={length}
+          ring={ring + i * 0.08}
+          volume={volume * velocity[i % 4]}
+          pan={-0.16 + (0.32 * i) / Math.max(1, notes.length - 1)}
+          spread={0.08}
+          reverb={0.5}
+          detune={[-1.5, 0.8, -0.4, 1.1][i % 4]}
+          name={`${name}-${i}`}
+        />
       ))}
     </>
   );
@@ -28,7 +56,8 @@ const SCORE_CONTOUR = [0, 0.34, 0.16, 0.56, 0.3, 0.72, 0.46, 0.88, 0.62, 1];
 
 /** One uninterrupted performance: tempo and playable register open continuously toward 2 AM. */
 function EscalatingPiano({ end }: { end: number }) {
-  const events: { at: number; midi: number; volume: number; ring: number; length: number; pan: number }[] = [];
+  const events: { at: number; midi: number; volume: number; ring: number; length: number; pan: number }[] =
+    [];
   const start = 10;
   let at = start;
   let i = 0;
@@ -57,7 +86,19 @@ function EscalatingPiano({ end }: { end: number }) {
   return (
     <>
       {events.map((event, index) => (
-        <FeltPiano key={index} note={440 * Math.pow(2, (event.midi - 69) / 12)} at={event.at} length={event.length} ring={event.ring} volume={event.volume} pan={event.pan} spread={0.07} reverb={0.48} detune={[-1.1, 0.6, -0.3, 0.9][index % 4]} name={`continuous-${index}`} />
+        <FeltPiano
+          key={index}
+          note={440 * Math.pow(2, (event.midi - 69) / 12)}
+          at={event.at}
+          length={event.length}
+          ring={event.ring}
+          volume={event.volume}
+          pan={event.pan}
+          spread={0.07}
+          reverb={0.48}
+          detune={[-1.1, 0.6, -0.3, 0.9][index % 4]}
+          name={`continuous-${index}`}
+        />
       ))}
     </>
   );
@@ -74,7 +115,15 @@ function IndieScore() {
       <EscalatingPiano end={S.start("blank")} />
 
       <Sequence from={S.start("blank")} durationInFrames={S.duration("blank")} name="v5-blank-score">
-        <FeltPhrase at={16} notes={["C4", "G4", "E4", "D4"]} step={27} volume={0.026} ring={3.4} length={34} name="two-am-lullaby" />
+        <FeltPhrase
+          at={16}
+          notes={["C4", "G4", "E4", "D4"]}
+          step={27}
+          volume={0.026}
+          ring={3.4}
+          length={34}
+          name="two-am-lullaby"
+        />
       </Sequence>
 
       <Sequence from={S.start("outro")} durationInFrames={S.duration("outro")} name="v5-outro-score">
@@ -93,13 +142,27 @@ export function ArchDev5() {
     <AbsoluteFill className="archdev3">
       <IndieScore />
       <Scenes plan={S}>
-        <Scenes.Scene name="intro"><Intro showLaptop={false} /></Scenes.Scene>
-        <Scenes.Scene name="open"><Open /></Scenes.Scene>
-        <Scenes.Scene name="plan"><Plan /></Scenes.Scene>
-        <Scenes.Scene name="agents"><Agents roundRage /></Scenes.Scene>
-        <Scenes.Scene name="review"><Review pileup /></Scenes.Scene>
-        <Scenes.Scene name="blank"><Blank /></Scenes.Scene>
-        <Scenes.Scene name="outro"><Outro /></Scenes.Scene>
+        <Scenes.Scene name="intro">
+          <Intro showLaptop={false} />
+        </Scenes.Scene>
+        <Scenes.Scene name="open">
+          <Open />
+        </Scenes.Scene>
+        <Scenes.Scene name="plan">
+          <Plan />
+        </Scenes.Scene>
+        <Scenes.Scene name="agents">
+          <Agents roundRage />
+        </Scenes.Scene>
+        <Scenes.Scene name="review">
+          <Review pileup />
+        </Scenes.Scene>
+        <Scenes.Scene name="blank">
+          <Blank />
+        </Scenes.Scene>
+        <Scenes.Scene name="outro">
+          <Outro />
+        </Scenes.Scene>
       </Scenes>
       <Grain opacity={0.05} blend="multiply" tile={280} />
     </AbsoluteFill>

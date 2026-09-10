@@ -9,7 +9,18 @@ export function timecode(frame: number, fps: number): string {
   return `${String(m).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}:${String(f).padStart(2, "0")}`;
 }
 
-export const CATEGORY_ORDER = ["file", "bus", "pluck", "epiano", "sine", "triangle", "sawtooth", "square", "noise", "breath"];
+export const CATEGORY_ORDER = [
+  "file",
+  "bus",
+  "pluck",
+  "epiano",
+  "sine",
+  "triangle",
+  "sawtooth",
+  "square",
+  "noise",
+  "breath",
+];
 
 export function cueCategory(c: AudioCue): string {
   return c.kind === "file" ? "file" : c.kind === "bus" ? "bus" : (c.tone?.wave ?? "sine");
@@ -49,7 +60,13 @@ export function volumeEnvelope(c: AudioCue): [number, number][] {
   const dur = Math.max(1, c.endFrame - c.startFrame);
   const v = c.volume;
   const pts: [number, number][] = [];
-  if (c.kind === "bus") return c.automation?.volume ?? [[0, 1], [dur, 1]];
+  if (c.kind === "bus")
+    return (
+      c.automation?.volume ?? [
+        [0, 1],
+        [dur, 1],
+      ]
+    );
   const auto = c.tone?.automation?.volume;
   const base = (f: number) => {
     let g = v;

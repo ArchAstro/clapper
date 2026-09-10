@@ -23,7 +23,14 @@ export function ConnectScene() {
           <Kicker>Connect your agent</Kicker>
         </Rise>
         <h2 className="display" style={{ margin: "18px 0 0", fontSize: 96, lineHeight: 1.02 }}>
-          <SplitText text={"Works with the agent\nyou already have."} by="word" each={4} at={6} duration={26} from={{ opacity: 0, y: 40 }} />
+          <SplitText
+            text={"Works with the agent\nyou already have."}
+            by="word"
+            each={4}
+            at={6}
+            duration={26}
+            from={{ opacity: 0, y: 40 }}
+          />
         </h2>
         <div style={{ marginTop: 44, display: "flex", gap: 16, flexWrap: "wrap" }}>
           <Stagger each={5} at={36} duration={26} spring="wobbly" from={{ opacity: 0, y: 26, scale: 0.7 }}>
@@ -33,20 +40,44 @@ export function ConnectScene() {
           </Stagger>
         </div>
       </div>
-      <Animate from={{ opacity: 0, y: 60 }} at={84} duration={28} style={{ position: "absolute", left: 120, top: 640, width: 1680 }}>
-        <div style={{ borderRadius: 20, background: "var(--dark)", color: "var(--dark-ink)", padding: "34px 40px", boxShadow: "0 30px 70px rgba(27,24,17,0.25)", minHeight: 300 }}>
+      <Animate
+        from={{ opacity: 0, y: 60 }}
+        at={84}
+        duration={28}
+        style={{ position: "absolute", left: 120, top: 640, width: 1680 }}
+      >
+        <div
+          style={{
+            borderRadius: 20,
+            background: "var(--dark)",
+            color: "var(--dark-ink)",
+            padding: "34px 40px",
+            boxShadow: "0 30px 70px rgba(27,24,17,0.25)",
+            minHeight: 300,
+          }}
+        >
           <div style={{ display: "flex", gap: 10, marginBottom: 26 }}>
             {["#ff5f57", "#febc2e", "#28c840"].map((c) => (
-              <span key={c} style={{ width: 14, height: 14, borderRadius: 999, background: c, opacity: 0.9 }} />
+              <span
+                key={c}
+                style={{ width: 14, height: 14, borderRadius: 999, background: c, opacity: 0.9 }}
+              />
             ))}
-            <span className="mono" style={{ marginLeft: 12, fontSize: 18, color: "var(--dark-muted)" }}>terminal</span>
+            <span className="mono" style={{ marginLeft: 12, fontSize: 18, color: "var(--dark-muted)" }}>
+              terminal
+            </span>
           </div>
           <div className="mono" style={{ fontSize: 34, lineHeight: 1.5 }}>
             <span style={{ color: "var(--dark-muted)" }}>$ </span>
             <Typewriter text={CMD} at={CMD_AT} cps={CMD_CPS} cursorAfter={false} />
           </div>
           <Sequence from={DONE_AT} layout="none" name="connected">
-            <Animate from={{ opacity: 0, y: 8 }} duration={14} className="mono" style={{ marginTop: 22, fontSize: 30, color: "#7fb894" }}>
+            <Animate
+              from={{ opacity: 0, y: 8 }}
+              duration={14}
+              className="mono"
+              style={{ marginTop: 22, fontSize: 30, color: "#7fb894" }}
+            >
               ✓ Connected to Intern. Ask for a site.
             </Animate>
           </Sequence>

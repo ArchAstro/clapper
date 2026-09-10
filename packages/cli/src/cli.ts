@@ -2,10 +2,10 @@ import fs from "node:fs";
 import path from "node:path";
 import { parseArgs } from "node:util";
 import { buildHarness, removeHarness, serveBuilt, startStudio } from "./bundle.ts";
-import { collectCues, probeCompositions, renderComposition, renderStill, renderStills } from "./render.ts";
-import { reviewComposition } from "./review.ts";
 import { doctor } from "./doctor.ts";
 import { createProject, findConfig, installProject, linkRuntime } from "./project.ts";
+import { collectCues, probeCompositions, renderComposition, renderStill, renderStills } from "./render.ts";
+import { reviewComposition } from "./review.ts";
 
 const HELP = `clapper — React → MP4
 
@@ -52,8 +52,10 @@ Dependency scripts are disabled; pass --allow-scripts explicitly if needed.
 `;
 
 export async function main(argv: string[]) {
-  if(argv[0]==="score"||argv[0]==="instruments"){
-    const {musicCLI}=await import("./music-cli.ts");await musicCLI(argv[0],argv.slice(1));return;
+  if (argv[0] === "score" || argv[0] === "instruments") {
+    const { musicCLI } = await import("./music-cli.ts");
+    await musicCLI(argv[0], argv.slice(1));
+    return;
   }
   const { values, positionals } = parseArgs({
     args: argv,
@@ -92,12 +94,16 @@ export async function main(argv: string[]) {
     return;
   }
   if (command === "new") {
-    if (!entryArg || positionals.length !== 2) throw new Error("Usage: clapper new <directory> [--template basic|comic]");
+    if (!entryArg || positionals.length !== 2)
+      throw new Error("Usage: clapper new <directory> [--template basic|comic]");
     createProject(entryArg, values.template);
     return;
   }
   const project = findConfig(entryArg ? path.dirname(path.resolve(entryArg)) : process.cwd());
-  if (project && process.env.CLAPPER_VERSION && project.config.runtime !== process.env.CLAPPER_VERSION) throw new Error(`Project pins Clapper ${project.config.runtime}; launcher is ${process.env.CLAPPER_VERSION}. Install the matching launcher.`);
+  if (project && process.env.CLAPPER_VERSION && project.config.runtime !== process.env.CLAPPER_VERSION)
+    throw new Error(
+      `Project pins Clapper ${project.config.runtime}; launcher is ${process.env.CLAPPER_VERSION}. Install the matching launcher.`,
+    );
   if (project && process.env.CLAPPER_RUNTIME) linkRuntime(project.dir);
   if (command === "install" || command === "add") {
     const current = findConfig();
@@ -111,9 +117,16 @@ export async function main(argv: string[]) {
     values.composition ??= project.config.composition;
   }
   if (command === "doctor") {
-    const dir = entryArg ? (fs.statSync(path.resolve(entryArg)).isDirectory() ? path.resolve(entryArg) : findProjectDir(path.resolve(entryArg))) : process.cwd();
+    const dir = entryArg
+      ? fs.statSync(path.resolve(entryArg)).isDirectory()
+        ? path.resolve(entryArg)
+        : findProjectDir(path.resolve(entryArg))
+      : process.cwd();
     const checks = doctor(dir);
-    for (const c of checks) console.log(`${c.ok ? "ok  " : "FAIL"} ${c.name.padEnd(18)} ${c.detail}${!c.ok && c.fix ? `\n     → ${c.fix}` : ""}`);
+    for (const c of checks)
+      console.log(
+        `${c.ok ? "ok  " : "FAIL"} ${c.name.padEnd(18)} ${c.detail}${!c.ok && c.fix ? `\n     → ${c.fix}` : ""}`,
+      );
     const bad = checks.filter((c) => !c.ok).length;
     console.log(bad ? `${bad} problem(s)` : "all good");
     if (bad) process.exitCode = 1;
@@ -124,17 +137,31 @@ export async function main(argv: string[]) {
   if (!fs.existsSync(entry)) throw new Error(`Entry not found: ${entry}`);
   const projectDir = findProjectDir(entry);
   const publicDir = path.join(projectDir, "public");
-  if(project?.config.score && ["preview","render","still","review"].includes(command)){
-    const scoreFile=path.resolve(project.dir,project.config.score);
-    if(!scoreFile.startsWith(project.dir+path.sep))throw new Error("Score file must be inside project");
-    const {prepareScore}=await import("./music-render.ts");await prepareScore(scoreFile,project.dir);
+  if (project?.config.score && ["preview", "render", "still", "review"].includes(command)) {
+    const scoreFile = path.resolve(project.dir, project.config.score);
+    if (!scoreFile.startsWith(project.dir + path.sep)) throw new Error("Score file must be inside project");
+    const { prepareScore } = await import("./music-render.ts");
+    await prepareScore(scoreFile, project.dir);
   }
   const props = values.props ? (JSON.parse(values.props) as Record<string, unknown>) : undefined;
 
   switch (command) {
     case "preview": {
-      const beforeReload=project?.config.score?async()=>{const {prepareScore}=await import("./music-render.ts");return prepareScore(path.resolve(project.dir,project.config.score!),project.dir);}:undefined;
-      const { url } = await startStudio({ entry, projectDir, mode: "studio" }, { port: values.port ? parseInt(values.port, 10) : undefined, open: values.open,beforeReload,scoreFile:project?.config.score?path.resolve(project.dir,project.config.score):undefined });
+      const beforeReload = project?.config.score
+        ? async () => {
+            const { prepareScore } = await import("./music-render.ts");
+            return prepareScore(path.resolve(project.dir, project.config.score!), project.dir);
+          }
+        : undefined;
+      const { url } = await startStudio(
+        { entry, projectDir, mode: "studio" },
+        {
+          port: values.port ? parseInt(values.port, 10) : undefined,
+          open: values.open,
+          beforeReload,
+          scoreFile: project?.config.score ? path.resolve(project.dir, project.config.score) : undefined,
+        },
+      );
       console.log(`clapper studio → ${url}`);
       await new Promise(() => {});
       return;
@@ -148,8 +175,13 @@ export async function main(argv: string[]) {
           console.log(JSON.stringify(comps, null, 2));
         } else {
           for (const c of comps) {
-            console.log(`${c.id}\t${c.width}x${c.height}\t${c.fps}fps\t${c.durationInFrames} frames (${(c.durationInFrames / c.fps).toFixed(2)}s)`);
-            for (const s of c.scenes ?? []) console.log(`  ${s.name.padEnd(12)} ${String(s.start).padStart(5)}–${String(s.end).padEnd(5)} (${(s.start / c.fps).toFixed(2)}s, ${((s.end - s.start) / c.fps).toFixed(1)}s long)`);
+            console.log(
+              `${c.id}\t${c.width}x${c.height}\t${c.fps}fps\t${c.durationInFrames} frames (${(c.durationInFrames / c.fps).toFixed(2)}s)`,
+            );
+            for (const s of c.scenes ?? [])
+              console.log(
+                `  ${s.name.padEnd(12)} ${String(s.start).padStart(5)}–${String(s.end).padEnd(5)} (${(s.start / c.fps).toFixed(2)}s, ${((s.end - s.start) / c.fps).toFixed(1)}s long)`,
+              );
           }
         }
       } finally {
@@ -166,7 +198,10 @@ export async function main(argv: string[]) {
       try {
         const comps = await probeCompositions(server.url);
         const meta = comps.find((c) => c.id === (values.composition ?? c.id));
-        if (!meta) throw new Error(`Unknown composition "${values.composition}" (available: ${comps.map((c) => c.id).join(", ")})`);
+        if (!meta)
+          throw new Error(
+            `Unknown composition "${values.composition}" (available: ${comps.map((c) => c.id).join(", ")})`,
+          );
         let last = -1;
         const result = await reviewComposition({
           url: server.url,
@@ -195,8 +230,13 @@ export async function main(argv: string[]) {
         console.log(`  files:  ${result.files.join(", ")}`);
         const errors = result.issues.filter((i) => i.level === "error");
         const warns = result.issues.filter((i) => i.level === "warn");
-        console.log(`  lint:   ${errors.length} error(s), ${warns.length} warning(s) · ${result.checked.copyBoxes} copy boxes over ${result.checked.frames} frames${result.issues.length ? " — see lint.json / brief.md" : ""}`);
-        for (const i of result.issues.slice(0, 12)) console.log(`    ${i.level.padEnd(5)} ${i.rule}${i.frame !== undefined ? ` @${i.frame}` : ""}${i.scene ? ` [${i.scene}]` : ""}: ${i.message}`);
+        console.log(
+          `  lint:   ${errors.length} error(s), ${warns.length} warning(s) · ${result.checked.copyBoxes} copy boxes over ${result.checked.frames} frames${result.issues.length ? " — see lint.json / brief.md" : ""}`,
+        );
+        for (const i of result.issues.slice(0, 12))
+          console.log(
+            `    ${i.level.padEnd(5)} ${i.rule}${i.frame !== undefined ? ` @${i.frame}` : ""}${i.scene ? ` [${i.scene}]` : ""}: ${i.message}`,
+          );
         console.log(`  ${((Date.now() - t0) / 1000).toFixed(1)}s total`);
         if (errors.length) process.exitCode = 1;
       } finally {
@@ -224,11 +264,17 @@ export async function main(argv: string[]) {
           byKind.set(k, (byKind.get(k) ?? 0) + 1);
         }
         console.log(`${cues.length} cues in "${compositionId}"`);
-        for (const [k, n] of [...byKind.entries()].sort((a, b) => b[1] - a[1])) console.log(`  ${k.padEnd(16)} ${n}`);
+        for (const [k, n] of [...byKind.entries()].sort((a, b) => b[1] - a[1]))
+          console.log(`  ${k.padEnd(16)} ${n}`);
         console.log("start\tend\tvol\tkind\tdetail\tid");
         for (const c of cues) {
-          const detail = c.kind === "tone" ? `${c.tone?.wave} ${Math.round(c.tone?.freq ?? 0)}Hz${c.tone?.reverb ? ` rev${c.tone.reverb}` : ""}${c.tone?.pan ? ` pan${c.tone.pan}` : ""}` : c.src;
-          console.log(`${(c.startFrame / fps).toFixed(2)}s\t${(c.endFrame / fps).toFixed(2)}s\t${c.volume.toFixed(2)}\t${c.kind}\t${detail}\t${c.id.split("|")[0].split("/").slice(1).join("/")}`);
+          const detail =
+            c.kind === "tone"
+              ? `${c.tone?.wave} ${Math.round(c.tone?.freq ?? 0)}Hz${c.tone?.reverb ? ` rev${c.tone.reverb}` : ""}${c.tone?.pan ? ` pan${c.tone.pan}` : ""}`
+              : c.src;
+          console.log(
+            `${(c.startFrame / fps).toFixed(2)}s\t${(c.endFrame / fps).toFixed(2)}s\t${c.volume.toFixed(2)}\t${c.kind}\t${detail}\t${c.id.split("|")[0].split("/").slice(1).join("/")}`,
+          );
         }
       } finally {
         await server.close();
@@ -248,15 +294,26 @@ export async function main(argv: string[]) {
         let compositionId = values.composition;
         if (!compositionId) {
           compositionId = comps[0].id;
-          if (comps.length > 1) console.error(`No --composition given; using "${compositionId}" (available: ${comps.map((c) => c.id).join(", ")})`);
+          if (comps.length > 1)
+            console.error(
+              `No --composition given; using "${compositionId}" (available: ${comps.map((c) => c.id).join(", ")})`,
+            );
         }
         const meta = comps.find((c) => c.id === compositionId);
-        if (!meta) throw new Error(`Unknown composition "${compositionId}" (available: ${comps.map((c) => c.id).join(", ")})`);
+        if (!meta)
+          throw new Error(
+            `Unknown composition "${compositionId}" (available: ${comps.map((c) => c.id).join(", ")})`,
+          );
         // --scene narrows to one scene of the plan; --range is absolute frames
-        let range: [number, number] | undefined = values.range ? (values.range.split("-").map((n) => parseInt(n, 10)) as [number, number]) : undefined;
+        let range: [number, number] | undefined = values.range
+          ? (values.range.split("-").map((n) => parseInt(n, 10)) as [number, number])
+          : undefined;
         if (values.scene) {
           const sc = meta.scenes?.find((s) => s.name === values.scene);
-          if (!sc) throw new Error(`Unknown scene "${values.scene}"${meta.scenes?.length ? ` (scenes: ${meta.scenes.map((s) => s.name).join(", ")})` : " (the composition declares no scenes; pass scenes={plan} to <Composition>)"}`);
+          if (!sc)
+            throw new Error(
+              `Unknown scene "${values.scene}"${meta.scenes?.length ? ` (scenes: ${meta.scenes.map((s) => s.name).join(", ")})` : " (the composition declares no scenes; pass scenes={plan} to <Composition>)"}`,
+            );
           range = [sc.start, sc.end];
         }
         if (command === "still") {
@@ -274,15 +331,38 @@ export async function main(argv: string[]) {
           } else frames = [0];
           const scale = values.scale ? parseFloat(values.scale) : values.draft ? 0.5 : 1;
           if (frames.length === 1 && values.out && /\.(png|jpe?g)$/i.test(values.out)) {
-            console.log(await renderStill({ url: server.url, compositionId, frame: frames[0], out: values.out, scale, props }));
+            console.log(
+              await renderStill({
+                url: server.url,
+                compositionId,
+                frame: frames[0],
+                out: values.out,
+                scale,
+                props,
+              }),
+            );
             return;
           }
           const outDir = values.out ?? path.join(projectDir, "out", "stills");
-          const files = await renderStills({ url: server.url, compositionId, frames, outDir, scale, props, format: values["image-format"] as never });
+          const files = await renderStills({
+            url: server.url,
+            compositionId,
+            frames,
+            outDir,
+            scale,
+            props,
+            format: values["image-format"] as never,
+          });
           for (const f of files) console.log(f);
           return;
         }
-        const out = values.out ?? path.join(projectDir, "out", `${compositionId}${values.scene ? `.${values.scene}` : ""}${values.draft ? ".draft" : ""}.mp4`);
+        const out =
+          values.out ??
+          path.join(
+            projectDir,
+            "out",
+            `${compositionId}${values.scene ? `.${values.scene}` : ""}${values.draft ? ".draft" : ""}.mp4`,
+          );
         let last = -1;
         const result = await renderComposition({
           url: server.url,
@@ -298,7 +378,12 @@ export async function main(argv: string[]) {
           preset: values.preset ?? (values.draft ? "veryfast" : undefined),
           imageFormat: values["image-format"] as never,
           muteAudio: values.mute,
-          loudnorm: values.loudnorm === undefined ? undefined : values.loudnorm === "off" ? false : parseFloat(values.loudnorm),
+          loudnorm:
+            values.loudnorm === undefined
+              ? undefined
+              : values.loudnorm === "off"
+                ? false
+                : parseFloat(values.loudnorm),
           onProgress: (done, total) => {
             const pct = Math.floor((done / total) * 100);
             if (pct !== last) {
@@ -308,7 +393,9 @@ export async function main(argv: string[]) {
           },
         });
         process.stderr.write("\n");
-        console.log(`Wrote ${result.out}  (${result.frames} frames, ${result.audioCues} audio cues, ${result.seconds.toFixed(1)}s render, ${((Date.now() - t0) / 1000).toFixed(1)}s total)`);
+        console.log(
+          `Wrote ${result.out}  (${result.frames} frames, ${result.audioCues} audio cues, ${result.seconds.toFixed(1)}s render, ${((Date.now() - t0) / 1000).toFixed(1)}s total)`,
+        );
       } finally {
         await server.close();
         if (!values["keep-build"]) removeHarness(outDir);

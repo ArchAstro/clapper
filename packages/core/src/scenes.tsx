@@ -1,5 +1,5 @@
 import { Children, isValidElement, type ReactElement, type ReactNode } from "react";
-import { resolveFrames, type Frames } from "./frames";
+import { type Frames, resolveFrames } from "./frames";
 import { TransitionSeries, type TransitionSpec } from "./transitions";
 
 /**
@@ -43,16 +43,20 @@ export interface ScenePlan<K extends string = string> {
   cuts(): number[];
 }
 
-export function defineScenes<K extends string>(defs: Record<K, SceneDef>, opts: { fps: number; defaultTransition?: TransitionSpec | "hard" }): ScenePlan<K> {
+export function defineScenes<K extends string>(
+  defs: Record<K, SceneDef>,
+  opts: { fps: number; defaultTransition?: TransitionSpec | "hard" },
+): ScenePlan<K> {
   const fps = opts.fps;
   const names = Object.keys(defs) as K[];
   const infos: SceneInfo[] = [];
   let cursor = 0;
   names.forEach((name, i) => {
     const d = defs[name];
-    const duration = d.frames !== undefined ? resolveFrames(d.frames, fps) : Math.round((d.seconds ?? 0) * fps);
+    const duration =
+      d.frames !== undefined ? resolveFrames(d.frames, fps) : Math.round((d.seconds ?? 0) * fps);
     if (!duration || duration <= 0) throw new Error(`Scene "${name}" needs seconds or frames`);
-    const t = i === 0 ? null : d.transition ?? opts.defaultTransition ?? "hard";
+    const t = i === 0 ? null : (d.transition ?? opts.defaultTransition ?? "hard");
     const transition = t === "hard" || t === null ? null : t;
     const overlap = transition ? resolveFrames(transition.duration, fps) : 0;
     const start = i === 0 ? 0 : cursor - overlap;
@@ -100,7 +104,12 @@ export function Scenes({ plan, children }: { plan: ScenePlan<any>; children: Rea
   return (
     <TransitionSeries transition={{ type: "none", duration: 0 }}>
       {plan.list().map((s) => (
-        <TransitionSeries.Item key={s.name} durationInFrames={s.duration} name={s.name} transition={s.transition ?? { type: "none", duration: 0 }}>
+        <TransitionSeries.Item
+          key={s.name}
+          durationInFrames={s.duration}
+          name={s.name}
+          transition={s.transition ?? { type: "none", duration: 0 }}
+        >
           {byName.get(s.name)!.props.children}
         </TransitionSeries.Item>
       ))}

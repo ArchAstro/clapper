@@ -1,6 +1,15 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent } from "react";
+import { type MouseEvent as ReactMouseEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { AudioCue, CompositionMeta, TrackInfo } from "../registry";
-import { CATEGORY_ORDER, clamp, cueCategory, cueLabel, packRows, timecode, volumeEnvelope, type Selection } from "./state";
+import {
+  CATEGORY_ORDER,
+  clamp,
+  cueCategory,
+  cueLabel,
+  packRows,
+  type Selection,
+  timecode,
+  volumeEnvelope,
+} from "./state";
 
 const HEAD = 150;
 
@@ -39,7 +48,21 @@ export interface TimelineProps {
 }
 
 /** NLE-style timeline: ruler, scene markers, sequence lanes by depth, audio lanes by kind, playhead, loop range. */
-export function Timeline({ meta, tracks, cues, frame, playing, range, selection, ppf, onPpf, onFit, onSeek, onSelect, onRange }: TimelineProps) {
+export function Timeline({
+  meta,
+  tracks,
+  cues,
+  frame,
+  playing,
+  range,
+  selection,
+  ppf,
+  onPpf,
+  onFit,
+  onSeek,
+  onSelect,
+  onRange,
+}: TimelineProps) {
   const total = meta.durationInFrames;
   const fps = meta.fps;
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -124,11 +147,30 @@ export function Timeline({ meta, tracks, cues, frame, playing, range, selection,
 
   const lanes = useMemo<Lane[]>(() => {
     const out: Lane[] = [];
-    const scenes = (meta.scenes ?? []).map((s, i) => ({ id: `scene:${s.name}`, start: s.start, end: s.end, label: s.name, cls: "scene", alt: i % 2 === 1, sel: null, title: `${s.name} · ${s.start}–${s.end} (${((s.end - s.start) / fps).toFixed(2)} s)` }));
+    const scenes = (meta.scenes ?? []).map((s, i) => ({
+      id: `scene:${s.name}`,
+      start: s.start,
+      end: s.end,
+      label: s.name,
+      cls: "scene",
+      alt: i % 2 === 1,
+      sel: null,
+      title: `${s.name} · ${s.start}–${s.end} (${((s.end - s.start) / fps).toFixed(2)} s)`,
+    }));
     if (scenes.length) out.push({ name: "scenes", count: scenes.length, rows: packRows(scenes) });
     const depths = [...new Set(tracks.map((t) => t.depth))].sort((a, b) => a - b);
     depths.forEach((d, i) => {
-      const items = tracks.filter((t) => t.depth === d).map((t) => ({ id: t.id, start: t.startFrame, end: t.endFrame, label: t.name, cls: `seq d${Math.min(3, i + 1)}`, sel: { kind: "track", id: t.id } as Selection, title: `${t.name} · ${t.startFrame}–${t.endFrame}` }));
+      const items = tracks
+        .filter((t) => t.depth === d)
+        .map((t) => ({
+          id: t.id,
+          start: t.startFrame,
+          end: t.endFrame,
+          label: t.name,
+          cls: `seq d${Math.min(3, i + 1)}`,
+          sel: { kind: "track", id: t.id } as Selection,
+          title: `${t.name} · ${t.startFrame}–${t.endFrame}`,
+        }));
       out.push({ name: i === 0 ? "sequences" : `nested ${i}`, count: items.length, rows: packRows(items) });
     });
     const byCat = new Map<string, AudioCue[]>();
@@ -137,9 +179,20 @@ export function Timeline({ meta, tracks, cues, frame, playing, range, selection,
       if (!byCat.has(k)) byCat.set(k, []);
       byCat.get(k)!.push(c);
     }
-    const cats = [...byCat.keys()].sort((a, b) => (CATEGORY_ORDER.indexOf(a) + 100) % 100 - ((CATEGORY_ORDER.indexOf(b) + 100) % 100));
+    const cats = [...byCat.keys()].sort(
+      (a, b) => ((CATEGORY_ORDER.indexOf(a) + 100) % 100) - ((CATEGORY_ORDER.indexOf(b) + 100) % 100),
+    );
     for (const k of cats) {
-      const items = byCat.get(k)!.map((c) => ({ id: c.id, start: c.startFrame, end: c.endFrame, label: cueLabel(c), cls: `audio-${k}`, sel: { kind: "cue", id: c.id } as Selection, env: volumeEnvelope(c), title: `${cueLabel(c)} · ${c.startFrame}–${c.endFrame} · vol ${c.volume.toFixed(2)}` }));
+      const items = byCat.get(k)!.map((c) => ({
+        id: c.id,
+        start: c.startFrame,
+        end: c.endFrame,
+        label: cueLabel(c),
+        cls: `audio-${k}`,
+        sel: { kind: "cue", id: c.id } as Selection,
+        env: volumeEnvelope(c),
+        title: `${cueLabel(c)} · ${c.startFrame}–${c.endFrame} · vol ${c.volume.toFixed(2)}`,
+      }));
       // dense patterns (ringing plucks) would stack into a dozen rows: cap at 4 and let the rest overlap in the last row
       const rows = packRows(items);
       if (rows.length > 4) {
@@ -158,12 +211,21 @@ export function Timeline({ meta, tracks, cues, frame, playing, range, selection,
     const out: { f: number; major: boolean; label?: string }[] = [];
     for (let f = 0; f <= total; f += minor) {
       const isMajor = Math.abs(f / major - Math.round(f / major)) < 1e-6;
-      out.push({ f: Math.round(f), major: isMajor, label: isMajor ? (major >= fps ? timecode(Math.round(f), fps).slice(0, 5) : `f${Math.round(f)}`) : undefined });
+      out.push({
+        f: Math.round(f),
+        major: isMajor,
+        label: isMajor
+          ? major >= fps
+            ? timecode(Math.round(f), fps).slice(0, 5)
+            : `f${Math.round(f)}`
+          : undefined,
+      });
     }
     return out;
   }, [fps, scale, total]);
 
-  const isSel = (b: Block) => (b.sel && selection && b.sel.kind === selection.kind && b.sel.id === selection.id) || false;
+  const isSel = (b: Block) =>
+    (b.sel && selection && b.sel.kind === selection.kind && b.sel.id === selection.id) || false;
   const bodyW = x(total);
 
   return (
@@ -238,10 +300,18 @@ export function Timeline({ meta, tracks, cues, frame, playing, range, selection,
 
 function Envelope({ env, dur }: { env: [number, number][]; dur: number }) {
   const max = Math.max(1, ...env.map(([, g]) => g));
-  const pts = env.map(([f, g]) => `${((f / dur) * 100).toFixed(1)},${(100 - (g / max) * 90).toFixed(1)}`).join(" ");
+  const pts = env
+    .map(([f, g]) => `${((f / dur) * 100).toFixed(1)},${(100 - (g / max) * 90).toFixed(1)}`)
+    .join(" ");
   return (
     <svg viewBox="0 0 100 100" preserveAspectRatio="none">
-      <polyline points={`0,100 ${pts} 100,100`} fill="rgba(255,255,255,.12)" stroke="rgba(255,255,255,.45)" strokeWidth={1} vectorEffect="non-scaling-stroke" />
+      <polyline
+        points={`0,100 ${pts} 100,100`}
+        fill="rgba(255,255,255,.12)"
+        stroke="rgba(255,255,255,.45)"
+        strokeWidth={1}
+        vectorEffect="non-scaling-stroke"
+      />
     </svg>
   );
 }

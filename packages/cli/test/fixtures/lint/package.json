@@ -1,1 +1,5 @@
-{ "name": "lint-fixture", "private": true, "type": "module" }
+{
+  "name": "lint-fixture",
+  "private": true,
+  "type": "module"
+}

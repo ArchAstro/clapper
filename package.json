@@ -1,10 +1,17 @@
 {
   "name": "clapper-monorepo",
+  "version": "0.3.0",
+  "license": "MIT",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@11.7.0",
   "scripts": {
     "postinstall": "pnpm --dir packages/music build",
+    "check:public": "node scripts/check-public.mjs",
+    "lint": "biome lint .",
+    "format": "biome format --write . && gofmt -w launcher",
+    "format:check": "biome format . && node scripts/check-go-format.mjs",
+    "check": "biome check . && node scripts/check-go-format.mjs",
     "test:music": "node scripts/test-music.mjs",
     "build:standalone": "node scripts/build-release.mjs",
     "test:standalone": "node scripts/test-standalone.mjs",
@@ -17,6 +24,7 @@
     "render": "pnpm --filter intern-promo render"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.5.13",
     "@types/node": "^22.0.0",
     "typescript": "^5.9.0"
   }

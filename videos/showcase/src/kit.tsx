@@ -1,9 +1,9 @@
-import { Easing, interpolate, noise1d, progress, useFrame, useVideoConfig, type EasingFn } from "@clapper/core";
-import type { CSSProperties, ReactNode } from "react";
+import { Easing, interpolate, noise1d, useFrame } from "@clapper/core";
+import type { CSSProperties } from "react";
 
 /* ---------- shared motion vocabulary for the showcase videos ---------- */
 
-export { Reveal, Rule, Eyebrow } from "@clapper/core";
+export { Eyebrow, Reveal, Rule } from "@clapper/core";
 export const EXPO = Easing.outExpo;
 export const QUINT = Easing.outQuint;
 export const INOUT = Easing.inOutQuint;
@@ -33,16 +33,52 @@ function grainTile(seed: number, size: number, freq: number): string {
   return uri;
 }
 
-export function Grain({ opacity = 0.08, blend = "multiply", scale = 1, seeds = 6, tile = 320 }: { opacity?: number; blend?: CSSProperties["mixBlendMode"]; scale?: number; seeds?: number; tile?: number }) {
+export function Grain({
+  opacity = 0.08,
+  blend = "multiply",
+  scale = 1,
+  seeds = 6,
+  tile = 320,
+}: {
+  opacity?: number;
+  blend?: CSSProperties["mixBlendMode"];
+  scale?: number;
+  seeds?: number;
+  tile?: number;
+}) {
   const frame = useFrame();
   const seed = 11 + (frame % seeds) * 17;
   const ox = ((frame * 37) % tile) - tile;
   const oy = ((frame * 23) % tile) - tile;
-  return <div aria-hidden style={{ position: "absolute", inset: 0, pointerEvents: "none", mixBlendMode: blend, opacity, backgroundImage: grainTile(seed, tile, 0.9 / scale), backgroundSize: `${tile}px ${tile}px`, backgroundPosition: `${ox}px ${oy}px` }} />;
+  return (
+    <div
+      aria-hidden
+      style={{
+        position: "absolute",
+        inset: 0,
+        pointerEvents: "none",
+        mixBlendMode: blend,
+        opacity,
+        backgroundImage: grainTile(seed, tile, 0.9 / scale),
+        backgroundSize: `${tile}px ${tile}px`,
+        backgroundPosition: `${ox}px ${oy}px`,
+      }}
+    />
+  );
 }
 
 export function Vignette({ strength = 0.5, color = "#000" }: { strength?: number; color?: string }) {
-  return <div style={{ position: "absolute", inset: 0, pointerEvents: "none", background: `radial-gradient(120% 90% at 50% 45%, transparent 55%, ${color} 140%)`, opacity: strength }} />;
+  return (
+    <div
+      style={{
+        position: "absolute",
+        inset: 0,
+        pointerEvents: "none",
+        background: `radial-gradient(120% 90% at 50% 45%, transparent 55%, ${color} 140%)`,
+        opacity: strength,
+      }}
+    />
+  );
 }
 
 /** Subtle handheld shake driven by noise; returns a transform string. Amount in px. */
@@ -102,7 +138,7 @@ export function series(n: number, seed = 1, drift = 0.6): number[] {
   let v = 0.4;
   for (let i = 0; i < n; i++) {
     const r = Math.sin(i * 12.9898 + seed * 78.233) * 43758.5453;
-    v += ((r - Math.floor(r)) - 0.5) * 0.18 + (drift / n) * 0.8;
+    v += (r - Math.floor(r) - 0.5) * 0.18 + (drift / n) * 0.8;
     v = Math.max(0.05, Math.min(0.98, v));
     out.push(v);
   }

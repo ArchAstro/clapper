@@ -1,7 +1,7 @@
-import { createElement, useEffect, type ComponentType, type ReactNode } from "react";
+import { type ComponentType, createElement, type ReactNode, useEffect } from "react";
 import { flushSync } from "react-dom";
 import { createRoot } from "react-dom/client";
-import { getRegistry, notifyRegistry, type CompositionEntry, type CompositionMeta } from "./registry";
+import { type CompositionEntry, type CompositionMeta, getRegistry, notifyRegistry } from "./registry";
 import type { ScenePlan } from "./scenes";
 
 export interface CompositionProps<P extends Record<string, unknown> = Record<string, unknown>> {
@@ -37,8 +37,12 @@ export function Composition<P extends Record<string, unknown>>(props: Compositio
 
 export function registerComposition<P extends Record<string, unknown>>(props: CompositionProps<P>) {
   const duration =
-    props.durationInFrames ?? (props.durationInSeconds !== undefined ? Math.round(props.durationInSeconds * props.fps) : props.scenes?.total);
-  if (!duration || duration <= 0) throw new Error(`Composition "${props.id}" needs durationInFrames or durationInSeconds`);
+    props.durationInFrames ??
+    (props.durationInSeconds !== undefined
+      ? Math.round(props.durationInSeconds * props.fps)
+      : props.scenes?.total);
+  if (!duration || duration <= 0)
+    throw new Error(`Composition "${props.id}" needs durationInFrames or durationInSeconds`);
   const entry: CompositionEntry = {
     id: props.id,
     component: props.component as ComponentType<any>,
@@ -53,9 +57,17 @@ export function registerComposition<P extends Record<string, unknown>>(props: Co
   const prev = r.compositions.get(props.id);
   r.compositions.set(props.id, entry);
   for (const [name, size] of Object.entries(props.formats ?? {})) {
-    r.compositions.set(`${props.id}@${name}`, { ...entry, id: `${props.id}@${name}`, width: size.width, height: size.height, format: name, baseId: props.id });
+    r.compositions.set(`${props.id}@${name}`, {
+      ...entry,
+      id: `${props.id}@${name}`,
+      width: size.width,
+      height: size.height,
+      format: name,
+      baseId: props.id,
+    });
   }
-  if (!prev || prev.component !== entry.component || prev.durationInFrames !== entry.durationInFrames) notifyRegistry();
+  if (!prev || prev.component !== entry.component || prev.durationInFrames !== entry.durationInFrames)
+    notifyRegistry();
 }
 
 /** Group compositions (purely organisational). */

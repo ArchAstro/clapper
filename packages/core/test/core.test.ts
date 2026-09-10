@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { Easing, interpolate, progress, spring, springSettleFrames, stagger } from "../src/interpolate";
 import { evalKeyframes, toStyle } from "../src/animate";
-import { evalCamera, cameraTransform } from "../src/camera";
-import { typedLength } from "../src/text";
-import { createRandom, noise1d, random } from "../src/random";
 import { noteToHz } from "../src/audio";
+import { cameraTransform, evalCamera } from "../src/camera";
+import { Easing, interpolate, progress, spring, springSettleFrames, stagger } from "../src/interpolate";
+import { createRandom, noise1d, random } from "../src/random";
+import { typedLength } from "../src/text";
 
 describe("interpolate", () => {
   it("maps linearly and clamps by default", () => {
@@ -25,7 +25,15 @@ describe("interpolate", () => {
     expect(interpolate(10, [0, 10], [0, 1], { easing: Easing.outExpo })).toBe(1);
   });
   it("easing endpoints are exact", () => {
-    for (const e of [Easing.ease, Easing.in, Easing.out, Easing.inOut, Easing.outBack, Easing.outElastic, Easing.outBounce]) {
+    for (const e of [
+      Easing.ease,
+      Easing.in,
+      Easing.out,
+      Easing.inOut,
+      Easing.outBack,
+      Easing.outElastic,
+      Easing.outBounce,
+    ]) {
       expect(e(0)).toBeCloseTo(0, 6);
       expect(e(1)).toBeCloseTo(1, 6);
     }
@@ -62,7 +70,9 @@ describe("spring", () => {
     expect(v).toBeCloseTo(1, 2);
   });
   it("overshoots with low damping", () => {
-    const vals = Array.from({ length: 60 }, (_, f) => spring({ frame: f, fps: 60, config: { stiffness: 180, damping: 6 } }));
+    const vals = Array.from({ length: 60 }, (_, f) =>
+      spring({ frame: f, fps: 60, config: { stiffness: 180, damping: 6 } }),
+    );
     expect(Math.max(...vals)).toBeGreaterThan(1.05);
   });
 });
@@ -91,14 +101,20 @@ describe("camera", () => {
     expect(evalCamera([], 0, 1920, 1080)).toEqual({ x: 960, y: 540, zoom: 1, rotate: 0 });
   });
   it("inherits unspecified values from the previous keyframe", () => {
-    const kf = [{ frame: 0, zoom: 1 }, { frame: 10, x: 100, y: 50, zoom: 2 }, { frame: 20, zoom: 1 }];
+    const kf = [
+      { frame: 0, zoom: 1 },
+      { frame: 10, x: 100, y: 50, zoom: 2 },
+      { frame: 20, zoom: 1 },
+    ];
     expect(evalCamera(kf, 20, 1920, 1080)).toEqual({ x: 100, y: 50, zoom: 1, rotate: 0 });
     const mid = evalCamera(kf, 5, 1920, 1080);
     expect(mid.zoom).toBeGreaterThan(1);
     expect(mid.zoom).toBeLessThan(2);
   });
   it("transform keeps the point of interest centered", () => {
-    expect(cameraTransform({ x: 100, y: 50, zoom: 2, rotate: 0 }, 1920, 1080)).toBe("translate(960px, 540px) rotate(0deg) scale(2) translate(-100px, -50px)");
+    expect(cameraTransform({ x: 100, y: 50, zoom: 2, rotate: 0 }, 1920, 1080)).toBe(
+      "translate(960px, 540px) rotate(0deg) scale(2) translate(-100px, -50px)",
+    );
   });
 });
 
@@ -137,8 +153,8 @@ describe("random / notes", () => {
 });
 
 import { resolveFrames } from "../src/frames";
-import { defineScenes } from "../src/scenes";
 import { ik2 } from "../src/rig";
+import { defineScenes } from "../src/scenes";
 
 it("resolveFrames: frames pass through, seconds and ms round to frames", () => {
   expect(resolveFrames(12, 30)).toBe(12);
@@ -150,7 +166,14 @@ it("resolveFrames: frames pass through, seconds and ms round to frames", () => {
 });
 
 it("defineScenes: hard cuts add up, transitions overlap, lookups agree", () => {
-  const plan = defineScenes({ open: { seconds: 2 }, plan: { frames: 45 }, end: { seconds: 1, transition: { type: "fade", duration: "0.5s" } } }, { fps: 30 });
+  const plan = defineScenes(
+    {
+      open: { seconds: 2 },
+      plan: { frames: 45 },
+      end: { seconds: 1, transition: { type: "fade", duration: "0.5s" } },
+    },
+    { fps: 30 },
+  );
   expect(plan.names).toEqual(["open", "plan", "end"]);
   expect(plan.start("plan")).toBe(60);
   expect(plan.start("end")).toBe(60 + 45 - 15);
@@ -172,11 +195,19 @@ it("ik2: reachable target keeps the segment lengths; elbow bends outward", () =>
   expect(lx).toBeLessThan(-46);
 });
 
-import { registerComposition, getComposition } from "../src/composition";
+import { getComposition, registerComposition } from "../src/composition";
 
 it("formats register size variants that share the component and scene map", () => {
   const C = () => null;
-  registerComposition({ id: "spot", component: C, width: 1920, height: 1080, fps: 30, durationInFrames: 90, formats: { "9:16": { width: 1080, height: 1920 }, "1:1": { width: 1080, height: 1080 } } });
+  registerComposition({
+    id: "spot",
+    component: C,
+    width: 1920,
+    height: 1080,
+    fps: 30,
+    durationInFrames: 90,
+    formats: { "9:16": { width: 1080, height: 1920 }, "1:1": { width: 1080, height: 1080 } },
+  });
   const base = getComposition("spot")!;
   const tall = getComposition("spot@9:16")!;
   expect(tall.width).toBe(1080);
@@ -191,7 +222,11 @@ it("formats register size variants that share the component and scene map", () =
 import { hatchLines, roughEllipse, roughPath, roughRect, scribble, sketchHash } from "../src/sketch";
 
 it("sketch: rough paths are deterministic per seed, differ across seeds, and stay near the polyline", () => {
-  const pts: [number, number][] = [[0, 0], [100, 0], [100, 60]];
+  const pts: [number, number][] = [
+    [0, 0],
+    [100, 0],
+    [100, 60],
+  ];
   const a = roughPath(pts, 7, 2);
   expect(roughPath(pts, 7, 2)).toBe(a);
   expect(roughPath(pts, 8, 2)).not.toBe(a);
@@ -225,11 +260,48 @@ import { SCRIBBLE_POSES } from "../src/rigs/scribble";
 
 it("evalPose: hits named poses exactly on keys, blends between, and arcs lift the hand channels", () => {
   const P = definePoses({ a: { x: 0, hx: 0, hy: 0 }, b: { x: 10, hx: 100, hy: 0 } });
-  expect(evalPose(P, [{ at: 0, pose: "a" }, { at: 20, pose: "b" }], 0, 30)).toEqual({ x: 0, hx: 0, hy: 0 });
-  expect(evalPose(P, [{ at: 0, pose: "a" }, { at: 20, pose: "b" }], 20, 30)).toEqual({ x: 10, hx: 100, hy: 0 });
-  const mid = evalPose(P, [{ at: 0, pose: "a" }, { at: 20, pose: "b", ease: "linear" }], 10, 30);
+  expect(
+    evalPose(
+      P,
+      [
+        { at: 0, pose: "a" },
+        { at: 20, pose: "b" },
+      ],
+      0,
+      30,
+    ),
+  ).toEqual({ x: 0, hx: 0, hy: 0 });
+  expect(
+    evalPose(
+      P,
+      [
+        { at: 0, pose: "a" },
+        { at: 20, pose: "b" },
+      ],
+      20,
+      30,
+    ),
+  ).toEqual({ x: 10, hx: 100, hy: 0 });
+  const mid = evalPose(
+    P,
+    [
+      { at: 0, pose: "a" },
+      { at: 20, pose: "b", ease: "linear" },
+    ],
+    10,
+    30,
+  );
   expect(mid.x).toBeCloseTo(5, 5);
-  const arc = evalPose(P, [{ at: 0, pose: "a" }, { at: 20, pose: "b", arc: 30 }], 10, 30, { arcChannels: [["hx", "hy"]] });
+  const arc = evalPose(
+    P,
+    [
+      { at: 0, pose: "a" },
+      { at: 20, pose: "b", arc: 30 },
+    ],
+    10,
+    30,
+    { arcChannels: [["hx", "hy"]] },
+  );
   expect(arc.hy).toBeCloseTo(-30, 5);
   expect(arc.hx).toBeCloseTo(50, 5);
   expect(evalPose(P, [{ at: "1s", pose: "b" }], 30, 30).x).toBe(10);

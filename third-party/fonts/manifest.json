@@ -1,0 +1,177 @@
+{
+  "revision": "8e44913e4ff26fc997e6856c1ec40ff4791c98c5",
+  "fonts": [
+    {
+      "family": "Patrick Hand",
+      "license": "OFL-1.1",
+      "licenseFile": "third-party/fonts/patrickhand/OFL.txt",
+      "source": "https://raw.githubusercontent.com/google/fonts/8e44913e4ff26fc997e6856c1ec40ff4791c98c5/ofl/patrickhand/OFL.txt",
+      "files": [
+        {
+          "file": "videos/archdev-site/src/fonts/LDI1apSQOAYtSuYWp8ZhfYe8XsLLubg58w.woff2",
+          "sha256": "42156e008dd5fc3000679ff4e9ba9cbd3f417b6317c6dcbe11a12e9c87a09b28"
+        },
+        {
+          "file": "videos/showcase/src/fonts/LDI1apSQOAYtSuYWp8ZhfYe8XsLLubg58w.woff2",
+          "sha256": "42156e008dd5fc3000679ff4e9ba9cbd3f417b6317c6dcbe11a12e9c87a09b28"
+        }
+      ]
+    },
+    {
+      "family": "Gochi Hand",
+      "license": "OFL-1.1",
+      "licenseFile": "third-party/fonts/gochihand/OFL.txt",
+      "source": "https://raw.githubusercontent.com/google/fonts/8e44913e4ff26fc997e6856c1ec40ff4791c98c5/ofl/gochihand/OFL.txt",
+      "files": [
+        {
+          "file": "videos/archdev-site/src/fonts/hES06XlsOjtJsgCkx1Pkfon_-18kTWE.woff2",
+          "sha256": "65da857e1941e9856da139e5b4c955cdd49492819565df6ac6e80866bbf92773"
+        },
+        {
+          "file": "videos/showcase/src/fonts/hES06XlsOjtJsgCkx1Pkfon_-18kTWE.woff2",
+          "sha256": "65da857e1941e9856da139e5b4c955cdd49492819565df6ac6e80866bbf92773"
+        }
+      ]
+    },
+    {
+      "family": "Caveat",
+      "license": "OFL-1.1",
+      "licenseFile": "third-party/fonts/caveat/OFL.txt",
+      "source": "https://raw.githubusercontent.com/google/fonts/8e44913e4ff26fc997e6856c1ec40ff4791c98c5/ofl/caveat/OFL.txt",
+      "files": [
+        {
+          "file": "videos/archdev-site/src/fonts/Wnz6HAc5bAfYB2Q7ZjYYiAzcPA.woff2",
+          "sha256": "7a0049db01fdd8fc7af7ef36675862a72a5c76d0cb45ae63c9f5b6f1b769dac7"
+        },
+        {
+          "file": "videos/showcase/src/fonts/Wnz6HAc5bAfYB2Q7ZjYYiAzcPA.woff2",
+          "sha256": "7a0049db01fdd8fc7af7ef36675862a72a5c76d0cb45ae63c9f5b6f1b769dac7"
+        }
+      ]
+    },
+    {
+      "family": "Fragment Mono",
+      "license": "OFL-1.1",
+      "licenseFile": "third-party/fonts/fragmentmono/OFL.txt",
+      "source": "https://raw.githubusercontent.com/google/fonts/8e44913e4ff26fc997e6856c1ec40ff4791c98c5/ofl/fragmentmono/OFL.txt",
+      "files": [
+        {
+          "file": "videos/intern-promo/src/fonts/4iCr6K5wfMRRjxp0DA6-2CLnB45HhqcL71QxtQ.woff2",
+          "sha256": "ed108107e74221cc5e163f12c6b35ba3e75e7615283828d6862c7a0784e1b0c9"
+        },
+        {
+          "file": "videos/intern-promo/src/fonts/4iCr6K5wfMRRjxp0DA6-2CLnB41HhqcL71QxtQ.woff2",
+          "sha256": "e3085219252209a8d4128f90ff6d793315c752f73a979082d1d85d9cb46f63a4"
+        },
+        {
+          "file": "videos/intern-promo/src/fonts/4iCr6K5wfMRRjxp0DA6-2CLnB4NHhqcL71Q.woff2",
+          "sha256": "4f4dc27f4a770c0d02fde800daa836c8adc0d1e423b28da74baaf0d1cc3ab96c"
+        }
+      ]
+    },
+    {
+      "family": "Instrument Serif",
+      "license": "OFL-1.1",
+      "licenseFile": "third-party/fonts/instrumentserif/OFL.txt",
+      "source": "https://raw.githubusercontent.com/google/fonts/8e44913e4ff26fc997e6856c1ec40ff4791c98c5/ofl/instrumentserif/OFL.txt",
+      "files": [
+        {
+          "file": "videos/intern-promo/src/fonts/jizHRFtNs2ka5fXjeivQ4LroWlx-6zAjgn7Motmp5r61.woff2",
+          "sha256": "a04fc7ed18a8037149ce0bfda58076709d8e0840e136ed00abbdc196b7992443"
+        },
+        {
+          "file": "videos/intern-promo/src/fonts/jizHRFtNs2ka5fXjeivQ4LroWlx-6zAjjH7Motmp5g.woff2",
+          "sha256": "6ee678c33f388dd7ba59700ebea635deb98821baafd817b09891f7927177f702"
+        },
+        {
+          "file": "videos/intern-promo/src/fonts/jizBRFtNs2ka5fXjeivQ4LroWlx-6zsTjnTLgNuZ5w.woff2",
+          "sha256": "a8c4bd7cd7073180e740d2d83a616b5cb0845579b73207eeafeae8532e70c901"
+        },
+        {
+          "file": "videos/intern-promo/src/fonts/jizBRFtNs2ka5fXjeivQ4LroWlx-6zUTjnTLgNs.woff2",
+          "sha256": "60c06664b5a95c7de6cc3e00d1f9034d78bd1e40b564016b241674449a067d4d"
+        }
+      ]
+    },
+    {
+      "family": "Schibsted Grotesk",
+      "license": "OFL-1.1",
+      "licenseFile": "third-party/fonts/schibstedgrotesk/OFL.txt",
+      "source": "https://raw.githubusercontent.com/google/fonts/8e44913e4ff26fc997e6856c1ec40ff4791c98c5/ofl/schibstedgrotesk/OFL.txt",
+      "files": [
+        {
+          "file": "videos/intern-promo/src/fonts/Jqz55SSPQuCQF3t8uOwiUL-taUTtap9IayojdSFOd1I.woff2",
+          "sha256": "f5df746dbc2eccec6d22fdaaa2d253cd6915a30ce9f6ba86138bb6151c7254db"
+        },
+        {
+          "file": "videos/intern-promo/src/fonts/Jqz55SSPQuCQF3t8uOwiUL-taUTtap9GayojdSFO.woff2",
+          "sha256": "e3b56e90510a84ac0ed465b822e112983eaf58e37436bf769681c31f77b1f3a7"
+        }
+      ]
+    },
+    {
+      "family": "Bricolage Grotesque",
+      "license": "OFL-1.1",
+      "licenseFile": "third-party/fonts/bricolagegrotesque/OFL.txt",
+      "source": "https://raw.githubusercontent.com/google/fonts/8e44913e4ff26fc997e6856c1ec40ff4791c98c5/ofl/bricolagegrotesque/OFL.txt",
+      "files": [
+        {
+          "file": "videos/showcase/src/fonts/3y9K6as8bTXq_nANBjzKo3IeZx8z6up5BeSl9D4dj_x9PpZBMlGGInHWVyNJtvI.woff2",
+          "sha256": "1d04719f1325400ea4267e630dba29b02af87eb094d7d71d2e4d80a05479d07a"
+        }
+      ]
+    },
+    {
+      "family": "Fraunces",
+      "license": "OFL-1.1",
+      "licenseFile": "third-party/fonts/fraunces/OFL.txt",
+      "source": "https://raw.githubusercontent.com/google/fonts/8e44913e4ff26fc997e6856c1ec40ff4791c98c5/ofl/fraunces/OFL.txt",
+      "files": [
+        {
+          "file": "videos/showcase/src/fonts/6NU58FyLNQOQZAnv9ZwNjucMHVn85Ni7emAe9lKqZTnbB-gzTK0K1ChjdPeQ7ZXk8kD6.woff2",
+          "sha256": "1e0d114a72921799f06413d3673a80c316fa77d8d344df6de7c8659302ece2dc"
+        },
+        {
+          "file": "videos/showcase/src/fonts/6NU78FyLNQOQZAnv9bYEvDiIdE9Ea92uemAk_WBq8U_9v0c2Wa0KxCFTeP2Xz5fU8w.woff2",
+          "sha256": "f120089b9440f3e35a980a2137347b1851ad46ee4b8ad5c63b6c07e053fa40e2"
+        }
+      ]
+    },
+    {
+      "family": "JetBrains Mono",
+      "license": "OFL-1.1",
+      "licenseFile": "third-party/fonts/jetbrainsmono/OFL.txt",
+      "source": "https://raw.githubusercontent.com/google/fonts/8e44913e4ff26fc997e6856c1ec40ff4791c98c5/ofl/jetbrainsmono/OFL.txt",
+      "files": [
+        {
+          "file": "videos/showcase/src/fonts/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPx7cwgknk-6nFg.woff2",
+          "sha256": "9c38cb2d0d2d93c1ee6e21fa78db76f13ea7e15e15cc64214c7ca89b6aaa35c4"
+        }
+      ]
+    },
+    {
+      "family": "Space Grotesk",
+      "license": "OFL-1.1",
+      "licenseFile": "third-party/fonts/spacegrotesk/OFL.txt",
+      "source": "https://raw.githubusercontent.com/google/fonts/8e44913e4ff26fc997e6856c1ec40ff4791c98c5/ofl/spacegrotesk/OFL.txt",
+      "files": [
+        {
+          "file": "videos/showcase/src/fonts/V8mDoQDjQSkFtoMM3T6r8E7mPb94C_k3HqUtEw.woff2",
+          "sha256": "054c266fbb441ee059365dba0885d206f67ca05b375de869b88e02ebfccc9b9d"
+        }
+      ]
+    },
+    {
+      "family": "Unbounded",
+      "license": "OFL-1.1",
+      "licenseFile": "third-party/fonts/unbounded/OFL.txt",
+      "source": "https://raw.githubusercontent.com/google/fonts/8e44913e4ff26fc997e6856c1ec40ff4791c98c5/ofl/unbounded/OFL.txt",
+      "files": [
+        {
+          "file": "videos/showcase/src/fonts/Yq6W-LOTXCb04q32xlpwtcZfvRIkSYZH.woff2",
+          "sha256": "ed84482df7b95e6a56a113de1ba2a8d54337f499ba19d54ca697a7e15427ff5f"
+        }
+      ]
+    }
+  ]
+}

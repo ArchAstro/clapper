@@ -1,6 +1,9 @@
 import { Component, type ReactNode } from "react";
 
-export class ErrorBoundary extends Component<{ onError?: (m: string) => void; resetKey?: string; children: ReactNode }, { failed: boolean; key?: string }> {
+export class ErrorBoundary extends Component<
+  { onError?: (m: string) => void; resetKey?: string; children: ReactNode },
+  { failed: boolean; key?: string }
+> {
   state = { failed: false, key: undefined as string | undefined };
   static getDerivedStateFromError() {
     return { failed: true };

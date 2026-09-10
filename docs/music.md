@@ -49,6 +49,8 @@ Samples live under `~/.cache/clapper/instruments`, override with `CLAPPER_INSTRU
 
 ## Attach music to a video
 
+The catalog also includes three curated CC0 rock presets, for **78 total**: `green-guitar`, `little-bass`, and `club-drums`. See `videos/animal-rock/README.md` for pinned sources, adaptation details and a complete original band jam. Tracks can set `preampDb` (−24…48 dB) and `drive` (1…12) for a filtered soft-clipping amp stage; `gain` controls output trim. Unlike a volume boost after mixing, input gain determines how much the samples saturate. Audition/measure the actual source level when setting it.
+
 The studio's **Music** tab displays the configured score beside the film. **Score** shows instrument tracks, a piano roll, the current tempo/meter/beat and a playhead; click a note or section marker to seek the video. **Code** shows the exact source file, read-only. Editing that file rebuilds the audio and refreshes the view. Seeking accounts for the ScoreAudio cue's timeline offset; compositions that do not mount the configured score show that explicitly.
 
 Add `"score": "src/score.ts"` to `clapper.json`, alongside `runtime`, `entry` and `composition`. Then:

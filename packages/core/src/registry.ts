@@ -30,7 +30,18 @@ export interface CompositionEntry extends CompositionMeta {
   component: ComponentType<any>;
 }
 
-export type Wave = "sine" | "triangle" | "square" | "sawtooth" | "noise" | "pluck" | "epiano" | "feltpiano" | "mallet" | "bowed" | "breath";
+export type Wave =
+  | "sine"
+  | "triangle"
+  | "square"
+  | "sawtooth"
+  | "noise"
+  | "pluck"
+  | "epiano"
+  | "feltpiano"
+  | "mallet"
+  | "bowed"
+  | "breath";
 
 export interface ToneSpec {
   /**

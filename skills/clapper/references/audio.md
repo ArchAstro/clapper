@@ -1,6 +1,6 @@
 # Sound: one musical arc, concrete mix evidence
 
-For full composition, first read `docs/music.md` in the Clapper checkout. The sampled score DSL supports a musical clock, tempo changes, notes/chords/phrases, CC expression, stems and a mastered SFZ performance. Discover real patches with `clapper instruments list --json`; reject out-of-range notes instead of assuming every instrument covers the MIDI keyboard. `ScoreAudio` uses the same prepared WAV for studio and export, with automatic rebuild after score edits. For an already mastered score, `render --loudnorm off` preserves its gain. The notes below remain relevant to orchestration, mix review and synthesized foley.
+For full composition, first read [music.md](music.md). It covers the score DSL, instrument selection, musical timing, animation sync, and studio Music/Code views. ScoreAudio uses the same prepared WAV for studio and export; `render --loudnorm off` preserves its mastered gain. This file covers mix review and synthesized foley.
 
 ## Compose an arc before adding cues
 
@@ -71,4 +71,4 @@ Use a unique mono filename if one already exists. For short problem windows, ins
 
 Historical goals like −16 LUFS, LRA ≥8 LU, side RMS ≥−30 dB or bitrate <8 Mbps were project suggestions, not quality laws. Use the narrative and delivery brief. Never widen a deliberately intimate mono sound or flatten intentional silence merely to hit a number.
 
-`render --loudnorm <number|off>` exists in the current local CLI. Inspect `--help` before using it elsewhere. The `review` command does not forward every render option; when mix/encoding settings matter, render explicitly then pass `--video` to review. Browser playback and cue previews are approximations of offline synthesis; audition the exported MP4 for the final judgment. If this session cannot hear audio, report **measured only; listening unverified**, and do not issue unconditional audio SHIP.
+`render --loudnorm <number|off>` exists in the current local CLI. Inspect `--help` before using it elsewhere. The `review` command does not forward every render option; when mix/encoding settings matter, render explicitly then pass `--video` to review. Synthesized Tone cue previews are approximations; ScoreAudio plays the actual prepared WAV. Final combined mix gain can still differ, so audition the exported MP4 for the final judgment. If this session cannot hear audio, report **measured only; listening unverified**, and do not issue unconditional audio SHIP.
