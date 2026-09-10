@@ -56,6 +56,8 @@ For a new video, copy only the template's authored files (`package.json`, `tscon
 
 ## 3. Author picture and sound together
 
+For a full musical score, use `@clapper/music` and the sampled SFZ pipeline described in the checkout's `docs/music.md`. Start with `clapper instruments list --json`, choose explicit articulation presets and check their ranges, then compose `src/score.ts`. Add `score` to `clapper.json` and use `<ScoreAudio score={score}/>` from `@clapper/core/music`. `clapper score render` produces mastered audio, MIDI and stems; preview and export use the same prepared WAV. The `videos/cat-ballet` score is the working example. Use the existing synthesized cues for foley or when their timbre is desired, not as a substitute for a requested multi-instrument sampled score.
+
 1. Write a compact beat plan: audience, promise, duration, format, style reference, one action per scene, on-screen copy, and the intended sound/quiet beat. For a requested spec, use an HTML task UI. Otherwise a short scene table is enough; don't delay a simple edit with a spec.
 2. `defineScenes` owns durations and overlaps. Pass the plan to both `<Composition scenes={SCENES}>` and `<Scenes plan={SCENES}>`. Use `SCENES.start(name)` for global sound cues. Inside a scene, `useFrame()` is local. Numeric times are frames; `"0.4s"` is seconds. Recompute frame references after a retime.
 3. Put factual copy/numbers in one `data.ts`, scoped brand tokens in `theme.css`, and long music beds in one root-level `Score`. Local action foley may stay in its scene. Check reused scenes for old beds/hits before adding a new score.

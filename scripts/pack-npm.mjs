@@ -39,10 +39,15 @@ try {
   fs.copyFileSync(path.join(repo,"docs/npm.md"),path.join(cli,"README.md"));
   pack(cli,{...common,name:"@clapper/cli",description:"Create and render React videos with a managed Clapper runtime",bin:{clapper:"bin/clapper.cjs"},engines:{node:">=20"},files:["bin","README.md"],optionalDependencies:Object.fromEntries(manifests.map(m=>[`@clapper/launcher-${m.platform}`,version])),clapperPlatforms:manifests.map(m=>m.platform)});
 
+  const music=path.join(stage,"music");fs.mkdirSync(music);
+  fs.cpSync(path.join(repo,"packages/music/dist"),path.join(music,"dist"),{recursive:true});
+  const musicSource=JSON.parse(fs.readFileSync(path.join(repo,"packages/music/package.json"),"utf8"));
+  delete musicSource.scripts;delete musicSource.devDependencies;
+  pack(music,{...musicSource,...common,files:["dist"]});
   const core=path.join(stage,"core");fs.mkdirSync(core);
   fs.cpSync(path.join(repo,"packages/core/src"),path.join(core,"src"),{recursive:true});
   const {devDependencies,scripts,...source}=JSON.parse(fs.readFileSync(path.join(repo,"packages/core/package.json"),"utf8"));
-  pack(core,{...source,...common,files:["src"]});
+  pack(core,{...source,...common,dependencies:{...source.dependencies,"@clapper/music":version},files:["src"]});
   fs.writeFileSync(path.join(out,"artifacts.json"),JSON.stringify({version,platforms:manifests.map(m=>m.platform),artifacts},null,2)+"\n");
   console.log(`Packed ${artifacts.length} npm artifacts in ${out}\nNo packages published.`);
 } finally { fs.rmSync(stage,{recursive:true,force:true}); }

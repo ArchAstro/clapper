@@ -4,6 +4,8 @@
   "type": "module",
   "packageManager": "pnpm@11.7.0",
   "scripts": {
+    "postinstall": "pnpm --dir packages/music build",
+    "test:music": "node scripts/test-music.mjs",
     "build:standalone": "node scripts/build-release.mjs",
     "test:standalone": "node scripts/test-standalone.mjs",
     "pack:npm": "node scripts/pack-npm.mjs",

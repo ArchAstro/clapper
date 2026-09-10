@@ -2,5 +2,6 @@ node_modules
 dist
 out
 .clapper
+.clapper-music/
 *.log
 .DS_Store

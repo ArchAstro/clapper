@@ -9,7 +9,7 @@ import { spawnSync } from "node:child_process";
 import { createRequire } from "node:module";
 
 const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const version = process.env.CLAPPER_RELEASE_VERSION ?? "0.2.0-dev.1";
+const version = process.env.CLAPPER_RELEASE_VERSION ?? "0.3.0-dev.1";
 const platform = `${process.platform}-${process.arch}`;
 if (!/^\d+\.\d+\.\d+(?:-[a-zA-Z0-9.-]+)?$/.test(version)) throw new Error("Invalid CLAPPER_RELEASE_VERSION");
 if (!["darwin-arm64", "darwin-x64", "linux-x64", "linux-arm64"].includes(platform)) throw new Error(`Unsupported build host: ${platform}`);
@@ -31,11 +31,22 @@ try {
   console.log(`Building Clapper ${version} for ${platform}`);
   // Honor the existing lockfile; the archive includes dependency license files.
   run("pnpm",["install","--frozen-lockfile"]);
-  for(const pkg of ["core","cli"]){
-    for(const name of ["src","bin","package.json","node_modules"]){
+  run("pnpm",["--dir","packages/music","build"]);
+  run(process.execPath,["scripts/build-sfizz.mjs"]);
+  for(const pkg of ["core","cli","music"]){
+    for(const name of ["src","bin","dist","assets","package.json","node_modules"]){
       const source=path.join(repo,"packages",pkg,name);
       if(fs.existsSync(source)) copy(source,path.join(root,"packages",pkg,name));
     }
+    const metadataFile=path.join(root,"packages",pkg,"package.json");
+    const metadata=JSON.parse(fs.readFileSync(metadataFile,"utf8"));
+    for(const [name,spec] of Object.entries(metadata.dependencies??{})){
+      if(String(spec).startsWith("workspace:")){
+        const sibling=JSON.parse(fs.readFileSync(path.join(repo,"packages",name.split("/").at(-1),"package.json"),"utf8"));
+        metadata.dependencies[name]=sibling.version;
+      }
+    }
+    fs.writeFileSync(metadataFile,JSON.stringify(metadata,null,2)+"\n");
   }
   copy(path.join(repo,"node_modules"),path.join(root,"node_modules"));
   copy(path.join(repo,"package.json"),path.join(root,"package.json"));
@@ -85,6 +96,9 @@ try {
   const ffmpeg=cliRequire("ffmpeg-static");
   if(!ffmpeg||!fs.existsSync(ffmpeg))throw new Error("ffmpeg-static binary missing");
   copy(ffmpeg,path.join(root,"bin/ffmpeg"));
+  copy(path.join(repo,".clapper/toolchain/build/library/bin/sfizz_render"),path.join(root,"bin/sfizz_render"));
+  copy(path.join(repo,".clapper/toolchain/sfizz-source.tar.gz"),path.join(root,"licenses/sfizz-1.2.3-source.tar.gz"));
+  copy(path.join(repo,".clapper/toolchain/sfizz-build.json"),path.join(root,"licenses/sfizz-build.json"));
   // Full Chromium also satisfies doctor; all browser binaries are version-matched.
   const browserCache=path.join(dist,".browsers");
   run(path.join(root,"node/bin/node"),[path.join(path.dirname(cliRequire.resolve("playwright/package.json")),"cli.js"),"install","chromium"],{env:{...process.env,PLAYWRIGHT_BROWSERS_PATH:browserCache}});

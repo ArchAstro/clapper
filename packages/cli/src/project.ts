@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 
-export interface ProjectConfig { runtime: string; entry: string; composition: string }
+export interface ProjectConfig { runtime: string; entry: string; composition: string; score?:string }
 
 export function findConfig(start = process.cwd()): { dir: string; config: ProjectConfig } | undefined {
   let dir = path.resolve(start);

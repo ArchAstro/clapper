@@ -2,6 +2,8 @@
 
 Write videos in React. Render them to MP4. Review them like a studio would.
 
+**Music as code:** [`@clapper/music`](docs/music.md) adds typed scores, tempo maps, MIDI interchange and native SFZ rendering with 75 catalogued CC0 presets. See [`videos/cat-ballet`](videos/cat-ballet/README.md) for an original chamber waltz synchronized to a cat's ballet choreography.
+
 **Standalone distribution:** the native launcher now supports `clapper new`, `clapper add`, and project-local `preview`, `render`, and `review` with a managed Node/Chromium/ffmpeg runtime. See [building and testing the standalone package](docs/standalone.md). Release artifacts are built locally; creating them does not publish a release.
 
 **npm distribution:** [the npm/npx package](docs/npm.md) uses that same launcher and runtime. `node scripts/pack-npm.mjs` creates publishable CLI, platform-launcher, and core tarballs; `node scripts/test-npm.mjs` verifies the actual npm installation. No npm publication is performed by these commands.

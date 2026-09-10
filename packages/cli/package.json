@@ -10,6 +10,7 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
+    "@clapper/music": "workspace:*",
     "@clapper/core": "workspace:*",
     "@vitejs/plugin-react": "^5.0.0",
     "ffmpeg-static": "^5.3.0",

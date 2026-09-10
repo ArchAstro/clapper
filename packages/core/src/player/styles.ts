@@ -6,6 +6,12 @@ html,body{height:100%}
 body{margin:0;background:var(--bg);color:var(--fg);font:12.5px/1.4 -apple-system,system-ui,"Segoe UI",sans-serif;overflow:hidden;user-select:none}
 button,input,select,textarea{font:inherit;color:inherit}
 .studio{display:grid;grid-template-columns:250px 1fr 330px;grid-template-rows:38px 1fr 310px;height:100vh}
+.studio.music-open{grid-template-columns:230px minmax(240px,1fr) 520px}
+.music-heading h2{font-size:17px;text-transform:none;letter-spacing:0;color:var(--fg);margin:0 0 5px}.music-heading>div,.music-mode>span,.music-notice,.music-code>p{color:var(--muted);font-size:11px}
+.music-mode{display:flex;align-items:center;gap:6px;margin:16px 0}.music-mode>span{margin-left:auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.music-clock{display:flex;gap:18px;font-variant-numeric:tabular-nums;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.music-tracks{display:flex;flex-direction:column;gap:4px;margin:12px 0}.music-track{display:flex;gap:9px;align-items:center;text-align:left;padding:7px 9px;border:1px solid transparent;border-radius:5px;background:transparent;cursor:pointer}.music-track.selected{border-color:#3b6850;background:#1d2a23}.music-track:hover{background:#20262a}.music-track i{width:7px;height:25px;border-radius:3px}.music-track span{flex:1}.music-track strong,.music-track small{display:block}.music-track small{color:var(--muted);font-size:10px}.music-track em{font-style:normal;color:var(--muted)}
+.music-roll-heading{display:flex;justify-content:space-between;margin:16px 0 8px}.music-roll-heading span{font-size:11px;color:var(--muted)}.music-roll{width:100%;display:block}.music-note{cursor:pointer}.music-note:hover,.music-note:focus{fill:#ffda91;opacity:1;outline:none;stroke:#fff2c9;stroke-width:1}.music-markers{display:flex;gap:6px;flex-wrap:wrap;margin-top:15px}.music-code pre{user-select:text;white-space:pre;overflow:auto;background:#0f1417;border:1px solid var(--line);border-radius:6px;padding:12px;font:11px/1.65 ui-monospace,SFMono-Regular,monospace;max-height:65vh;color:#c9ddd0}.music-empty{padding:12px;color:var(--muted)}
 .top{grid-column:1/4;display:flex;align-items:center;gap:8px;padding:0 12px;border-bottom:1px solid var(--line);background:var(--panel)}
 .top .brand{font-weight:600;letter-spacing:.06em;text-transform:uppercase;font-size:11px;color:var(--muted);margin-right:8px}
 .top .name{font-weight:600}

@@ -16,6 +16,7 @@ import { Viewport, type Overlays, type Zoom } from "./viewport";
 import { Timeline } from "./timeline";
 import { CueTable, Inspector } from "./inspector";
 import { Scratch } from "./scratch";
+import { Music } from "./music";
 import { clamp, timecode, type Selection } from "./state";
 
 function useRegistryVersion() {
@@ -53,7 +54,7 @@ function Studio() {
   const [selection, setSelection] = useState<Selection>(null);
   const [overlays, setOverlays] = useState<Overlays>({ safe: false, grid: false, copy: false });
   const [zoom, setZoom] = useState<Zoom>("fit");
-  const [tab, setTab] = useState<"inspect" | "cues" | "scratch">("inspect");
+  const [tab, setTab] = useState<"inspect" | "cues" | "scratch" | "music">(()=>new URLSearchParams(location.search).get("panel")==="music"?"music":"inspect");
   const [ppf, setPpf] = useState<number | null>(null);
   const fitRef = useRef(1);
   const [error, setError] = useState<string | null>(null);
@@ -241,7 +242,7 @@ function Studio() {
   if (!comp) return <div className="empty">No compositions registered. Call registerRoot() with a component that renders &lt;Composition /&gt;.</div>;
 
   return (
-    <div className="studio">
+    <div className={`studio ${tab==="music"?"music-open":""}`}>
       <div className="top">
         <span className="brand">clapper studio</span>
         <span className="name">{comp.id}</span>
@@ -297,8 +298,8 @@ function Studio() {
       <Viewport entry={comp} frame={frame} overlays={overlays} zoom={zoom} error={error} onError={setError} scene={scene} />
       <div className="panel">
         <div className="tabs">
-          {(["inspect", "cues", "scratch"] as const).map((t) => (
-            <button key={t} className={`tab ${tab === t ? "on" : ""}`} onClick={() => setTab(t)}>
+          {(["inspect", "cues", "music", "scratch"] as const).map((t) => (
+            <button key={t} className={`tab ${tab === t ? "on" : ""}`} onClick={() => {setTab(t);const p=new URLSearchParams(location.search);p.set("panel",t);history.replaceState(null,"",`?${p}`);}}>
               {t}
             </button>
           ))}
@@ -318,6 +319,7 @@ function Studio() {
             />
           )}
           {tab === "scratch" && <Scratch onCompiled={pick} />}
+          {tab === "music" && <Music frame={frame} fps={comp.fps} cues={cues} onSeek={seek}/>}
         </div>
       </div>
       <div className="bottom">

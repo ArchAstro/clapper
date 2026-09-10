@@ -1,5 +1,7 @@
 # Sound: one musical arc, concrete mix evidence
 
+For full composition, first read `docs/music.md` in the Clapper checkout. The sampled score DSL supports a musical clock, tempo changes, notes/chords/phrases, CC expression, stems and a mastered SFZ performance. Discover real patches with `clapper instruments list --json`; reject out-of-range notes instead of assuming every instrument covers the MIDI keyboard. `ScoreAudio` uses the same prepared WAV for studio and export, with automatic rebuild after score edits. For an already mastered score, `render --loudnorm off` preserves its gain. The notes below remain relevant to orchestration, mix review and synthesized foley.
+
 ## Compose an arc before adding cues
 
 1. Define the opening texture, recurring motif, escalation, quiet beat and resolution. Sound should express the story. A larger cue inventory is not a better score.

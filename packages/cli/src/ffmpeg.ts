@@ -277,7 +277,7 @@ function lowpassInPlace(samples: Float32Array, sr: number, hz: number) {
 }
 
 /** Schroeder reverb: 4 parallel combs + 2 series allpasses. `variant` decorrelates L/R. */
-function reverb(input: Float32Array, sr: number, variant: 0 | 1): Float32Array {
+export function reverb(input: Float32Array, sr: number, variant: 0 | 1): Float32Array {
   const n = input.length;
   const out = new Float32Array(n);
   const combMs = variant === 0 ? [29.7, 37.1, 41.1, 43.7] : [30.9, 36.1, 42.3, 44.9];

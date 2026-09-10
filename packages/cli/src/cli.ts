@@ -10,6 +10,8 @@ import { createProject, findConfig, installProject, linkRuntime } from "./projec
 const HELP = `clapper — React → MP4
 
 Usage:
+  clapper score <validate|render|export|import> <file>  Compose and render music
+  clapper instruments <list|install|audition>         Explore sampled instruments
   clapper new <directory> [--template basic|comic]  Create an editable project
   clapper install                    Restore project dependencies
   clapper add <package...>            Add libraries with the managed npm
@@ -50,6 +52,9 @@ Dependency scripts are disabled; pass --allow-scripts explicitly if needed.
 `;
 
 export async function main(argv: string[]) {
+  if(argv[0]==="score"||argv[0]==="instruments"){
+    const {musicCLI}=await import("./music-cli.ts");await musicCLI(argv[0],argv.slice(1));return;
+  }
   const { values, positionals } = parseArgs({
     args: argv,
     allowPositionals: true,
@@ -119,11 +124,17 @@ export async function main(argv: string[]) {
   if (!fs.existsSync(entry)) throw new Error(`Entry not found: ${entry}`);
   const projectDir = findProjectDir(entry);
   const publicDir = path.join(projectDir, "public");
+  if(project?.config.score && ["preview","render","still","review"].includes(command)){
+    const scoreFile=path.resolve(project.dir,project.config.score);
+    if(!scoreFile.startsWith(project.dir+path.sep))throw new Error("Score file must be inside project");
+    const {prepareScore}=await import("./music-render.ts");await prepareScore(scoreFile,project.dir);
+  }
   const props = values.props ? (JSON.parse(values.props) as Record<string, unknown>) : undefined;
 
   switch (command) {
     case "preview": {
-      const { url } = await startStudio({ entry, projectDir, mode: "studio" }, { port: values.port ? parseInt(values.port, 10) : undefined, open: values.open });
+      const beforeReload=project?.config.score?async()=>{const {prepareScore}=await import("./music-render.ts");return prepareScore(path.resolve(project.dir,project.config.score!),project.dir);}:undefined;
+      const { url } = await startStudio({ entry, projectDir, mode: "studio" }, { port: values.port ? parseInt(values.port, 10) : undefined, open: values.open,beforeReload,scoreFile:project?.config.score?path.resolve(project.dir,project.config.score):undefined });
       console.log(`clapper studio → ${url}`);
       await new Promise(() => {});
       return;

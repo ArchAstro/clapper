@@ -3,6 +3,7 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { build, createServer, preview, searchForWorkspaceRoot, type InlineConfig, type PreviewServer, type ViteDevServer } from "vite";
 import react from "@vitejs/plugin-react";
+import {musicAPI} from "./music-api.ts";
 
 const require = createRequire(import.meta.url);
 
@@ -64,7 +65,9 @@ function baseConfig(t: BundleTarget, dir: string): InlineConfig {
     configFile: false,
     envFile: false,
     logLevel: "warn",
-    cacheDir: path.join(t.projectDir, "node_modules", ".vite-clapper"),
+    // Project-owned even when node_modules is a shared symlink. Keeping the
+    // dependency cache beneath node_modules also excludes it from React HMR.
+    cacheDir: path.join(t.projectDir, ".clapper", "node_modules", ".vite"),
     plugins: [react()],
     resolve: { dedupe: ["react", "react-dom", "react/jsx-runtime", "@clapper/core"], alias: reactAliases(t.projectDir) },
     server: { fs: { allow: [workspaceRoot, t.projectDir, corePackageDir(), dir, ...(process.env.CLAPPER_RUNTIME ? [process.env.CLAPPER_RUNTIME] : [])] } },
@@ -73,7 +76,7 @@ function baseConfig(t: BundleTarget, dir: string): InlineConfig {
     // regular npm-installed project (the workspace's linked sources hid this).
     optimizeDeps: {
       include: ["react", "react-dom", "react-dom/client", "react/jsx-runtime"],
-      exclude: ["@clapper/core", "@clapper/core/player", "@clapper/core/harness", "@clapper/core/rigs", "@clapper/core/latex"],
+      exclude: ["@clapper/core", "@clapper/core/player", "@clapper/core/harness", "@clapper/core/rigs", "@clapper/core/latex", "@clapper/core/music"],
     },
     define: { "process.env.NODE_ENV": JSON.stringify(t.mode === "harness" ? "production" : "development") },
   };
@@ -124,11 +127,21 @@ export async function serveBuilt(t: BundleTarget, outDir: string): Promise<{ url
 }
 
 /** Start the studio dev server. */
-export async function startStudio(t: BundleTarget, opts: { port?: number; open?: boolean } = {}): Promise<{ url: string; server: ViteDevServer }> {
+export async function startStudio(t: BundleTarget, opts: { port?: number; open?: boolean; scoreFile?:string; beforeReload?:()=>Promise<unknown> } = {}): Promise<{ url: string; server: ViteDevServer }> {
   const dir = writeHarnessDir({ ...t, mode: "studio" });
   const cfg = baseConfig({ ...t, mode: "studio" }, dir);
+  let rebuilding=Promise.resolve();
   const server = await createServer({
     ...cfg,
+    plugins:[...(cfg.plugins??[]),musicAPI(t.projectDir,opts.scoreFile),...(opts.beforeReload?[{name:"clapper-score-rebuild",async handleHotUpdate(ctx:{file:string;server:ViteDevServer}){
+      if(!/\.(tsx?|json)$/.test(ctx.file)||ctx.file.includes(`${path.sep}.clapper${path.sep}`))return;
+      rebuilding=rebuilding.catch(()=>{}).then(async()=>{await opts.beforeReload!();});
+      await rebuilding;
+      // This hook replaces normal HMR with a full reload. Invalidate the graph
+      // explicitly before telling the browser to fetch the newly scored source.
+      ctx.server.moduleGraph.invalidateAll();
+      ctx.server.ws.send({type:"full-reload"});return [];
+    }}]:[])],
     server: { ...cfg.server, port: opts.port ?? 4321, host: "127.0.0.1", open: opts.open ?? false },
   });
   await server.listen();
