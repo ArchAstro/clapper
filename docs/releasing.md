@@ -2,6 +2,24 @@
 
 These commands publish externally. The build, pack and test scripts do not publish or change repository visibility.
 
+## Everyday CLI workflow
+
+From a clean, committed checkout:
+
+```fish
+pnpm release:prepare
+pnpm release:publish --dry-run
+# Make the GitHub runtime public (section 2), then authenticate with npm:
+npm login --registry=https://registry.npmjs.org
+pnpm release:publish
+```
+
+`release:prepare` installs from the lockfile, runs lint/format, public-source, type, unit and Go checks, builds the runtime/packages, and runs standalone and npm acceptance tests. Only a successful run writes `dist/release-prepared.json`, binding the tested files to their hashes and Git commit. Preparation does not publish anything. Commit source changes before preparation; any later commit, rebuild or altered artifact requires preparation again. This convenience workflow currently qualifies one native platform per release.
+
+`release:publish` verifies that receipt and a clean checkout, checks anonymous access to the GitHub runtime and npm authentication, then publishes launchers → music → core → CLI. It uses `latest` for stable versions and `next` for prereleases. A retry skips already-published versions only when their registry integrity matches; conflicting versions fail before any new publication. npm publication is not atomic: if authentication or the network fails midway, fix the issue and rerun the same command. The wrapper never changes repository visibility, creates GitHub releases, or logs in for you.
+
+`--dry-run` validates prepared files and runs npm's publication preview without registry writes; it skips remote availability/authentication checks, so it is not proof of publishing permissions. Unknown flags are rejected. In CI, provide npm credentials through the runner's npm configuration instead of `npm login`; the scripts inherit that configuration and return a nonzero exit code on failure. Interactive npm authentication may require 2FA. The lower-level commands below remain available for diagnosis.
+
 ## 1. Prepare an immutable candidate
 
 The first qualified target is macOS Apple Silicon. Node 24+, pnpm 11.7.0, Go 1.24+, CMake, a C/C++ compiler, make, curl and pkg-config are build prerequisites. Linux/Intel can build natively, but only advertise platforms whose packaged integration tests have passed. Windows is not implemented.

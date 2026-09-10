@@ -25,4 +25,5 @@ jobs:
       - run: pnpm check:public
       - run: pnpm typecheck
       - run: pnpm test
+      - run: pnpm test:release
       - run: go -C launcher test -race ./...
