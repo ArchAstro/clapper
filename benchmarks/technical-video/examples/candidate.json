@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "id": "skill-candidate",
+  "author": {
+    "command": ["YOUR_AUTHOR_HARNESS", "--request", "{request}"],
+    "model": "PIN_MODEL_ID",
+    "version": "PIN_MODEL_VERSION",
+    "settings": {}
+  },
+  "skill": "../../../skills/clapper",
+  "runtime": {
+    "command": ["node", "{clapper}"],
+    "version": "0.4.0",
+    "identity": "source-checkout"
+  },
+  "isolation": {
+    "kind": "host-dev"
+  },
+  "budget": {
+    "wallSeconds": 1800,
+    "maxTokens": 30000,
+    "maxCostUSD": 20,
+    "repairs": 2,
+    "maxOutputBytes": 268435456
+  }
+}

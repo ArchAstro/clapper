@@ -166,8 +166,11 @@ export async function mixAudio(o: MixOptions): Promise<string | null> {
   for (const cue of o.cues) {
     if (cue.kind !== "file" || !cue.src) continue;
     const startSec = cue.startFrame / o.fps;
-    const lenSec = Math.max(0, Math.min(cue.endFrame, o.durationInFrames) - cue.startFrame) / o.fps;
-    if (lenSec <= 0 || startSec >= total) continue;
+    const originalLenSec = (cue.endFrame - cue.startFrame) / o.fps;
+    const skippedSec = Math.max(0, -startSec);
+    const visibleStartSec = Math.max(0, startSec);
+    const lenSec = Math.max(0, Math.min(cue.endFrame / o.fps, total) - visibleStartSec);
+    if (lenSec <= 0) continue;
     const src = resolveSrc(cue.src, o.publicDir);
     if (!/^https?:/.test(src) && !fs.existsSync(src)) {
       console.warn(`[clapper] audio file not found, skipping: ${src}`);
@@ -180,15 +183,24 @@ export async function mixAudio(o: MixOptions): Promise<string | null> {
     const trim = cue.trimStart ?? 0;
     const rate = cue.playbackRate ?? 1;
     if (rate !== 1) chain.push(`atempo=${clampTempo(rate)}`);
-    chain.push(`atrim=start=${trim.toFixed(4)}:end=${(trim + lenSec).toFixed(4)}`, "asetpts=PTS-STARTPTS");
+    chain.push(
+      `atrim=start=${trim.toFixed(4)}:end=${(trim + originalLenSec).toFixed(4)}`,
+      "asetpts=PTS-STARTPTS",
+    );
     chain.push(`aformat=sample_fmts=fltp:sample_rates=${sr}:channel_layouts=stereo`);
     chain.push(`volume=${cue.volume.toFixed(4)}`);
     if (cue.fadeInFrames > 0) chain.push(`afade=t=in:st=0:d=${(cue.fadeInFrames / o.fps).toFixed(4)}`);
     if (cue.fadeOutFrames > 0)
       chain.push(
-        `afade=t=out:st=${Math.max(0, lenSec - cue.fadeOutFrames / o.fps).toFixed(4)}:d=${(cue.fadeOutFrames / o.fps).toFixed(4)}`,
+        `afade=t=out:st=${Math.max(0, originalLenSec - cue.fadeOutFrames / o.fps).toFixed(4)}:d=${(cue.fadeOutFrames / o.fps).toFixed(4)}`,
       );
-    const delayMs = Math.round(startSec * 1000);
+    // Clip after the cue-local fades so range exports retain the original
+    // source position and envelope instead of restarting speech or its fade.
+    chain.push(
+      `atrim=start=${skippedSec.toFixed(4)}:end=${(skippedSec + lenSec).toFixed(4)}`,
+      "asetpts=PTS-STARTPTS",
+    );
+    const delayMs = Math.round(visibleStartSec * 1000);
     chain.push(`adelay=${delayMs}|${delayMs}`);
     if (busExpr) chain.push(`volume='${busExpr}':eval=frame`);
     filters.push(`[${i}:a]${chain.join(",")}[a${i}]`);

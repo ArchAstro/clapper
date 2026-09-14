@@ -1,0 +1,34 @@
+{
+  "schema": 1,
+  "reviewer": "independent-content",
+  "preference": "B",
+  "confidence": "moderate",
+  "basis": "Explicit residual operands, transition computation and contextual attention example; both match the supplied original-architecture notes.",
+  "observed_modalities": [
+    "supplied reference text",
+    "scene timing metadata",
+    "decoded video frames",
+    "consecutive sampled transition strips"
+  ],
+  "unobserved_modalities": ["audio", "full continuous playback"],
+  "intervals_seconds": {
+    "A": {
+      "overview": [0, 296],
+      "transition_strips": [[23, 59], [101, 137]],
+      "native_frames": [205]
+    },
+    "B": {
+      "overview": [0, 297.067],
+      "transition_strips": [[66, 102], [88, 124]],
+      "native_frames": [131, 150, 174, 195, 248]
+    }
+  },
+  "sampling_seconds": {
+    "overview": 10,
+    "transition_strips": 2
+  },
+  "strip_filename_caveat": "Filename end times reflect requested output duration; actual 18-sample tiles span approximately 36 input seconds.",
+  "actual_learning_claim": false,
+  "audio_assessed": false,
+  "full_acceptance_claim": false
+}

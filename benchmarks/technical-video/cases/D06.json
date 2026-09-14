@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "id": "D06",
+  "family": "tls",
+  "split": "dev",
+  "title": "TLS 1.3 handshake",
+  "brief": "Explain the goal and a complete normal handshake, then key agreement, authentication and transcript verification. Use one running example. Complete the whole flow before opening its pieces. Include spoken narration; label illustrative states as illustrations.",
+  "audience": "Software engineer comfortable with basic programming and algebra, new to this mechanism. Define formal terms on first use.",
+  "durationSeconds": [180, 300],
+  "size": [1280, 720],
+  "fps": 30,
+  "audioRequired": true,
+  "sources": [
+    {
+      "id": "tls13",
+      "file": "sources/tls13.md",
+      "sha256": "e952687b6d3ba64a47cb875d2316a263dc2e229f0d38e26f674d4543ae49a3ee",
+      "url": "https://www.rfc-editor.org/rfc/rfc8446",
+      "revision": "RFC8446, August2018, \u00a72 and \u00a74; ordinary server-authenticated ECDHE handshake"
+    }
+  ],
+  "requiredSourceIds": ["tls13"],
+  "constraints": [
+    {
+      "id": "source-fit",
+      "description": "Pinned RFC excerpt; distinct signing and key-agreement roles; correct message order; scope excludes resumption/0-RTT unless explicitly requested.",
+      "modality": "image",
+      "sourceId": "tls13",
+      "sourceSpan": "RFC8446, August2018, \u00a72 and \u00a74; ordinary server-authenticated ECDHE handshake"
+    },
+    {
+      "id": "intuition-first",
+      "description": "A concrete purpose/example and full end-to-end journey appear before internal machinery and equations. Each zoom refers to an established box and returns to the whole.",
+      "modality": "motion"
+    },
+    {
+      "id": "mechanism",
+      "description": "Suggesting that the server sends the session key in the certificate; mixing TLS versions.",
+      "modality": "motion",
+      "sourceId": "tls13",
+      "sourceSpan": "RFC8446, August2018, \u00a72 and \u00a74; ordinary server-authenticated ECDHE handshake"
+    },
+    {
+      "id": "legible",
+      "description": "Essential words, diagrams, equations and causal motions are readable without clipping or distracting collisions at the target viewing size.",
+      "modality": "image"
+    },
+    {
+      "id": "narration",
+      "description": "Audition the final mux: complete, intelligible, consistent voice; terminology pronounced clearly; spoken referents match visible states.",
+      "modality": "audio"
+    }
+  ],
+  "eventFrames": [],
+  "transferQuestions": ["Which failure should prevent application data from being trusted, and why?"]
+}

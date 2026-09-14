@@ -125,6 +125,7 @@ try {
   copy(path.join(repo, "videos/_template/src"), path.join(root, "templates/basic/src"));
   copy(path.join(repo, "templates/comic/src"), path.join(root, "templates/comic/src"));
   copy(path.join(repo, "skills/clapper"), path.join(root, "skill"));
+  copy(path.join(repo, "benchmarks/technical-video"), path.join(root, "benchmarks/technical-video"));
 
   console.log(`Downloading verified Node ${nodeVersion} (includes npm)…`);
   const nodeArchive = `node-${nodeVersion}-${platform}.tar.gz`;

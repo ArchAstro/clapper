@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "status": "development-reference; not a sealed answer key",
+  "result": {
+    "servers": 5,
+    "majority": 3,
+    "minorityPartition": {
+      "reachable": 2,
+      "canElect": false
+    },
+    "majorityPartition": {
+      "reachable": 3,
+      "canElect": true
+    },
+    "higherTermResponse": {
+      "before": {
+        "term": 1,
+        "role": "leader"
+      },
+      "receivedTerm": 2,
+      "after": {
+        "term": 2,
+        "role": "follower"
+      }
+    },
+    "limits": "Election-only reference cases, not a full Raft implementation or log-commit oracle."
+  }
+}

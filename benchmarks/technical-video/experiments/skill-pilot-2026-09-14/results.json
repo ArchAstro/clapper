@@ -1,0 +1,221 @@
+{
+  "schema": 1,
+  "status": "complete",
+  "scope": "exploratory development pilot; no promotion or learner claim",
+  "runCount": 8,
+  "budgetPasses": 0,
+  "runs": [
+    {
+      "arm": "baseline-v1",
+      "caseId": "D01",
+      "status": "budget_exhausted",
+      "skillHash": "ad76b61cb82eba51e6e7ab9ea7ac4259b62d83d7f82a6f85e4a3d77cd5a67874",
+      "runtimeHash": "5385bb773df1d302ca4bb8642de5a57f19ecd9adedc8831b6b02a99a8f60b7fa",
+      "authorHash": "5719f5d4c58e81320f7f0f0086eeb8db1924710512973239e845e7f2a1f68dde",
+      "usage": {
+        "tokens": 2585923,
+        "costUSD": 0,
+        "repairs": 0
+      },
+      "elapsedSeconds": 853.216,
+      "completedCommands": 34,
+      "failedCommands": 4,
+      "speechOverrunCommands": 2,
+      "modelUsageEvents": [
+        {
+          "input_tokens": 2561094,
+          "cached_input_tokens": 2385536,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 24829,
+          "reasoning_output_tokens": 7385
+        }
+      ]
+    },
+    {
+      "arm": "baseline-v1",
+      "caseId": "D05",
+      "status": "budget_exhausted",
+      "skillHash": "ad76b61cb82eba51e6e7ab9ea7ac4259b62d83d7f82a6f85e4a3d77cd5a67874",
+      "runtimeHash": "5385bb773df1d302ca4bb8642de5a57f19ecd9adedc8831b6b02a99a8f60b7fa",
+      "authorHash": "5719f5d4c58e81320f7f0f0086eeb8db1924710512973239e845e7f2a1f68dde",
+      "usage": {
+        "tokens": 2476171,
+        "costUSD": 0,
+        "repairs": 0
+      },
+      "elapsedSeconds": 816.729,
+      "completedCommands": 36,
+      "failedCommands": 5,
+      "speechOverrunCommands": 1,
+      "modelUsageEvents": [
+        {
+          "input_tokens": 2452256,
+          "cached_input_tokens": 2357888,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 23915,
+          "reasoning_output_tokens": 7092
+        }
+      ]
+    },
+    {
+      "arm": "candidate-v1",
+      "caseId": "D01",
+      "status": "budget_exhausted",
+      "skillHash": "b1d3c3fcc6e43f3c3f984f97ba90e0f29027c59b8ac8d61946b405886d0b23d6",
+      "runtimeHash": "5385bb773df1d302ca4bb8642de5a57f19ecd9adedc8831b6b02a99a8f60b7fa",
+      "authorHash": "5719f5d4c58e81320f7f0f0086eeb8db1924710512973239e845e7f2a1f68dde",
+      "usage": {
+        "tokens": 2602104,
+        "costUSD": 0,
+        "repairs": 0
+      },
+      "elapsedSeconds": 861.128,
+      "completedCommands": 34,
+      "failedCommands": 6,
+      "speechOverrunCommands": 2,
+      "modelUsageEvents": [
+        {
+          "input_tokens": 2576510,
+          "cached_input_tokens": 2477952,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 25594,
+          "reasoning_output_tokens": 6958
+        }
+      ]
+    },
+    {
+      "arm": "candidate-v1",
+      "caseId": "D05",
+      "status": "budget_exhausted",
+      "skillHash": "b1d3c3fcc6e43f3c3f984f97ba90e0f29027c59b8ac8d61946b405886d0b23d6",
+      "runtimeHash": "5385bb773df1d302ca4bb8642de5a57f19ecd9adedc8831b6b02a99a8f60b7fa",
+      "authorHash": "5719f5d4c58e81320f7f0f0086eeb8db1924710512973239e845e7f2a1f68dde",
+      "usage": {
+        "tokens": 3984073,
+        "costUSD": 0,
+        "repairs": 0
+      },
+      "elapsedSeconds": 1006.851,
+      "completedCommands": 37,
+      "failedCommands": 5,
+      "speechOverrunCommands": 2,
+      "modelUsageEvents": [
+        {
+          "input_tokens": 3956128,
+          "cached_input_tokens": 3744640,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 27945,
+          "reasoning_output_tokens": 8761
+        }
+      ]
+    },
+    {
+      "arm": "candidate-v2",
+      "caseId": "D01",
+      "status": "budget_exhausted",
+      "skillHash": "760b32cba72c4022796eaffe7d5205955781ca3e035ff23697fc3e02acdc48ac",
+      "runtimeHash": "5385bb773df1d302ca4bb8642de5a57f19ecd9adedc8831b6b02a99a8f60b7fa",
+      "authorHash": "5719f5d4c58e81320f7f0f0086eeb8db1924710512973239e845e7f2a1f68dde",
+      "usage": {
+        "tokens": 3215184,
+        "costUSD": 0,
+        "repairs": 0
+      },
+      "elapsedSeconds": 988.751,
+      "completedCommands": 41,
+      "failedCommands": 3,
+      "speechOverrunCommands": 0,
+      "modelUsageEvents": [
+        {
+          "input_tokens": 3189110,
+          "cached_input_tokens": 3042560,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 26074,
+          "reasoning_output_tokens": 8399
+        }
+      ]
+    },
+    {
+      "arm": "candidate-v2",
+      "caseId": "D05",
+      "status": "budget_exhausted",
+      "skillHash": "760b32cba72c4022796eaffe7d5205955781ca3e035ff23697fc3e02acdc48ac",
+      "runtimeHash": "5385bb773df1d302ca4bb8642de5a57f19ecd9adedc8831b6b02a99a8f60b7fa",
+      "authorHash": "5719f5d4c58e81320f7f0f0086eeb8db1924710512973239e845e7f2a1f68dde",
+      "usage": {
+        "tokens": 3635716,
+        "costUSD": 0,
+        "repairs": 0
+      },
+      "elapsedSeconds": 957.155,
+      "completedCommands": 34,
+      "failedCommands": 3,
+      "speechOverrunCommands": 1,
+      "modelUsageEvents": [
+        {
+          "input_tokens": 3608670,
+          "cached_input_tokens": 3474048,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 27046,
+          "reasoning_output_tokens": 9118
+        }
+      ]
+    },
+    {
+      "arm": "candidate-v3",
+      "caseId": "D01",
+      "status": "budget_exhausted",
+      "skillHash": "fb2fc9bb9cd55bfc6b429c37a6fe18a2e978a6422e0369d39a2482aad545ce4d",
+      "runtimeHash": "5385bb773df1d302ca4bb8642de5a57f19ecd9adedc8831b6b02a99a8f60b7fa",
+      "authorHash": "5719f5d4c58e81320f7f0f0086eeb8db1924710512973239e845e7f2a1f68dde",
+      "usage": {
+        "tokens": 2054663,
+        "costUSD": 0,
+        "repairs": 0
+      },
+      "elapsedSeconds": 811.04,
+      "completedCommands": 27,
+      "failedCommands": 1,
+      "speechOverrunCommands": 0,
+      "modelUsageEvents": [
+        {
+          "input_tokens": 2030700,
+          "cached_input_tokens": 1934336,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 23963,
+          "reasoning_output_tokens": 7120
+        }
+      ]
+    },
+    {
+      "arm": "candidate-v3",
+      "caseId": "D05",
+      "status": "budget_exhausted",
+      "skillHash": "fb2fc9bb9cd55bfc6b429c37a6fe18a2e978a6422e0369d39a2482aad545ce4d",
+      "runtimeHash": "5385bb773df1d302ca4bb8642de5a57f19ecd9adedc8831b6b02a99a8f60b7fa",
+      "authorHash": "5719f5d4c58e81320f7f0f0086eeb8db1924710512973239e845e7f2a1f68dde",
+      "usage": {
+        "tokens": 2431246,
+        "costUSD": 0,
+        "repairs": 0
+      },
+      "elapsedSeconds": 845.23,
+      "completedCommands": 28,
+      "failedCommands": 1,
+      "speechOverrunCommands": 0,
+      "modelUsageEvents": [
+        {
+          "input_tokens": 2406301,
+          "cached_input_tokens": 2218624,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 24945,
+          "reasoning_output_tokens": 8272
+        }
+      ]
+    }
+  ],
+  "fullFilmCandidateSkillHash": "fb2fc9bb9cd55bfc6b429c37a6fe18a2e978a6422e0369d39a2482aad545ce4d",
+  "finalSkillHash": "725fb56ee332bfbb0b45bd321f7ea560d9f250b4cb8d48ff0d42645f38dd0e38",
+  "finalWordingCheck": "Plan-only forward test after two narrow clarifications; no full-film rerun",
+  "runtimeFix": "Applied after all trial and diagnostic exports; file-audio range cropping"
+}

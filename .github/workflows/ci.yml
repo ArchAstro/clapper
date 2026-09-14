@@ -25,5 +25,25 @@ jobs:
       - run: pnpm check:public
       - run: pnpm typecheck
       - run: pnpm test
+      - run: pnpm --dir packages/cli exec playwright install --with-deps chromium
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - run: pnpm test:evals:fixtures
+      - run: pnpm test:audio-range
+      - run: pnpm test:evals
       - run: pnpm test:release
       - run: go -C launcher test -race ./...
+
+  eval-container:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.7.0
+      - run: pnpm install --frozen-lockfile
+      - run: docker build -f benchmarks/technical-video/examples/Dockerfile -t clapper-eval:ci .
+      - run: node scripts/test-evals-container.mjs "$(docker image inspect clapper-eval:ci --format '{{.Id}}')"

@@ -1,0 +1,60 @@
+{
+  "schema": 1,
+  "id": "D04",
+  "family": "btree",
+  "split": "dev",
+  "title": "B-tree lookup and split",
+  "brief": "Show a complete lookup before opening a node; then insert a key that forces a split. Use one running example. Complete the whole flow before opening its pieces. Include spoken narration; label illustrative states as illustrations.",
+  "audience": "Software engineer comfortable with basic programming and algebra, new to this mechanism. Define formal terms on first use.",
+  "durationSeconds": [180, 300],
+  "size": [1280, 720],
+  "fps": 30,
+  "audioRequired": true,
+  "sources": [
+    {
+      "id": "btree",
+      "file": "sources/btree.md",
+      "sha256": "3630f75e71b2b7a29249102f80f5cefee0ac13f76e577a22a9f76236793e05ae",
+      "url": "https://opendsa-server.cs.vt.edu/ODSA/Books/Everything/html/BTree.html",
+      "revision": "Original curated classic B-tree example; not a B+ tree implementation"
+    }
+  ],
+  "requiredSourceIds": ["btree"],
+  "constraints": [
+    {
+      "id": "source-fit",
+      "description": "Ordering, search path, separator placement and fanout all checked on an executable fixture.",
+      "modality": "image",
+      "sourceId": "btree",
+      "sourceSpan": "Original curated classic B-tree example; not a B+ tree implementation"
+    },
+    {
+      "id": "intuition-first",
+      "description": "A concrete purpose/example and full end-to-end journey appear before internal machinery and equations. Each zoom refers to an established box and returns to the whole.",
+      "modality": "motion"
+    },
+    {
+      "id": "mechanism",
+      "description": "An animated split that loses a key, invents a disk-read count, or presents a stylized layout as a measured trace fails.",
+      "modality": "motion",
+      "sourceId": "btree",
+      "sourceSpan": "Original curated classic B-tree example; not a B+ tree implementation"
+    },
+    {
+      "id": "legible",
+      "description": "Essential words, diagrams, equations and causal motions are readable without clipping or distracting collisions at the target viewing size.",
+      "modality": "image"
+    },
+    {
+      "id": "narration",
+      "description": "Audition the final mux: complete, intelligible, consistent voice; terminology pronounced clearly; spoken referents match visible states.",
+      "modality": "audio"
+    }
+  ],
+  "eventFrames": [],
+  "transferQuestions": ["Follow a new key not shown in the film and justify the path."],
+  "oracle": {
+    "file": "oracles/D04.json",
+    "sha256": "6b907a4c5dd19bb2468b342c9c91c5cc5c7798b9f3fcf8c493c506eaa8aae878"
+  }
+}

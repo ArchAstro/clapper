@@ -23,3 +23,10 @@ If you don't have `npx`, ask your agent to install the skill from [skills/clappe
 Optional local speech with multiple locked narrator voices: see [Narration](docs/narration.md).
 Run `clapper voices install` only when needed; model weights and the inference runtime
 are not included in the default install.
+
+### Technical-video evals (checkout)
+
+The [evaluation suite](benchmarks/technical-video/README.md) runs frozen briefs,
+real render/evidence collection, independent judgments and blind comparisons.
+Use `node packages/cli/bin/clapper.mjs eval --help`. It never treats missing
+observations as approval or claims learning gains from model-generated reviewers.

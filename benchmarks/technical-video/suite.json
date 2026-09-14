@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "id": "technical-video-dev-v1",
+  "cases": [
+    "cases/D01.json",
+    "cases/D02.json",
+    "cases/D03.json",
+    "cases/D04.json",
+    "cases/D05.json",
+    "cases/D06.json"
+  ]
+}

@@ -1,0 +1,120 @@
+{
+  "schema": 1,
+  "status": "development-reference; not a sealed answer key",
+  "result": {
+    "minimumDegree": 2,
+    "input": [10, 20, 5, 6, 12, 30, 7, 17],
+    "trace": [
+      {
+        "insert": 10,
+        "tree": {
+          "keys": [10],
+          "children": []
+        }
+      },
+      {
+        "insert": 20,
+        "tree": {
+          "keys": [10, 20],
+          "children": []
+        }
+      },
+      {
+        "insert": 5,
+        "tree": {
+          "keys": [5, 10, 20],
+          "children": []
+        }
+      },
+      {
+        "insert": 6,
+        "tree": {
+          "keys": [10],
+          "children": [
+            {
+              "keys": [5, 6],
+              "children": []
+            },
+            {
+              "keys": [20],
+              "children": []
+            }
+          ]
+        }
+      },
+      {
+        "insert": 12,
+        "tree": {
+          "keys": [10],
+          "children": [
+            {
+              "keys": [5, 6],
+              "children": []
+            },
+            {
+              "keys": [12, 20],
+              "children": []
+            }
+          ]
+        }
+      },
+      {
+        "insert": 30,
+        "tree": {
+          "keys": [10],
+          "children": [
+            {
+              "keys": [5, 6],
+              "children": []
+            },
+            {
+              "keys": [12, 20, 30],
+              "children": []
+            }
+          ]
+        }
+      },
+      {
+        "insert": 7,
+        "tree": {
+          "keys": [10],
+          "children": [
+            {
+              "keys": [5, 6, 7],
+              "children": []
+            },
+            {
+              "keys": [12, 20, 30],
+              "children": []
+            }
+          ]
+        }
+      },
+      {
+        "insert": 17,
+        "tree": {
+          "keys": [10, 20],
+          "children": [
+            {
+              "keys": [5, 6, 7],
+              "children": []
+            },
+            {
+              "keys": [12, 17],
+              "children": []
+            },
+            {
+              "keys": [30],
+              "children": []
+            }
+          ]
+        }
+      }
+    ],
+    "inorder": [5, 6, 7, 10, 12, 17, 20, 30],
+    "lookup17": {
+      "visited": [[10, 20], [12, 17]],
+      "found": true
+    }
+  }
+}

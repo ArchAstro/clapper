@@ -1,0 +1,23 @@
+{
+  "preference": "B",
+  "observed_modalities": ["decoded video frames", "on-screen text", "supplied brief/source/scene metadata"],
+  "audio_listened": false,
+  "diagnostic_only": true,
+  "inspected_intervals_seconds": {
+    "A": [[18, 39], [78, 104], [103, 129]],
+    "B": [[18, 41], [62, 88], [87, 112]]
+  },
+  "consecutive_frame_intervals_seconds": {
+    "A": [[29.9, 30.067], [78.9, 79.067], [114.9, 115.067], [116, 116.167]],
+    "B": [[23.9, 24.067], [25.4, 25.567], [62.9, 63.067], [98.9, 99.067], [100, 100.167]]
+  },
+  "overview_sample_period_seconds": 18,
+  "remaining_major_issue": "B changes service ownership/count before token visibly leaves queue; transit and service-event captions still need clearer alignment.",
+  "keep": [
+    "continuous overload trace",
+    "free-slot feedback",
+    "completion counter",
+    "explicit admission transit count",
+    "whole-flow-first structure"
+  ]
+}

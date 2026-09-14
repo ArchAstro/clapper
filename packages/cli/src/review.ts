@@ -1,4 +1,5 @@
 import { spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import type { CompositionMeta, SceneMeta } from "@archastro/clapper-core";
@@ -102,15 +103,33 @@ interface Box {
 }
 
 /** DOM checks on sampled frames: copy outside the safe area, copy overlapping copy. */
-async function domLint(
+export async function domLint(
   url: string,
   meta: CompositionMeta,
   props: Record<string, unknown> | undefined,
   scenes: SceneMeta[],
   log: (m: string) => void,
-): Promise<{ issues: LintIssue[]; frames: number; copyBoxes: number }> {
+  options: {
+    extraFrames?: number[];
+    includeSvg?: boolean;
+    inspectMoving?: boolean;
+    compareSeek?: boolean;
+  } = {},
+): Promise<{
+  issues: LintIssue[];
+  frames: number;
+  copyBoxes: number;
+  svgLabels: number;
+  htmlLabels: number;
+  sampledFrames: number[];
+  seekDeterministic: boolean;
+}> {
   const issues: LintIssue[] = [];
-  let copyBoxes = 0;
+  let copyBoxes = 0,
+    svgLabels = 0,
+    htmlLabels = 0;
+  let seekDeterministic = true;
+  const screenshots = new Map<number, string>();
   const frames = new Set<number>();
   // Sample only where one scene is on screen alone (outside transition overlaps): start+12, middle, end-6.
   const sorted = [...scenes].sort((a, b) => a.start - b.start);
@@ -122,6 +141,12 @@ async function domLint(
     for (const f of [solo0 + Math.min(12, d - 1), solo0 + Math.floor(d / 2), solo1 - 6])
       if (f >= solo0 && f < solo1 && f < meta.durationInFrames - 3) frames.add(f);
   });
+  for (const frame of options.extraFrames ?? []) {
+    if (!Number.isInteger(frame) || frame < 0 || frame >= meta.durationInFrames)
+      throw new Error("Invalid review sample frame");
+    frames.add(frame);
+  }
+  if (frames.size > 600) throw new Error("Review sample budget exceeds 600 frames");
   const browser = await chromium.launch({ args: CHROME_ARGS });
   try {
     const page = await openHarnessPage(browser, url, { width: meta.width, height: meta.height }, 1, log);
@@ -131,7 +156,7 @@ async function domLint(
     ] as const);
     const measure = async (n: number): Promise<Box[]> => {
       await page.evaluate((k) => window.__clapper!.setFrame(k), n);
-      return page.evaluate(() => {
+      return page.evaluate((includeSvg) => {
         const out: Box[] = [];
         const visibleOpacity = (el: Element | null) => {
           let o = 1;
@@ -143,20 +168,21 @@ async function domLint(
           }
           return o;
         };
-        const all = Array.from(document.querySelectorAll("[data-copy],[data-eyebrow]"));
+        const selector = includeSvg ? "[data-copy],[data-eyebrow],svg text" : "[data-copy],[data-eyebrow]";
+        const all = Array.from(document.querySelectorAll(selector));
         all.forEach((el, i) => el.setAttribute("data-lint-i", String(i)));
         for (const el of all) {
           const text = (el.textContent ?? "").trim();
           if (!text) continue;
           if (visibleOpacity(el) < 0.08) continue;
           // nested copy (a Reveal wrapping an Eyebrow, letters inside a line): keep the innermost only
-          if (el.querySelector("[data-copy],[data-eyebrow]")) continue;
+          if (el.querySelector(selector)) continue;
           const ancestor = el.parentElement?.closest("[data-copy],[data-eyebrow]");
           const group = ancestor ? Number(ancestor.getAttribute("data-lint-i")) : -1;
           // Measure the glyphs (a Range), not the block box: a full-width <h1> is not "outside the safe area".
           const range = document.createRange();
           range.selectNodeContents(el.firstElementChild ?? el);
-          const inner = range.getBoundingClientRect();
+          const inner = el instanceof SVGElement ? el.getBoundingClientRect() : range.getBoundingClientRect();
           // Clip by every overflow-hidden ancestor and by the canvas: masked or exited copy is not on screen.
           let x1 = inner.left,
             y1 = inner.top,
@@ -177,31 +203,42 @@ async function domLint(
           const w = x2 - x1,
             h = y2 - y1;
           if (w <= 0 || h <= 0) continue;
-          if (w * h < 0.2 * inner.width * inner.height) continue; // mostly masked away (mid-reveal or exited)
+          if (!includeSvg && w * h < 0.2 * inner.width * inner.height) continue; // mostly masked away (mid-reveal or exited)
           out.push({
             x: x1,
             y: y1,
             w,
             h,
             text: text.slice(0, 40),
-            kind: el.hasAttribute("data-eyebrow") ? "eyebrow" : "copy",
+            kind: el instanceof SVGElement ? "svg" : el.hasAttribute("data-eyebrow") ? "eyebrow" : "copy",
             group,
           });
         }
         return out;
-      });
+      }, options.includeSvg ?? false);
     };
     for (const f of [...frames].sort((a, b) => a - b)) {
       const now = await measure(f);
-      const later = await measure(f + 3);
+      if (options.compareSeek)
+        screenshots.set(
+          f,
+          createHash("sha256")
+            .update(await page.screenshot({ type: "png" }))
+            .digest("hex"),
+        );
+      const later = await measure(Math.min(f + 3, meta.durationInFrames - 1));
       // settled boxes only: copy in flight (entering, exiting, wiping) is not a layout defect
       const key = (b: Box) => `${b.kind}|${b.text}|${b.group}`;
       const laterBy = new Map(later.map((b) => [key(b), b]));
-      const boxes = now.filter((b) => {
-        const l = laterBy.get(key(b));
-        return l && Math.abs(l.x - b.x) < 2 && Math.abs(l.y - b.y) < 2 && Math.abs(l.w - b.w) < 2;
-      });
+      const boxes = options.inspectMoving
+        ? now
+        : now.filter((b) => {
+            const l = laterBy.get(key(b));
+            return l && Math.abs(l.x - b.x) < 2 && Math.abs(l.y - b.y) < 2 && Math.abs(l.w - b.w) < 2;
+          });
       copyBoxes += boxes.length;
+      svgLabels += boxes.filter((b) => b.kind === "svg").length;
+      htmlLabels += boxes.filter((b) => b.kind !== "svg").length;
       const scene = scenes.find((s) => f >= s.start && f < s.end)?.name;
       const mx = meta.width * 0.05,
         my = meta.height * 0.05;
@@ -230,7 +267,8 @@ async function domLint(
             ox > 6 &&
             oy > 6 &&
             boxes[i].group === boxes[j].group &&
-            !(boxes[i].text.includes(boxes[j].text) || boxes[j].text.includes(boxes[i].text))
+            (options.inspectMoving ||
+              !(boxes[i].text.includes(boxes[j].text) || boxes[j].text.includes(boxes[i].text)))
           ) {
             issues.push({
               level: "error",
@@ -243,10 +281,34 @@ async function domLint(
         }
       }
     }
+    if (options.compareSeek)
+      for (const f of [...screenshots.keys()].reverse()) {
+        await measure(f);
+        const actual = createHash("sha256")
+          .update(await page.screenshot({ type: "png" }))
+          .digest("hex");
+        if (actual !== screenshots.get(f)) {
+          seekDeterministic = false;
+          issues.push({
+            level: "error",
+            rule: "seek-determinism",
+            frame: f,
+            message: "Pixels differ when the same frame is reached in reverse seek order",
+          });
+        }
+      }
   } finally {
     await browser.close();
   }
-  return { issues, frames: frames.size, copyBoxes };
+  return {
+    issues,
+    frames: frames.size,
+    copyBoxes,
+    svgLabels,
+    htmlLabels,
+    sampledFrames: [...frames].sort((a, b) => a - b),
+    seekDeterministic,
+  };
 }
 
 interface Luma {

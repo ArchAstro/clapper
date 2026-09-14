@@ -59,6 +59,27 @@ lock` explicitly, and review all scenes using that narrator. Never automatically
 relock to work around a mismatch. `--force` regenerates takes but cannot bypass the
 cast lock.
 
+## Set picture timing from measured speech
+
+For a new narrated film, treat the first scene durations as a draft. Write the
+spoken copy and synthesize it before investing in detailed animation timings.
+Use a separate probe script with the same narrator IDs, voice, speed, cue IDs and
+text. Its temporary windows are for measurement, not the final film: for example,
+allocate each cue `Math.max(60, Math.ceil(wordCount / 1.5) + 5)` seconds and derive
+non-overlapping starts by summing those windows. Render that probe once to a separate
+output directory. Read each manifest cue's `durationSeconds` (actual speech), not
+`duration` (allocated window), to set the final production cues and scene plan. Leave a deliberate
+beat to see the result or read a diagram, rather than stretching every scene to
+its initial estimate. Verify the resulting total against the requested duration.
+
+If the measured script is too long, shorten phrasing and remove repeated copy
+before tightening the picture. Preserve the requested definitions, causal steps,
+and at least one complete worked example when cutting copy. Do not speed up the locked narrator or hide
+an overrun with a new lock. Keep cue starts and scene boundaries derived from the
+same final plan so a timing change cannot desynchronize subsequent scenes. Reuse
+cached takes when only timing changes. For a fixed-picture audio pass, preserve
+its windows and edit the copy to fit instead.
+
 ## Put speech in scenes
 
 Add `"narration": "src/narration.ts"` to `clapper.json` (alongside `score`, if used).

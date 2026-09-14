@@ -1,0 +1,17 @@
+.git
+node_modules
+**/node_modules
+.clapper
+**/.clapper
+out
+**/out
+dist
+**/dist
+.env
+.env.*
+**/.env
+**/.env.*
+*.key
+*.pem
+**/*.key
+**/*.pem

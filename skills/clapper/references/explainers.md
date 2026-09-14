@@ -23,3 +23,30 @@
 8. Keep the film visually clean: one explanatory action per shot, generous space,
    consistent roles for colors, and motion that reveals causality. Do not substitute
    a succession of diagram slides for a continuous conceptual explanation.
+
+## Make the animation's intermediate states truthful
+
+For a causal demonstration, sketch the before, in-progress, and after states
+before animating. Derive object positions, counters, captions, and control signals
+from the same event phase. A caption can say “entering” while an object travels;
+“admitted” or “complete” becomes true only when the depicted event finishes.
+If a total includes objects in transit, show or explicitly account for them.
+Distinguish dispatch, transit and arrival when travel is part of the explanation.
+Correct settled-state arithmetic does not excuse contradictory intermediate frames.
+
+Establish the normal case before changing a rate, parameter, or input. Reveal the
+consequence after the change, using the same example. Do not show the overloaded
+or failed state in a setup scene before its cause has been introduced.
+
+Reserve motion lanes around labels and controls. Keep a tracked object identifiable
+through crossings; do not let it cover the gate, arrow, equation, or service label
+that explains its movement. Inspect the exported beginning, middle, and end of each
+critical causal transition, including overlapping movements. A clear contact-sheet
+thumbnail or final state alone cannot verify that transition.
+
+At a mathematical or architectural zoom, show the inputs to each operation and
+where its output goes. For an addition, expose both operands; for a skip path,
+draw its origin and merge point. A label naming an operation does not replace
+its missing route. Align matrix rows/columns and token counts with the example
+currently on screen, label the axes, and explicitly announce a changed example
+or schematic simplification before using it.

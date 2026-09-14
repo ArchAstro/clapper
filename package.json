@@ -25,7 +25,11 @@
     "test": "pnpm -r run test",
     "preview": "pnpm --filter intern-promo preview",
     "render": "pnpm --filter intern-promo render",
-    "test:narration": "node scripts/test-narration.mjs"
+    "test:narration": "node scripts/test-narration.mjs",
+    "test:evals": "node scripts/test-evals.mjs && node scripts/test-eval-failures.mjs",
+    "test:evals:fixtures": "node scripts/test-eval-fixtures.mjs",
+    "test:evals:container": "node scripts/test-evals-container.mjs",
+    "test:audio-range": "node scripts/test-audio-range.mjs"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.13",

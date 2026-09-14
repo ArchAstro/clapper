@@ -1,0 +1,10 @@
+{
+  "schema": 1,
+  "scope": "Deterministic verification using real cached Kokoro takes, not a fresh author or listening review",
+  "cueCount": 12,
+  "probeFit": true,
+  "productionDurationSeconds": 272.6,
+  "voiceChanged": false,
+  "textChanged": false,
+  "clipCount": 0
+}

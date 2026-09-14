@@ -1,0 +1,228 @@
+{
+  "options": [
+    {
+      "id": 1,
+      "title": "Regression corpus",
+      "effort": "2\u20133 engineering days",
+      "body": "Extend today\u2019s review kit with frozen clips and explicit expected failures. Fast protection against broken rendering, clipping, silence and source-selection mistakes.",
+      "tradeoff": "Useful guardrails; cannot establish that new videos teach better."
+    },
+    {
+      "id": 2,
+      "title": "Layered video evals",
+      "effort": "7\u201310 engineering days + corpus/calibration work",
+      "recommended": true,
+      "body": "Combine technical fixtures, fresh agent-authored films, independent grounded grading, blind comparisons and a small learner pilot. Reuse the existing CLI/render/review pipeline.",
+      "tradeoff": "Enough evidence to optimize the skill, with human judgment reserved for the outcomes machines cannot establish."
+    },
+    {
+      "id": 3,
+      "title": "Learning research platform",
+      "effort": "3\u20135 weeks + recruiting and ongoing review",
+      "body": "Expand option 2 into powered learner experiments, transcript/static-diagram controls and delayed retention tests.",
+      "tradeoff": "Strongest evidence of educational value; too much infrastructure and recruitment for the first iteration."
+    }
+  ],
+  "tracks": [
+    {
+      "id": "T1",
+      "name": "Rendering & audio contracts",
+      "unit": "24 short fixed fixtures",
+      "question": "Did the library preserve the intended picture and sound?",
+      "cadence": "Every relevant PR",
+      "evidence": "Decoded MP4; SVG/HTML geometry; deterministic seek probes; dimensions; audio duration/energy; voice/model hashes.",
+      "examples": "Wide equations, subscripts, moving labels, zoom boundaries, scene trims, missing fonts, cue overflow, missing model, same narrator across scenes.",
+      "limit": "A valid render is not a good explanation. Do not rerun an author model for these fixtures."
+    },
+    {
+      "id": "T2",
+      "name": "End-to-end technical films",
+      "unit": "12 full-film briefs at launch",
+      "question": "Can the skill turn an unfamiliar brief into a correct, coherent explanation?",
+      "cadence": "Candidate skill/runtime evaluation",
+      "evidence": "Original user brief, clarification transcript, pinned sources, first plan, final source/MP4, repair history and independent verdicts.",
+      "examples": "6 development briefs, 3 validation, 3 sealed holdout. Split by topic family: related UT and recurrent-gradient briefs stay together. Repeated seeds are not independent topics.",
+      "limit": "No cherry-picked takes. Every scheduled run, failure, retry and blocked judge stays in the report."
+    },
+    {
+      "id": "T3",
+      "name": "Judge calibration",
+      "unit": "12 matched clean/broken pairs",
+      "question": "Can the evaluator catch the mistakes we care about without rejecting good work?",
+      "cadence": "Before trusting a judge revision",
+      "evidence": "24 frozen artifacts with independently confirmed defects and timestamps; blinded order.",
+      "examples": "Wrong paper, correct math on wrong subject, equations before the whole story, reversed arrows, missing Q/K/V branches, incorrect transpose, voice switch, truncated speech.",
+      "limit": "Initial calibration is small: proposed gate \u226511/12 defect detections and \u22641/12 false alarms, with zero misses on designated critical cases. Report uncertainty; expand before strong reliability claims."
+    },
+    {
+      "id": "T4",
+      "name": "Actual learner outcomes",
+      "unit": "24-person exploratory pilot",
+      "question": "Can a target viewer explain or use the concept after watching?",
+      "cadence": "Shortlisted candidates, not every PR",
+      "evidence": "Prerequisite/pretest, blind randomized baseline vs candidate, equivalent posttest and one novel transfer problem.",
+      "examples": "12 viewers per arm; 3 distinct topics per viewer; no one watches both versions of the same topic. Balance topic exposure and quiz forms.",
+      "limit": "72 viewings are not 72 independent people. Analyze participant and topic dependence. This pilot estimates variance; use a preregistered power calculation for confirmatory claims."
+    }
+  ],
+  "cases": [
+    {
+      "id": "D01",
+      "topic": "Universal Transformers",
+      "target": "Source fit + abstraction ladder",
+      "prompt": "Explain Universal Transformers (2018/ICLR 2019) to an engineer new to attention. Build intuition, show the complete model, then one refinement step and training.",
+      "must": "Actual recurrent-depth encoder/decoder; separate depth and token axes; shared parameters; masked output prefix; cross-attention; prediction probabilities. Fixed-depth math is distinguished from optional ACT.",
+      "trap": "A polished explanation of Transformers as Programmable Computers must fail. Cheap plan-only variants test ambiguity handling: ask once when the paper is unspecified; proceed when the exact title is supplied.",
+      "transfer": "What changes if we add a refinement step, and what stays shared? Trace how a later loss affects an earlier use of the block."
+    },
+    {
+      "id": "D02",
+      "topic": "Backpropagation through a shared block",
+      "target": "Math + gradient routing",
+      "prompt": "Start with one prediction-and-update cycle. Then derive one connection, a rectangular matrix projection, and the shared-parameter gradient.",
+      "must": "Named dimensions, correct transpose and accumulation, explicit fixed-state partial derivative. Finite differences on non-square matrices and a nonlinear recurrence.",
+      "trap": "A square-only example can hide a missing transpose. A separate optimizer update between each unrolled use is wrong.",
+      "transfer": "For W\u2208R^(3\u00d72), x\u2208R\u00b2 and g\u2208R\u00b3, give both gradient shapes and explain why repeated uses add."
+    },
+    {
+      "id": "D03",
+      "topic": "Raft leader election",
+      "target": "State-machine causality",
+      "prompt": "Show a client-visible goal first, then an election end to end, then terms, votes, timeouts and one network partition.",
+      "must": "Use the pinned paper/spec; majority reasoning; explicit roles and time ordering; illustrative trace generated from a validated model.",
+      "trap": "A smooth animation that makes a minority partition safely elect a leader or confuses election with commitment fails.",
+      "transfer": "Predict what happens when the old leader reconnects with an earlier term."
+    },
+    {
+      "id": "D04",
+      "topic": "B-tree lookup and split",
+      "target": "Data-structure invariants",
+      "prompt": "Show a complete lookup before opening a node; then insert a key that forces a split.",
+      "must": "Ordering, search path, separator placement and fanout all checked on an executable fixture.",
+      "trap": "An animated split that loses a key, invents a disk-read count, or presents a stylized layout as a measured trace fails.",
+      "transfer": "Follow a new key not shown in the film and justify the path."
+    },
+    {
+      "id": "D05",
+      "topic": "Backpressure in a bounded queue",
+      "target": "Dynamic intuition + counterfactuals",
+      "prompt": "Show producer, queue and consumer from request to completion; then change the arrival rate and reveal the control mechanism.",
+      "must": "Units and conservation of work; distinguish transient backlog, sustained overload, waiting, dropping and retrying.",
+      "trap": "Queue growth silently disappearing between scenes; confusing throughput with latency.",
+      "transfer": "What happens if arrival rate stays above service rate and the buffer size doubles?"
+    },
+    {
+      "id": "D06",
+      "topic": "TLS 1.3 handshake",
+      "target": "Protocol sequence + scope",
+      "prompt": "Explain the goal and a complete normal handshake, then key agreement, authentication and transcript verification.",
+      "must": "Pinned RFC excerpt; distinct signing and key-agreement roles; correct message order; scope excludes resumption/0-RTT unless explicitly requested.",
+      "trap": "Suggesting that the server sends the session key in the certificate; mixing TLS versions.",
+      "transfer": "Which failure should prevent application data from being trusted, and why?"
+    }
+  ],
+  "rubric": [
+    [
+      "Purpose & intuition",
+      "0: no usable purpose. 2: accurate summary without a concrete mental model. 4: relatable problem, meaningful example, and clear expected outcome before internals."
+    ],
+    [
+      "Top-down coherence",
+      "0: disconnected facts or detail-first. 2: mostly logical order, missing a full journey. 4: complete input\u2192outcome at each level, explicit zoom targets, and return to the whole."
+    ],
+    [
+      "Mechanism & visual reasoning",
+      "0: wrong causal story (hard failure). 2: correct but mostly narrated labels. 4: arrows, state changes, equations and counterfactuals visibly explain the mechanism."
+    ],
+    [
+      "Clarity & craft",
+      "0: essential material unreadable. 2: readable but crowded or static. 4: clean hierarchy, legible equations, purposeful motion, continuity, and audience-appropriate density."
+    ],
+    [
+      "Narration & timing",
+      "0: missing/truncated essential speech. 2: understandable but mismatched or uneven. 4: clear pronunciation, stable voice, useful pacing and visual referents present when discussed."
+    ]
+  ],
+  "tasks": [
+    {
+      "id": "E01",
+      "phase": "P0",
+      "title": "Freeze the corpus and grading contract",
+      "days": "1\u20132 d + subject review",
+      "deps": [],
+      "path": "benchmarks/technical-video/",
+      "deliver": "Versioned public briefs, source packs with content hashes, target audience/duration, private claims/concept graph, misconceptions, numeric oracles and transfer questions.",
+      "accept": "6 development briefs complete. The historical wrong-paper film fails source fit even if every equation is correct. Ambiguous and exact-source variants produce different expected clarification behavior."
+    },
+    {
+      "id": "E02",
+      "phase": "P0",
+      "title": "Build isolated author runs and immutable receipts",
+      "days": "1\u20132 d",
+      "deps": ["E01"],
+      "path": "packages/cli/src/eval/runner.ts + eval-cli.ts (proposed)",
+      "deliver": "An author-command adapter with pinned runtime, skill snapshot, model/config, project copy, tool policy, limits and captured transcript. Each arm gets a fresh context and distinct workspace.",
+      "accept": "Baseline and candidate run the same briefs under equal budgets; interrupted runs resume safely; failed and capped runs remain in denominators; full artifacts and all repair attempts are hashed."
+    },
+    {
+      "id": "E03",
+      "phase": "P0",
+      "title": "Extend existing evidence collection",
+      "days": "1\u20132 d",
+      "deps": ["E01"],
+      "path": "packages/cli/src/review.ts + benchmark fixture cases",
+      "deliver": "Reuse render/review/ffmpeg helpers. Add SVG-text coverage, transformed geometry, event-window samples, seek-order comparisons and final-mux speech checks.",
+      "accept": "Moving-label and SVG-only failures are detected. Zero measured labels cannot be called clean. Sample coverage and unobserved intervals are reported. Numerical oracles are independent of author-generated examples."
+    },
+    {
+      "id": "E04",
+      "phase": "P0",
+      "title": "Add grounded, independent graders",
+      "days": "1\u20132 d",
+      "deps": ["E01", "E02", "E03"],
+      "path": "packages/cli/src/eval/grade.ts + benchmarks/technical-video/judges/ (proposed)",
+      "deliver": "Separate source/pedagogy, mathematical/mechanism, and motion/audio grading. Grade original user intent before author notes. Evidence citations use artifact hash, timestamp, source span and claim ID.",
+      "accept": "A grader returns PASS, FAIL or BLOCKED with reasons. Image-only access cannot approve motion; transcript-only access cannot approve pronunciation. Author-supplied approval text and instructions in artifacts cannot alter the rubric."
+    },
+    {
+      "id": "E05",
+      "phase": "P1",
+      "title": "Calibrate the judges with deliberate defects",
+      "days": "1\u20132 d + expert review",
+      "deps": ["E03", "E04"],
+      "path": "benchmarks/technical-video/calibration/ (proposed)",
+      "deliver": "12 matched clean/broken pairs, gold defect labels confirmed by a human expert, presentation-order swaps, confusion matrix and disagreement adjudication.",
+      "accept": "Report sensitivity, false alarms, critical misses and uncertainty. An uncalibrated or incapable judge cannot trigger automatic promotion; no evaluator gets credit for simply rejecting every film."
+    },
+    {
+      "id": "E06",
+      "phase": "P1",
+      "title": "Create the blind comparison report",
+      "days": "1\u20132 d",
+      "deps": ["E02", "E04", "E05"],
+      "path": "packages/cli/src/eval/report.ts (proposed); reuse current review-kit assets",
+      "deliver": "Anonymous A/B playback, matched scene/time navigation, per-axis anchored ratings, tie/insufficient-evidence choices, timestamped reasons, repair deltas and cost.",
+      "accept": "Version/model names hidden; order balanced; judgments persisted with provenance. The report separates all-run success rate from quality among valid films and does not invent metrics for unobserved modalities."
+    },
+    {
+      "id": "E07",
+      "phase": "P2",
+      "title": "Run a small learner pilot",
+      "days": "2\u20133 d + recruitment",
+      "deps": ["E06"],
+      "path": "benchmarks/technical-video/learner-protocol.md (proposed)",
+      "deliver": "Prerequisite screen, topic-balanced randomization, parallel quiz forms, blinded scoring, transfer question and optional delayed test. Obtain appropriate participant consent; collect minimal anonymous data.",
+      "accept": "Actual target viewers, not LLM personas. Pre-register questions/analysis before seeing candidate results. Treat 24 people as a variance/feasibility pilot; do not advertise improved learning from an underpowered difference."
+    },
+    {
+      "id": "E08",
+      "phase": "P2",
+      "title": "Wire promotion and the skill improvement loop",
+      "days": "1\u20132 d",
+      "deps": ["E05", "E06"],
+      "path": "skills/clapper/references/technical-evals.md (proposed) + .github/workflows/ci.yml",
+      "deliver": "PR fixture lane, on-demand skill experiments, versioned failure taxonomy, comparison receipts and an explicit human promotion decision. Expand the fresh release holdout before stable automation.",
+      "accept": "One intervention per candidate: skill, primitive or model. Retest implicated dev families, then independent validation. Never tune against hidden answers or silently move a threshold after a failed candidate."
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "schema": 1,
+  "scope": "uncalibrated sampled visual/content diagnosis, not benchmark approval",
+  "revisedPreferences": 6,
+  "baselinePreferences": 2,
+  "votes": [
+    {
+      "topic": "queue",
+      "reviewer": "initial-content",
+      "order": "baseline-A,revised-B",
+      "choice": "revised",
+      "rawChoice": "B"
+    },
+    {
+      "topic": "queue",
+      "reviewer": "initial-visual",
+      "order": "baseline-A,revised-B",
+      "choice": "revised",
+      "rawChoice": "B"
+    },
+    {
+      "topic": "ut",
+      "reviewer": "initial-content",
+      "order": "baseline-A,revised-B",
+      "choice": "revised",
+      "rawChoice": "B"
+    },
+    {
+      "topic": "ut",
+      "reviewer": "initial-visual",
+      "order": "baseline-A,revised-B",
+      "choice": "revised",
+      "rawChoice": "B"
+    },
+    {
+      "topic": "queue",
+      "reviewer": "counter-content",
+      "order": "revised-A,baseline-B",
+      "choice": "baseline",
+      "rawChoice": "B"
+    },
+    {
+      "topic": "ut",
+      "reviewer": "counter-content",
+      "order": "revised-A,baseline-B",
+      "choice": "revised",
+      "rawChoice": "A"
+    },
+    {
+      "topic": "queue",
+      "reviewer": "counter-visual",
+      "order": "revised-A,baseline-B",
+      "choice": "revised",
+      "rawChoice": "A"
+    },
+    {
+      "topic": "ut",
+      "reviewer": "counter-visual",
+      "order": "revised-A,baseline-B",
+      "choice": "baseline",
+      "rawChoice": "B"
+    }
+  ]
+}

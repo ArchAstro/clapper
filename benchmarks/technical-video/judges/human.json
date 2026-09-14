@@ -1,0 +1,7 @@
+{
+  "schema": 1,
+  "id": "human-reviewer",
+  "version": "rubric-v1",
+  "kind": "human",
+  "capabilities": ["text", "image", "motion", "audio"]
+}

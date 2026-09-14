@@ -10,6 +10,7 @@ import { reviewComposition } from "./review.ts";
 const HELP = `clapper — React → MP4
 
 Usage:
+  clapper eval <list|run|grade|compare|report>       Evaluate technical videos
   clapper voices <list|install|audition>           Optional local speech models
   clapper narration <validate|lock|render> <file>  Author and prepare locked narration
   clapper score <validate|render|export|import> <file>  Compose and render music
@@ -55,6 +56,11 @@ Dependency scripts are disabled; pass --allow-scripts explicitly if needed.
 `;
 
 export async function main(argv: string[]) {
+  if (argv[0] === "eval") {
+    const { evalCLI } = await import("./eval-cli.ts");
+    await evalCLI(argv.slice(1));
+    return;
+  }
   if (argv[0] === "narration" || argv[0] === "voices") {
     const { narrationCLI } = await import("./narration-cli.ts");
     await narrationCLI(argv[0], argv.slice(1));

@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "method": "independent sampled visual and technical-content diagnostic",
+  "queue": {
+    "preference": "B",
+    "confidence": "moderate",
+    "basis": "explicit existing-backlog accounting, item-partition conservation, and numerical end-to-end latency",
+    "strongest_counterevidence": "clipped consumer and transient item/caption mismatch; A has cleaner uninterrupted flow"
+  },
+  "ut": {
+    "preference": "A",
+    "confidence": "moderate",
+    "basis": "explicit residual and normalization paths with equations, complete transition mechanism, and motivated running example",
+    "strongest_counterevidence": "B has clearer teacher-forcing alignment, explicit weighted-value sum, mask illustration, and update equation"
+  },
+  "audio": "unassessed; not listened to",
+  "learning_outcomes": "not assessed",
+  "final_approval": false
+}

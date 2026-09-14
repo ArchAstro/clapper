@@ -1,0 +1,24 @@
+{
+  "review_type": "independent visual diagnostic",
+  "audio_assessed": false,
+  "full_playback": false,
+  "preferences": {
+    "queue": {
+      "overall": "A",
+      "confidence": "low",
+      "visual_causal_clarity": "B",
+      "state_label_consistency": "A",
+      "readability": "A",
+      "top_down_explanatory_structure": "A"
+    },
+    "ut": {
+      "overall": "B",
+      "confidence": "moderate",
+      "visual_causal_clarity": "tie",
+      "state_label_consistency": "tie",
+      "readability": "B",
+      "top_down_explanatory_structure": "B"
+    }
+  },
+  "report": "report.md"
+}

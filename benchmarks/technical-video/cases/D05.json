@@ -1,0 +1,60 @@
+{
+  "schema": 1,
+  "id": "D05",
+  "family": "queue",
+  "split": "dev",
+  "title": "Backpressure in a bounded queue",
+  "brief": "Show producer, queue and consumer from request to completion; then change the arrival rate and reveal the control mechanism. Use one running example. Complete the whole flow before opening its pieces. Include spoken narration; label illustrative states as illustrations.",
+  "audience": "Software engineer comfortable with basic programming and algebra, new to this mechanism. Define formal terms on first use.",
+  "durationSeconds": [180, 300],
+  "size": [1280, 720],
+  "fps": 30,
+  "audioRequired": true,
+  "sources": [
+    {
+      "id": "queue",
+      "file": "sources/queue.md",
+      "sha256": "cac634588329a49da803aee354505fe5a0ba6bf8c1a9e0a35175fdc8c9b4fa2e",
+      "url": "https://www.reactive-streams.org/",
+      "revision": "Original deterministic bounded-queue model; backpressure vocabulary from Reactive Streams"
+    }
+  ],
+  "requiredSourceIds": ["queue"],
+  "constraints": [
+    {
+      "id": "source-fit",
+      "description": "Units and conservation of work; distinguish transient backlog, sustained overload, waiting, dropping and retrying.",
+      "modality": "image",
+      "sourceId": "queue",
+      "sourceSpan": "Original deterministic bounded-queue model; backpressure vocabulary from Reactive Streams"
+    },
+    {
+      "id": "intuition-first",
+      "description": "A concrete purpose/example and full end-to-end journey appear before internal machinery and equations. Each zoom refers to an established box and returns to the whole.",
+      "modality": "motion"
+    },
+    {
+      "id": "mechanism",
+      "description": "Queue growth silently disappearing between scenes; confusing throughput with latency.",
+      "modality": "motion",
+      "sourceId": "queue",
+      "sourceSpan": "Original deterministic bounded-queue model; backpressure vocabulary from Reactive Streams"
+    },
+    {
+      "id": "legible",
+      "description": "Essential words, diagrams, equations and causal motions are readable without clipping or distracting collisions at the target viewing size.",
+      "modality": "image"
+    },
+    {
+      "id": "narration",
+      "description": "Audition the final mux: complete, intelligible, consistent voice; terminology pronounced clearly; spoken referents match visible states.",
+      "modality": "audio"
+    }
+  ],
+  "eventFrames": [],
+  "transferQuestions": ["What happens if arrival rate stays above service rate and the buffer size doubles?"],
+  "oracle": {
+    "file": "oracles/D05.json",
+    "sha256": "2b4238151a95288e822f3cd613366ffdc6c6eaa7dabb88825b29f08ac995b23f"
+  }
+}

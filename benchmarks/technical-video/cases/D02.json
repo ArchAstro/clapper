@@ -1,0 +1,62 @@
+{
+  "schema": 1,
+  "id": "D02",
+  "family": "neural-recurrence",
+  "split": "dev",
+  "title": "Backpropagation through a shared block",
+  "brief": "Start with one prediction-and-update cycle. Then derive one connection, a rectangular matrix projection, and the shared-parameter gradient. Use one running example. Complete the whole flow before opening its pieces. Include spoken narration; label illustrative states as illustrations.",
+  "audience": "Software engineer comfortable with basic programming and algebra, new to this mechanism. Define formal terms on first use.",
+  "durationSeconds": [180, 300],
+  "size": [1280, 720],
+  "fps": 30,
+  "audioRequired": true,
+  "sources": [
+    {
+      "id": "chain-rule",
+      "file": "sources/chain-rule.md",
+      "sha256": "826a91366605740f60b756ed492e3f4abc415f87e4ae326426707468eadc7da7",
+      "url": "https://www.deeplearningbook.org/contents/mlp.html",
+      "revision": "Original curated derivation; reference chapter6, Deep Learning"
+    }
+  ],
+  "requiredSourceIds": ["chain-rule"],
+  "constraints": [
+    {
+      "id": "source-fit",
+      "description": "Named dimensions, correct transpose and accumulation, explicit fixed-state partial derivative. Finite differences on non-square matrices and a nonlinear recurrence.",
+      "modality": "image",
+      "sourceId": "chain-rule",
+      "sourceSpan": "Original curated derivation; reference chapter6, Deep Learning"
+    },
+    {
+      "id": "intuition-first",
+      "description": "A concrete purpose/example and full end-to-end journey appear before internal machinery and equations. Each zoom refers to an established box and returns to the whole.",
+      "modality": "motion"
+    },
+    {
+      "id": "mechanism",
+      "description": "A square-only example can hide a missing transpose. A separate optimizer update between each unrolled use is wrong.",
+      "modality": "motion",
+      "sourceId": "chain-rule",
+      "sourceSpan": "Original curated derivation; reference chapter6, Deep Learning"
+    },
+    {
+      "id": "legible",
+      "description": "Essential words, diagrams, equations and causal motions are readable without clipping or distracting collisions at the target viewing size.",
+      "modality": "image"
+    },
+    {
+      "id": "narration",
+      "description": "Audition the final mux: complete, intelligible, consistent voice; terminology pronounced clearly; spoken referents match visible states.",
+      "modality": "audio"
+    }
+  ],
+  "eventFrames": [],
+  "transferQuestions": [
+    "For W∈R^(3×2), x∈R² and g∈R³, give both gradient shapes and explain why repeated uses add."
+  ],
+  "oracle": {
+    "file": "oracles/D02.json",
+    "sha256": "412ed6e57baf0c424bdbcf89faaf40e08a02467d5db300a3a4276687b3517975"
+  }
+}

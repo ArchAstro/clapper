@@ -9,12 +9,16 @@ Make the next useful artifact yourself: a scene plan, a few proof frames, a play
 
 ## 1. Bootstrap, then choose the shortest route
 
-**Read [bootstrap.md](references/bootstrap.md) first.** Installing this skill is the user's only setup step; perform the remaining setup yourself. Detect the project, OS/architecture and installed tools. With Node/npm available, run the bundled `scripts/bootstrap.mjs` using the installed skill's absolute path. It installs a pinned CLI through npm's cache, prepares the managed runtime, creates/restores the project, runs doctor and captures a proof frame. Without Node/npm, follow the verified native-launcher route in that reference. Reuse a working install; never silently upgrade a pinned project. Use the source route only for an existing framework workspace or framework development.
+**When an eval author request supplies a ready runtime and workspace, read the
+[author handoff contract](references/technical-evals.md#author-handoff-contract)
+first and use that route.** Otherwise read [bootstrap.md](references/bootstrap.md)
+first. Installing this skill is the user's only setup step; perform the remaining setup yourself. Detect the project, OS/architecture and installed tools. With Node/npm available, run the bundled `scripts/bootstrap.mjs` using the installed skill's absolute path. It installs a pinned CLI through npm's cache, prepares the managed runtime, creates/restores the project, runs doctor and captures a proof frame. Without Node/npm, follow the verified native-launcher route in that reference. Reuse a working install; never silently upgrade a pinned project. Use the source route only for an existing framework workspace or framework development.
 
 For the rest of this skill, `clapper` means the exact command prefix resolved during bootstrap (possibly `npm exec --yes --package=@archastro/clapper@<resolved-version> -- clapper`, or an absolute native launcher path). It does not assume a global executable. Run commands with the project directory as `workdir`. Do not require pnpm, a source checkout, system FFmpeg, a browser install or a separate sampler for the standalone route.
 
 1. Read project instructions, `clapper.json`, package scripts and Git status; preserve existing edits. Read API exports from the installed runtime or existing source checkout rather than assuming the last session's API. Bootstrap already verified the first frame; inspect that proof and continue instead of repeating setup.
 2. Choose the mode:
+   - **Benchmark / skill or runtime comparison:** read [technical-evals.md](references/technical-evals.md). Use the isolated evaluator and independent evidence; do not turn a regression test or self-review into a quality claim.
    - **Technical / scientific explainer:** read [explainers.md](references/explainers.md). Verify the intended primary source, build intuition, and explain the whole flow at each abstraction level before drilling down.
    - **New film:** use the bootstrapped basic/comic project; choose a visual direction from the brief and a relevant available example.
    - **Recut:** preserve the previous composition ID; reuse exported scene components and make the new scene plan explicit. Review changed scenes and both joins, plus regressions in the full export.

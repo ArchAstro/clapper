@@ -1,0 +1,18 @@
+{
+  "packet": "/private/tmp/clapper-ut-blind-dcfa08a1",
+  "items": [
+    {
+      "slot": "A",
+      "arm": "baseline",
+      "original": "/private/tmp/clapper-skill-optimization/baseline-v1/runs/D01-0/work/out/complete-film.mp4",
+      "sha256": "f74e94fbf328600a24ad6388c0af1ccf0dc207fc2189425fbc8b6b2029dcc016"
+    },
+    {
+      "slot": "B",
+      "arm": "candidate-v3",
+      "original": "/private/tmp/clapper-skill-optimization/candidate-v3/runs/D01-0/work/out/diagnostic-final.mp4",
+      "sha256": "9586da5133c0fc77d2fc9627bbebb13ace5ea1c24746551bb5505a422cec08cd"
+    }
+  ],
+  "scope": "diagnostic visual comparison; budget failures retained"
+}

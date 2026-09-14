@@ -1,0 +1,39 @@
+{
+  "preference": "B",
+  "strength": "narrow",
+  "observed_modalities": [
+    "decoded video frames",
+    "on-screen text and equations",
+    "supplied brief/source/scene metadata"
+  ],
+  "audio_listened": false,
+  "diagnostic_only": true,
+  "inspected_intervals_seconds": {
+    "A": [[23, 59], [132, 168]],
+    "B": [[21.1, 57.1], [180.13, 216.13]]
+  },
+  "full_resolution_stills_seconds": {
+    "A": [70, 122, 181, 206, 236],
+    "B": [57, 104, 127, 147, 173, 223, 246]
+  },
+  "consecutive_frame_intervals_seconds": {
+    "A": [[47.9, 48.067], [115, 115.167], [229, 229.167]],
+    "B": [[39.4, 39.567], [99, 99.167], [197, 197.167], [265, 265.167]]
+  },
+  "overview_sample_period_seconds": 18,
+  "primary_reason": "Explicit residual operand paths and matching algebra explain a complete refinement step.",
+  "remaining_defects": [
+    "Query/key/value roles not visibly defined in attention close-up",
+    "Clipped illustration label at 127 seconds",
+    "Gradient contributions not connected to corresponding parameter uses",
+    "Decoder detail selects into separate box without visibly updating prefix"
+  ],
+  "keep": [
+    "explicit residual routes",
+    "equation-to-operand mapping",
+    "continuous six-position example",
+    "separate encoder and decoder parameter sets",
+    "outer generation loop",
+    "ACT scope disclaimer"
+  ]
+}

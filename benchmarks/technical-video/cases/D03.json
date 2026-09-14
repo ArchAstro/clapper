@@ -1,0 +1,60 @@
+{
+  "schema": 1,
+  "id": "D03",
+  "family": "raft",
+  "split": "dev",
+  "title": "Raft leader election",
+  "brief": "Show a client-visible goal first, then an election end to end, then terms, votes, timeouts and one network partition. Use one running example. Complete the whole flow before opening its pieces. Include spoken narration; label illustrative states as illustrations.",
+  "audience": "Software engineer comfortable with basic programming and algebra, new to this mechanism. Define formal terms on first use.",
+  "durationSeconds": [180, 300],
+  "size": [1280, 720],
+  "fps": 30,
+  "audioRequired": true,
+  "sources": [
+    {
+      "id": "raft-2014",
+      "file": "sources/raft-2014.md",
+      "sha256": "4a36025efbb7a4c846380dff16fef69fb4912ec8d205684eb9d1d383cf3f5b99",
+      "url": "https://raft.github.io/raft.pdf",
+      "revision": "In Search of an Understandable Consensus Algorithm,2014, Figure2 and §5.2"
+    }
+  ],
+  "requiredSourceIds": ["raft-2014"],
+  "constraints": [
+    {
+      "id": "source-fit",
+      "description": "Use the pinned paper/spec; majority reasoning; explicit roles and time ordering; illustrative trace generated from a validated model.",
+      "modality": "image",
+      "sourceId": "raft-2014",
+      "sourceSpan": "In Search of an Understandable Consensus Algorithm,2014, Figure2 and §5.2"
+    },
+    {
+      "id": "intuition-first",
+      "description": "A concrete purpose/example and full end-to-end journey appear before internal machinery and equations. Each zoom refers to an established box and returns to the whole.",
+      "modality": "motion"
+    },
+    {
+      "id": "mechanism",
+      "description": "A smooth animation that makes a minority partition safely elect a leader or confuses election with commitment fails.",
+      "modality": "motion",
+      "sourceId": "raft-2014",
+      "sourceSpan": "In Search of an Understandable Consensus Algorithm,2014, Figure2 and §5.2"
+    },
+    {
+      "id": "legible",
+      "description": "Essential words, diagrams, equations and causal motions are readable without clipping or distracting collisions at the target viewing size.",
+      "modality": "image"
+    },
+    {
+      "id": "narration",
+      "description": "Audition the final mux: complete, intelligible, consistent voice; terminology pronounced clearly; spoken referents match visible states.",
+      "modality": "audio"
+    }
+  ],
+  "eventFrames": [],
+  "transferQuestions": ["Predict what happens when the old leader reconnects with an earlier term."],
+  "oracle": {
+    "file": "oracles/D03.json",
+    "sha256": "012127163e85097cb22367d8a9c020fd9da4fb34b3d806e1bd1721502e7c17fe"
+  }
+}

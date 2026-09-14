@@ -1,0 +1,58 @@
+{
+  "schema": 1,
+  "id": "D01",
+  "family": "neural-recurrence",
+  "split": "dev",
+  "title": "Universal Transformers",
+  "brief": "Explain Universal Transformers (2018/ICLR 2019) to an engineer new to attention. Build intuition, show the complete model, then one refinement step and training. Use one running example. Complete the whole flow before opening its pieces. Include spoken narration; label illustrative states as illustrations.",
+  "audience": "Software engineer comfortable with basic programming and algebra, new to this mechanism. Define formal terms on first use.",
+  "durationSeconds": [180, 300],
+  "size": [1280, 720],
+  "fps": 30,
+  "audioRequired": true,
+  "sources": [
+    {
+      "id": "ut-2019",
+      "file": "sources/ut-2019.md",
+      "sha256": "0c4cb5797ce6f9c58f09b823e0de3af67bf0053a8ad159787f7d3477b20e6733",
+      "url": "https://arxiv.org/abs/1807.03819v3",
+      "revision": "Universal Transformers, ICLR 2019, \u00a72.1\u20132.2"
+    }
+  ],
+  "requiredSourceIds": ["ut-2019"],
+  "constraints": [
+    {
+      "id": "source-fit",
+      "description": "Actual recurrent-depth encoder/decoder; separate depth and token axes; shared parameters; masked output prefix; cross-attention; prediction probabilities. Fixed-depth math is distinguished from optional ACT.",
+      "modality": "image",
+      "sourceId": "ut-2019",
+      "sourceSpan": "Universal Transformers, ICLR 2019, \u00a72.1\u20132.2"
+    },
+    {
+      "id": "intuition-first",
+      "description": "A concrete purpose/example and full end-to-end journey appear before internal machinery and equations. Each zoom refers to an established box and returns to the whole.",
+      "modality": "motion"
+    },
+    {
+      "id": "mechanism",
+      "description": "A polished explanation of Transformers as Programmable Computers must fail. Cheap plan-only variants test ambiguity handling: ask once when the paper is unspecified; proceed when the exact title is supplied.",
+      "modality": "motion",
+      "sourceId": "ut-2019",
+      "sourceSpan": "Universal Transformers, ICLR 2019, \u00a72.1\u20132.2"
+    },
+    {
+      "id": "legible",
+      "description": "Essential words, diagrams, equations and causal motions are readable without clipping or distracting collisions at the target viewing size.",
+      "modality": "image"
+    },
+    {
+      "id": "narration",
+      "description": "Audition the final mux: complete, intelligible, consistent voice; terminology pronounced clearly; spoken referents match visible states.",
+      "modality": "audio"
+    }
+  ],
+  "eventFrames": [],
+  "transferQuestions": [
+    "What changes if we add a refinement step, and what stays shared? Trace how a later loss affects an earlier use of the block."
+  ]
+}

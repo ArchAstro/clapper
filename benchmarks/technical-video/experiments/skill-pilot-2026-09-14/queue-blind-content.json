@@ -1,0 +1,32 @@
+{
+  "schema": 1,
+  "reviewer": "independent-content",
+  "preference": "B",
+  "confidence": "moderate",
+  "basis": "Visible explanatory continuity and control transitions; A stronger on backlog arithmetic and measured latency.",
+  "observed_modalities": [
+    "reference text",
+    "scene timing metadata",
+    "decoded video stills",
+    "consecutive sampled transition strips"
+  ],
+  "unobserved_modalities": ["audio", "full continuous playback"],
+  "intervals_seconds": {
+    "A": {
+      "overview": [0, 276],
+      "strips": [[18, 40], [103, 129]],
+      "native_frames": [150, 242]
+    },
+    "B": {
+      "overview": [0, 264],
+      "strips": [[18, 42], [87, 113]],
+      "native_frames": [134, 230]
+    }
+  },
+  "sampling": {
+    "overview_seconds": 10,
+    "transition_strip_seconds": 2
+  },
+  "actual_learning_claim": false,
+  "full_acceptance_claim": false
+}

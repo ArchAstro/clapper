@@ -1,0 +1,18 @@
+{
+  "packet": "/private/tmp/clapper-pilot-blind-eec18a33",
+  "items": [
+    {
+      "slot": "A",
+      "arm": "baseline",
+      "original": "/private/tmp/clapper-skill-optimization/baseline-v1/runs/D05-0/work/out/film.mp4",
+      "sha256": "34dbb18de239e9234443f8872403b3cb8531c8b18fbcc3d0160b0b6b2dc50042"
+    },
+    {
+      "slot": "B",
+      "arm": "candidate-v3",
+      "original": "/private/tmp/clapper-skill-optimization/candidate-v3/runs/D05-0/work/out/diagnostic-final.mp4",
+      "sha256": "ab42b8a2087e9e7b423ad1aa8b8455a58329b50829d0f311f1d7e5f2307a749e"
+    }
+  ],
+  "scope": "diagnostic visual comparison; original budget failures remain failures"
+}
