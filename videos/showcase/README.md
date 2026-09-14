@@ -2,6 +2,8 @@
 
 Three made-up SaaS products, three visual systems, one framework. Each is a 22–26 s brand spot with synthesized sound.
 
+For a source-code comparison, see [Nimbus in Clapper, Rendiv, and HyperFrames](../../benchmarks/nimbus/README.md). The two ports include all five scenes and runnable native previews/renders.
+
 | id | product | system | sound |
 | --- | --- | --- | --- |
 | `ledger` | treasury & close for finance teams | editorial: Fraunces on bone paper, JetBrains Mono numbers, one vermilion; hard cuts and wipes | sub-bass hits on cuts, counter ticks, low pads, resolved chord |

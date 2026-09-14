@@ -1,0 +1,38 @@
+@import url("./fonts/fonts.css");
+* {
+  box-sizing: border-box;
+}
+.vid {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+/* Nimbus: dark technical. */
+.nimbus {
+  --bg: #05070d;
+  --ink: #e6f0ff;
+  --cyan: #39d0ff;
+  --magenta: #ff3ea5;
+  --green: #3dff9a;
+  --grid: #121c30;
+  --muted: #6f7f9c;
+  --panel: #0a0f1c;
+  --display: "Unbounded", "Space Grotesk", sans-serif;
+  --body: "Space Grotesk", "Helvetica Neue", sans-serif;
+  --mono: "JetBrains Mono", "SF Mono", monospace;
+  font-family: var(--body);
+  color: var(--ink);
+  background: var(--bg);
+}
+.nimbus .display {
+  font-family: var(--display);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+}
+.nimbus .mono {
+  font-family: var(--mono);
+  font-feature-settings: "tnum";
+}

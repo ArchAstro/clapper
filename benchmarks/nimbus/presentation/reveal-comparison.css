@@ -1,0 +1,102 @@
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+[data-figure] {
+  width: 1800px;
+  padding: 42px 38px 31px;
+  background: #f0ebe1;
+  color: #46423a;
+  -webkit-font-smoothing: antialiased;
+}
+.columns {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+section {
+  padding: 0 27px;
+}
+section + section {
+  border-left: 1px solid #d7cfc0;
+}
+h2 {
+  margin: 0;
+  font:
+    600 38px / 1.2 Georgia,
+    "Times New Roman",
+    serif;
+  letter-spacing: -0.7px;
+}
+.description {
+  margin: 10px 0 30px;
+  font:
+    italic 23px / 1.35 Georgia,
+    "Times New Roman",
+    serif;
+  color: #7a7264;
+}
+pre {
+  margin: 0;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 20px;
+  line-height: 28px;
+  font-variant-ligatures: none;
+  letter-spacing: -0.45px;
+}
+.code-line {
+  min-height: 28px;
+}
+.code-line code {
+  white-space: pre;
+  font: inherit;
+}
+.line-number {
+  display: none;
+}
+.keyword {
+  color: #8b3f79;
+}
+.string {
+  color: #4d792b;
+}
+.number {
+  color: #b45722;
+}
+.tag {
+  color: #ad493c;
+}
+.function {
+  color: #17649b;
+}
+.property {
+  color: #94621d;
+}
+.variable {
+  color: #256b73;
+}
+.constant {
+  color: #7952a0;
+}
+.punctuation {
+  color: #80766b;
+}
+.section-break {
+  height: 25px;
+}
+footer {
+  margin-top: 38px;
+  padding-top: 22px;
+  text-align: center;
+  border-top: 1px solid #d7cfc0;
+  font-family: Georgia, "Times New Roman", serif;
+}
+footer p {
+  font-size: 27px;
+  margin: 0 0 12px;
+}
+footer small {
+  font-size: 17px;
+  color: #847b6c;
+}

@@ -1,0 +1,16 @@
+{
+  "name": "nimbus-hyperframes-example",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "preview": "hyperframes preview",
+    "render": "hyperframes render --output out/nimbus.mp4 --fps 30 --workers 4 --crf 21",
+    "lint": "hyperframes lint",
+    "prepreview": "node ../prepare.mjs hyperframes",
+    "prerender": "node ../prepare.mjs hyperframes"
+  },
+  "dependencies": {
+    "hyperframes": "0.8.40",
+    "gsap": "3.15.0"
+  }
+}

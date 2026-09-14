@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Nimbus — HyperFrames</title>
+    <link rel="stylesheet" href="assets/fonts/fonts.css" />
+    <link rel="stylesheet" href="assets/theme.css" />
+    <link rel="stylesheet" href="style.css" />
+    <script src="assets/gsap.min.js"></script>
+    <script src="assets/CustomEase.min.js"></script>
+  </head>
+  <body>
+    <div
+      data-hf-id="hf-s9mh"
+      id="nimbus"
+      class="vid nimbus clip"
+      data-composition-id="nimbus"
+      data-width="1920"
+      data-height="1080"
+      data-start="0"
+      data-duration="24.4"
+      data-fps="30"
+    >
+      <div data-hf-id="hf-kxq8" class="grid"></div>
+      <div data-hf-id="hf-lyns" class="fill radial"></div>
+      <section data-hf-id="hf-fyog" id="title" class="scene">
+        <div data-hf-id="hf-up8o" class="title-center">
+          <div data-hf-id="hf-zgfw" class="display title-wordmark">NIMBUS</div>
+          <div data-hf-id="hf-brnm" class="reveal" data-at="40">
+            <span data-hf-id="hf-63qs" class="eyebrow" style="font-size: 24px"
+              >Edge observability · 41 regions</span
+            >
+          </div>
+        </div>
+        <div data-hf-id="hf-az1f" class="scan"></div>
+        <div data-hf-id="hf-gs51" class="title-stats mono">
+          <span data-hf-id="hf-mwo5">12.4B req / day</span
+          ><span data-hf-id="hf-wz84">p99 · 88 ms</span
+          ><span data-hf-id="hf-9lm1">0 blind spots</span>
+        </div>
+      </section>
+      <section data-hf-id="hf-3t1m" id="graph" class="scene">
+        <div data-hf-id="hf-g4sl" class="camera">
+          <svg
+            data-hf-id="hf-yx1v"
+            width="1920"
+            height="1080"
+            style="position: absolute; overflow: visible"
+          />
+          <div data-hf-id="hf-oh85" class="labels"></div>
+        </div>
+        <div data-hf-id="hf-had6" class="heading">
+          <div data-hf-id="hf-3n0i" class="reveal" data-at="0">
+            <span data-hf-id="hf-106p" class="eyebrow">Live topology</span>
+          </div>
+          <div
+            data-hf-id="hf-hjun"
+            class="reveal display headline"
+            data-at="6"
+            data-reveal-duration="30"
+          >
+            <span data-hf-id="hf-vjkz">Every hop.</span>
+          </div>
+          <div
+            data-hf-id="hf-gr5u"
+            class="reveal display"
+            data-at="12"
+            data-reveal-duration="30"
+            style="font-size: 64px; color: var(--muted)"
+          >
+            <span data-hf-id="hf-v94t">Every request.</span>
+          </div>
+        </div>
+        <div data-hf-id="hf-hbh3" class="graph-stats mono">
+          <div data-hf-id="hf-u81u">
+            req/s <span data-hf-id="hf-ih0b" class="requests"></span>
+          </div>
+          <div data-hf-id="hf-zfej">
+            in flight <span data-hf-id="hf-e1pi" class="inflight"></span>
+          </div>
+          <div data-hf-id="hf-pplb">
+            errors
+            <span data-hf-id="hf-bykg" style="color: var(--green)">0.01%</span>
+          </div>
+        </div>
+      </section>
+      <section data-hf-id="hf-46z0" id="latency" class="scene">
+        <div data-hf-id="hf-03fi" class="heading">
+          <div data-hf-id="hf-jgdi" class="reveal" data-at="0">
+            <span data-hf-id="hf-s9l9" class="eyebrow"
+              >Latency · checkout · last 60 s</span
+            >
+          </div>
+          <div
+            data-hf-id="hf-za9r"
+            class="reveal display headline"
+            data-at="6"
+            data-reveal-duration="30"
+          >
+            <span data-hf-id="hf-wa8b">See it before they feel it.</span>
+          </div>
+        </div>
+        <div data-hf-id="hf-1429" class="latency-stats mono"></div>
+        <div data-hf-id="hf-umx2" class="bars">
+          <div data-hf-id="hf-ujh4" class="slo">
+            <span data-hf-id="hf-dr5i" class="mono">SLO · 250 ms</span>
+          </div>
+        </div>
+        <div data-hf-id="hf-krzt" class="alert badge">
+          <span data-hf-id="hf-gosj" class="alert-dot"></span>p99 breached SLO ·
+          us-east · checkout
+        </div>
+        <div data-hf-id="hf-y03c" class="recovered badge">
+          ↑ Auto-scaled +3 edge workers · recovered in 1.8 s
+        </div>
+      </section>
+      <section data-hf-id="hf-lgm9" id="trace" class="scene">
+        <div data-hf-id="hf-g80p" class="camera">
+          <div data-hf-id="hf-0hqj" class="heading">
+            <div data-hf-id="hf-juoj" class="reveal" data-at="0">
+              <span data-hf-id="hf-cziy" class="eyebrow"
+                >Request stream · us-east</span
+              >
+            </div>
+            <div
+              data-hf-id="hf-yvyq"
+              class="reveal display headline"
+              data-at="6"
+              data-reveal-duration="30"
+            >
+              <span data-hf-id="hf-u2kz">Trace the one that hurt.</span>
+            </div>
+          </div>
+          <div data-hf-id="hf-1ms0" class="terminal"></div>
+        </div>
+        <div data-hf-id="hf-qkzo" class="callout">
+          <span data-hf-id="hf-hbio" class="root-cause">root cause</span
+          ><span data-hf-id="hf-l6z4"
+            >Cold start on fn:checkout. Pre-warm rule suggested.</span
+          >
+        </div>
+      </section>
+      <section data-hf-id="hf-64v5" id="end" class="scene">
+        <div data-hf-id="hf-3h4z" class="end-center">
+          <svg
+            data-hf-id="hf-yefq"
+            class="cloud"
+            width="180"
+            height="180"
+            viewBox="0 0 100 100"
+          />
+          <div data-hf-id="hf-m3jf" class="display end-wordmark">NIMBUS</div>
+          <div
+            data-hf-id="hf-f88l"
+            class="reveal"
+            data-at="30"
+            data-reveal-duration="28"
+            style="font-size: 40px; color: var(--muted)"
+          >
+            <span data-hf-id="hf-slmr"
+              >See every request. Before your users do.</span
+            >
+          </div>
+          <div
+            data-hf-id="hf-jbyu"
+            class="reveal"
+            data-at="44"
+            data-reveal-duration="24"
+          >
+            <span data-hf-id="hf-rv5y" class="eyebrow" style="font-size: 22px"
+              >nimbus.run · start free · 41 regions</span
+            >
+          </div>
+        </div>
+        <div data-hf-id="hf-4iyp" class="fill fade-black"></div>
+      </section>
+      <div data-hf-id="hf-gaa7" class="fill vignette"></div>
+      <div data-hf-id="hf-233i" class="fill grain"></div>
+      <audio
+        data-hf-id="hf-b97f"
+        id="soundtrack"
+        src="assets/soundtrack.wav"
+        data-start="0"
+        data-duration="24.4"
+        data-track-index="1"
+        data-volume="1"
+      ></audio>
+    </div>
+    <script type="module">
+      import { timeline } from "./timeline.js";
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines.nimbus = timeline;
+    </script>
+  </body>
+</html>

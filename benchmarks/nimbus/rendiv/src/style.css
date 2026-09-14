@@ -1,0 +1,216 @@
+@import url("/assets/theme.css");
+.reveal {
+  overflow: hidden;
+  display: block;
+  vertical-align: bottom;
+  padding: 0.08em 0.06em;
+  margin: -0.08em -0.06em;
+}
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 20px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  font-weight: 500;
+}
+.title-center,
+.end-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+}
+.end-center {
+  gap: 26px;
+}
+.scan {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(transparent, var(--cyan), transparent);
+  opacity: 0.9;
+}
+.title-stats {
+  position: absolute;
+  left: 120px;
+  bottom: 90px;
+  display: flex;
+  gap: 60px;
+  font-size: 22px;
+  color: var(--muted);
+}
+.camera {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1920px;
+  height: 1080px;
+  transform-origin: 0 0;
+}
+.heading {
+  position: absolute;
+  left: 120px;
+  top: 100px;
+}
+.headline {
+  font-size: 64px;
+  margin-top: 14px;
+}
+.node-label {
+  position: absolute;
+  font-size: 20px;
+  letter-spacing: 0.06em;
+}
+.graph-stats {
+  position: absolute;
+  right: 120px;
+  top: 100px;
+  text-align: right;
+  font-size: 22px;
+  color: var(--muted);
+  line-height: 1.8;
+}
+.latency-stats {
+  position: absolute;
+  right: 120px;
+  top: 100px;
+  display: flex;
+  gap: 64px;
+  text-align: right;
+}
+.metric-label {
+  font-size: 20px;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+}
+.bars {
+  position: absolute;
+  left: 120px;
+  right: 120px;
+  top: 380px;
+  bottom: 230px;
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+.bar {
+  flex: 1;
+  border-radius: 6px;
+}
+.slo {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 38%;
+  height: 1px;
+  border-top: 2px dashed rgba(255, 62, 165, 0.6);
+}
+.slo span {
+  position: absolute;
+  right: 0;
+  top: -30px;
+  font-size: 18px;
+  color: var(--magenta);
+  letter-spacing: 0.1em;
+}
+.badge {
+  position: absolute;
+  bottom: 90px;
+  padding: 18px 26px;
+  border-radius: 12px;
+  font-size: 26px;
+  font-weight: 700;
+}
+.alert {
+  left: 120px;
+  background: var(--magenta);
+  color: #1a0410;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  filter: drop-shadow(0 0 24px rgba(255, 62, 165, 0.5));
+}
+.alert-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: #1a0410;
+}
+.recovered {
+  right: 120px;
+  background: var(--green);
+  color: #03150b;
+  filter: drop-shadow(0 0 24px rgba(61, 255, 154, 0.45));
+}
+.terminal {
+  position: absolute;
+  left: 200px;
+  right: 200px;
+  top: 300px;
+  border-radius: 18px;
+  border: 1px solid rgba(57, 208, 255, 0.18);
+  background: rgba(10, 15, 28, 0.85);
+  padding: 20px 0;
+}
+.log-row {
+  display: grid;
+  grid-template-columns: 220px 90px 1fr 160px 180px;
+  padding: 0 34px;
+  height: 62px;
+  align-items: center;
+  font-size: 24px;
+  white-space: nowrap;
+  border-left: 4px solid transparent;
+}
+.caret {
+  display: inline-block;
+  width: 0.55em;
+  margin-left: 0.08em;
+  border-bottom: 0.12em solid currentColor;
+  vertical-align: -0.04em;
+  height: 0.9em;
+}
+.callout {
+  position: absolute;
+  left: 120px;
+  bottom: 90px;
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  font-size: 26px;
+}
+.root-cause {
+  background: var(--magenta);
+  color: #1a0410;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 700;
+}
+.grid {
+  position: absolute;
+  inset: -60px;
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 60px 60px;
+  opacity: 0.9;
+}
+.radial {
+  background: radial-gradient(60% 50% at 50% 40%, rgba(57, 208, 255, 0.08), transparent 70%);
+}
+.vignette {
+  pointer-events: none;
+  background: radial-gradient(120% 90% at 50% 45%, transparent 55%, #02030a 140%);
+  opacity: 0.7;
+}
+.grain {
+  pointer-events: none;
+  mix-blend-mode: screen;
+  opacity: 0.065;
+  background-size: 320px 320px;
+}

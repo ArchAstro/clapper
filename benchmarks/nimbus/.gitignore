@@ -1,0 +1,7 @@
+rendiv/public/assets/
+hyperframes/assets/
+.hyperframes/
+renders/
+.studio/
+.thumbnails/
+rendiv/__rendiv_entry__.*

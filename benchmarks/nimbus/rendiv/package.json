@@ -1,0 +1,26 @@
+{
+  "name": "nimbus-rendiv-example",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "preview": "rendiv studio src/index.tsx",
+    "render": "rendiv render src/index.tsx Nimbus out/nimbus.mp4 --concurrency 4 --image-format jpeg --jpeg-quality 96 --crf 21",
+    "still": "rendiv still src/index.tsx Nimbus out/still.png",
+    "typecheck": "tsc --noEmit",
+    "prepreview": "node ../prepare.mjs rendiv",
+    "prerender": "node ../prepare.mjs rendiv",
+    "prestill": "node ../prepare.mjs rendiv"
+  },
+  "dependencies": {
+    "@rendiv/cli": "0.2.6",
+    "@rendiv/core": "0.2.6",
+    "@rendiv/player": "0.2.6",
+    "@rendiv/transitions": "0.2.6",
+    "react": "19.2.0",
+    "react-dom": "19.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.0",
+    "typescript": "5.9.3"
+  }
+}
