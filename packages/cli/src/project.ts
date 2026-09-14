@@ -7,6 +7,7 @@ export interface ProjectConfig {
   entry: string;
   composition: string;
   score?: string;
+  narration?: string;
 }
 
 export function findConfig(start = process.cwd()): { dir: string; config: ProjectConfig } | undefined {

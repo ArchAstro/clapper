@@ -1,6 +1,6 @@
 ---
 name: clapper
-description: Bootstrap Clapper and create, edit, preview, render, and improve React videos and original music-as-code scores. Handles CLI/runtime/project setup, sampled SFZ instruments, MIDI and stems, the studio Music/Code view, motion design, characters, foley, and adversarial visual/audio review. Use for Clapper films, original scores, animated demos, and recuts; not ordinary website UI or unrelated video editors.
+description: Bootstrap Clapper and create, edit, preview, render, and improve React videos and original music-as-code scores and optional local voice narration. Handles CLI/runtime/project setup, sampled SFZ instruments, MIDI and stems, the studio Music/Code view, motion design, characters, foley, and adversarial visual/audio review. Use for Clapper films, original scores, animated demos, and recuts; not ordinary website UI or unrelated video editors.
 ---
 
 # Clapper: brief → picture + sound → reviewed MP4
@@ -15,8 +15,10 @@ For the rest of this skill, `clapper` means the exact command prefix resolved du
 
 1. Read project instructions, `clapper.json`, package scripts and Git status; preserve existing edits. Read API exports from the installed runtime or existing source checkout rather than assuming the last session's API. Bootstrap already verified the first frame; inspect that proof and continue instead of repeating setup.
 2. Choose the mode:
+   - **Technical / scientific explainer:** read [explainers.md](references/explainers.md). Verify the intended primary source, build intuition, and explain the whole flow at each abstraction level before drilling down.
    - **New film:** use the bootstrapped basic/comic project; choose a visual direction from the brief and a relevant available example.
    - **Recut:** preserve the previous composition ID; reuse exported scene components and make the new scene plan explicit. Review changed scenes and both joins, plus regressions in the full export.
+   - **Voice narration / dialogue:** read [narration.md](references/narration.md), then [audio.md](references/audio.md). Install the optional local engine, audition voices, define one central cast, and explicitly lock it before preparing scenes.
    - **Audio pass:** keep picture timing fixed unless authorized to retime; read [audio.md](references/audio.md).
    - **Original music / band / choreography:** read [music.md](references/music.md), then [audio.md](references/audio.md) for mix review. Music-only requests do not require creating a video.
    - **Preview/render only:** use the existing entry and composition; don't impose a redesign or full creative review.
@@ -61,6 +63,16 @@ For a full musical score, follow [music.md](references/music.md): compose with `
 3. Put factual copy/numbers in one `data.ts`, scoped brand tokens in `theme.css`, and long music beds in one root-level `Score`. Local action foley may stay in its scene. Check reused scenes for old beds/hits before adding a new score.
 4. All important motion comes from `useFrame()`. Use seeded randomness, `useBoil`, or `noise1d`; no wall clocks, timers, or unseeded randomness. CSS animations may depend on worker history: use frame-based motion for anything that must survive arbitrary seeking.
 5. Read [visuals.md](references/visuals.md) before authoring or polishing picture. Read [audio.md](references/audio.md) before scoring or changing the mix. These cover demonstrated traps, not a mandated house style.
+
+### Voice narration is a separate script
+
+Use `defineNarration` and `NarrationAudio` from the narration API, following
+[narration.md](references/narration.md). The CLI downloads the optional model/runtime
+only through `clapper voices install`; normal setup stays lightweight. Reuse one
+central narrator ID across scenes and commit `clapper-voices.lock.json`. Never
+silently relock, select a new voice per scene, or change speaking speed to squeeze
+copy into a shot. Prepare takes, inspect actual durations, then adjust copy or scene
+windows. Listen to returning narrator lines together and review the final muxed mix.
 
 ## 4. Iterate with the right artifact
 

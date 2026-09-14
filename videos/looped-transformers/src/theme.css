@@ -1,0 +1,127 @@
+@import "../../showcase/src/fonts/fonts.css";
+* {
+  box-sizing: border-box;
+}
+.film {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #081620;
+  color: #f0f0e7;
+  font-family: "Space Grotesk", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+.film::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(#91a4b417 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+.eyebrow {
+  position: absolute;
+  top: 64px;
+  left: 100px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 23px;
+  letter-spacing: 2.5px;
+  color: #67e5d1;
+}
+.brand {
+  position: absolute;
+  top: 64px;
+  right: 100px;
+  font-size: 22px;
+  color: #91a4b4;
+  letter-spacing: 2px;
+}
+.title {
+  position: absolute;
+  left: 100px;
+  top: 113px;
+  width: 1720px;
+  margin: 0;
+  font-size: 68px;
+  font-weight: 550;
+  line-height: 1.12;
+  letter-spacing: -2px;
+}
+.subtitle {
+  position: absolute;
+  left: 103px;
+  top: 209px;
+  margin: 0;
+  color: #91a4b4;
+  font-size: 29px;
+}
+.diagram {
+  position: absolute;
+  left: 100px;
+  top: 298px;
+  width: 1720px;
+  height: 570px;
+}
+.note {
+  position: absolute;
+  left: 100px;
+  top: 934px;
+  width: 1500px;
+  font-size: 22px;
+  color: #91a4b4;
+}
+.counter {
+  position: absolute;
+  right: 100px;
+  top: 932px;
+  font-size: 25px;
+  font-family: "JetBrains Mono", monospace;
+  color: #91a4b4;
+}
+.footer {
+  position: absolute;
+  left: 100px;
+  right: 100px;
+  bottom: 42px;
+  height: 3px;
+  background: #30424e;
+}
+.footer > div {
+  height: 3px;
+  background: #67e5d1;
+}
+.intro-scene {
+  position: absolute;
+  inset: 0;
+}
+.intro-tag {
+  position: absolute;
+  left: 100px;
+  top: 70px;
+  color: #67e5d1;
+  font-size: 23px;
+  letter-spacing: 2px;
+}
+.intro-title {
+  position: absolute;
+  left: 100px;
+  top: 130px;
+  margin: 0;
+  font-size: 106px;
+  font-weight: 550;
+  letter-spacing: -3px;
+  line-height: 1.07;
+}
+.intro-stage {
+  position: absolute;
+  left: 100px;
+  top: 410px;
+  width: 1720px;
+  height: 570px;
+}
+.intro-bottom {
+  position: absolute;
+  left: 100px;
+  bottom: 50px;
+  font-size: 25px;
+  color: #91a4b4;
+}

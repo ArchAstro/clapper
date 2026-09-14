@@ -157,6 +157,59 @@ try {
     customEnv: { ...env, CLAPPER_INSTRUMENTS: path.join(root, "fresh-instruments") },
   });
   assert.ok(fs.statSync(path.join(musicProject, "out/spot.draft.mp4")).size > 1000);
+  // Narration remains an explicit download and works with the managed Node/npm.
+  const speechProject = path.join(root, "spoken film");
+  const speechEnv = { ...env, CLAPPER_VOICES: path.join(root, "optional-voices") };
+  const voices = JSON.parse(await run(["voices", "list", "--json"], { customEnv: speechEnv }));
+  assert.equal(voices.voices.length, 6);
+  assert.equal(fs.existsSync(speechEnv.CLAPPER_VOICES), false, "listing voices must not install models");
+  assert.match(
+    fs.readFileSync(path.join(runtimeDir, "skill/references/narration.md"), "utf8"),
+    /clapper voices install/,
+  );
+  assert.ok(fs.existsSync(path.join(runtimeDir, "skill/references/explainers.md")));
+  await run(["new", speechProject]);
+  fs.writeFileSync(
+    path.join(speechProject, "src/narration.ts"),
+    'import {defineNarration} from "@archastro/clapper-core/narration/models"; export default defineNarration({title:"Installed narration",narrators:{host:{voice:"af_heart"}},cues:[{id:"hello",narrator:"host",at:0,duration:8,text:"One voice stays consistent across every scene."}]});',
+  );
+  fs.writeFileSync(
+    path.join(speechProject, "src/index.tsx"),
+    'import {Composition,registerRoot} from "@archastro/clapper-core"; import {NarrationAudio} from "@archastro/clapper-core/narration"; import script from "./narration"; function Film(){return <><NarrationAudio script={script}/><div>Local narration</div></>}; registerRoot(()=> <Composition id="spot" component={Film} width={320} height={180} fps={30} durationInFrames={240}/>);',
+  );
+  const speechConfig = JSON.parse(fs.readFileSync(path.join(speechProject, "clapper.json"), "utf8"));
+  speechConfig.narration = "src/narration.ts";
+  fs.writeFileSync(path.join(speechProject, "clapper.json"), JSON.stringify(speechConfig));
+  await run(["narration", "lock", "src/narration.ts"], { cwd: speechProject, customEnv: speechEnv });
+  assert.match(
+    await run(["narration", "render", "src/narration.ts"], {
+      cwd: speechProject,
+      customEnv: speechEnv,
+      expected: 1,
+    }),
+    /runtime missing/,
+  );
+  await run(["voices", "install"], {
+    cwd: speechProject,
+    customEnv: { ...speechEnv, npm_config_offline: "false" },
+  });
+  await run(["render", "--draft", "-o", "out/speech.mp4"], { cwd: speechProject, customEnv: speechEnv });
+  const speechAudio = await run(
+    [
+      "-hide_banner",
+      "-i",
+      path.join(speechProject, "out/speech.mp4"),
+      "-vn",
+      "-af",
+      "astats",
+      "-f",
+      "null",
+      "-",
+    ],
+    { command: path.join(runtimeDir, "bin/ffmpeg") },
+  );
+  assert.match(speechAudio, /Audio: aac/);
+  assert.doesNotMatch(speechAudio, /RMS level dB: -inf/);
   preview = spawn(binary, ["preview", "--port", "0"], {
     cwd: project,
     env,

@@ -72,3 +72,9 @@ Use a unique mono filename if one already exists. For short problem windows, ins
 Historical goals like −16 LUFS, LRA ≥8 LU, side RMS ≥−30 dB or bitrate <8 Mbps were project suggestions, not quality laws. Use the narrative and delivery brief. Never widen a deliberately intimate mono sound or flatten intentional silence merely to hit a number.
 
 `render --loudnorm <number|off>` exists in the current local CLI. Inspect `--help` before using it elsewhere. The `review` command does not forward every render option; when mix/encoding settings matter, render explicitly then pass `--video` to review. Synthesized Tone cue previews are approximations; ScoreAudio plays the actual prepared WAV. Final combined mix gain can still differ, so audition the exported MP4 for the final judgment. If this session cannot hear audio, report **measured only; listening unverified**, and do not issue unconditional audio SHIP.
+
+## Spoken narration
+
+For actual local speech, follow [narration.md](narration.md). Use one locked cast
+across all scenes, then listen to the final narration/music mix for voice continuity,
+pronunciation and intelligibility. Synthesized tone cues are not voice narration.

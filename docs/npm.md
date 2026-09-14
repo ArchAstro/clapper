@@ -20,7 +20,7 @@ cd my-film
 npx @archastro/clapper preview
 ```
 
-Pin the CLI version for reproducible invocations, matching `clapper.json` (for example `npx @archastro/clapper@0.3.1 render`). The npm shim needs Node 20+; it starts the platform-specific native launcher, which manages its own pinned Node 24, browser, ffmpeg, templates and dependencies. npm users and standalone users share one runtime installation, checksum verification and cache implementation. This intentionally does not maintain a separate JavaScript installer or use whatever ffmpeg/Chrome happens to be installed.
+Pin the CLI version for reproducible invocations, matching `clapper.json` (for example `npx @archastro/clapper@0.4.0 render`). The npm shim needs Node 20+; it starts the platform-specific native launcher, which manages its own pinned Node 24, browser, ffmpeg, templates and dependencies. npm users and standalone users share one runtime installation, checksum verification and cache implementation. This intentionally does not maintain a separate JavaScript installer or use whatever ffmpeg/Chrome happens to be installed.
 
 Platform launchers are ordinary optional npm dependencies named `@archastro/clapper-launcher-<os>-<arch>`, selected by npm's `os`/`cpu` fields. Keep optional dependencies enabled. A release supports exactly the platforms it includes; the current locally verified build is macOS Apple Silicon. No postinstall script downloads a runtime: `--help` and `--version` work immediately, and the first real command installs it.
 

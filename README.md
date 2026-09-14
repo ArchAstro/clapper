@@ -17,3 +17,9 @@ Choose your agent when prompted, then start a new session and ask:
 The skill installs Clapper, prepares the runtime, creates the project, and guides visual/audio review. No separate Clapper setup is required.
 
 If you don't have `npx`, ask your agent to install the skill from [skills/clapper](https://github.com/ArchAstro/clapper/tree/main/skills/clapper).
+
+### Voice narration
+
+Optional local speech with multiple locked narrator voices: see [Narration](docs/narration.md).
+Run `clapper voices install` only when needed; model weights and the inference runtime
+are not included in the default install.

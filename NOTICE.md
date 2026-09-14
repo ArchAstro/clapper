@@ -9,3 +9,11 @@ Clapper's original code, documentation and code-generated examples are MIT licen
 5. **Other bundled dependencies:** Node/npm, Chromium/Playwright and JavaScript libraries retain their upstream license files. Runtime builds generate a dependency/license inventory. License identifiers summarize the inventory; the included license texts control.
 
 ArchAstro, ArchDev, Intern and other product names/logos used in examples remain trademarks of their respective owners. The MIT license grants no trademark rights or endorsement. Branded examples are demonstrations; their copy, prices and product claims may be historical or illustrative. No private service or account is needed to build these examples.
+
+## Optional narration downloads
+
+`clapper voices install` separately downloads Kokoro-82M-v1.0-ONNX model assets and
+Kokoro.js (Apache-2.0), plus its pinned dependency runtime. These weights and packages
+are not bundled in Clapper. The voice catalog records the upstream source, immutable
+revision and asset checksums; the optional npm lock records package versions and
+integrity hashes. Installed packages retain their license files.

@@ -10,3 +10,5 @@ out
 !.env.example
 *.pem
 *.key
+
+.clapper-narration/

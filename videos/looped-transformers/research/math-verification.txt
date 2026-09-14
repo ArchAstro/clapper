@@ -1,0 +1,49 @@
+{
+  "y": [
+    5,
+    -2
+  ],
+  "g": [
+    1,
+    -2
+  ],
+  "dW": [
+    [
+      3,
+      1
+    ],
+    [
+      -6,
+      -2
+    ]
+  ],
+  "dx": [
+    3,
+    0
+  ],
+  "initialLoss": 2.5,
+  "updated": [
+    [
+      0.85,
+      1.95
+    ],
+    [
+      -0.7,
+      1.1
+    ]
+  ],
+  "updatedLoss": 0.6249999999999996,
+  "finiteDifferenceMaxError": 4.935998276778264e-10,
+  "recurrentGradient": [
+    [
+      0.0009864057109432198,
+      -0.0016131379846840092
+    ],
+    [
+      -0.0012899300203445382,
+      0.004390597671798783
+    ]
+  ],
+  "recurrentFiniteDifferenceMaxError": 3.845383213241238e-14
+}
+{"scalarOutput":1.5,"scalarLoss":0.125,"scalarGradient":1.4999999999945612,"expectedScalarGradient":1.5}

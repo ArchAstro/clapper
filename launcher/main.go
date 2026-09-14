@@ -32,7 +32,7 @@ func main() {
 func run(args []string) error {
 	if len(args) == 0 || args[0] == "--help" || args[0] == "-h" {
 		fmt.Printf("Clapper %s — React videos, no system Node required\n\n", version)
-		fmt.Println("  clapper new <directory> [--template basic|comic]\n  clapper install              Restore project dependencies\n  clapper add <package...>     Add npm packages (scripts disabled by default)\n  clapper preview              Open the studio\n  clapper render | still | compositions | cues | review\n  clapper doctor               Check the managed toolchain\n  clapper runtime path         Install/locate the pinned runtime\n\nProject commands read clapper.json. Use <command> --help for render options.")
+		fmt.Println("  clapper new <directory> [--template basic|comic]\n  clapper install              Restore project dependencies\n  clapper add <package...>     Add npm packages (scripts disabled by default)\n  clapper preview              Open the studio\n  clapper render | still | compositions | cues | review\n  clapper voices <list|install|audition>  Optional local voices\n  clapper narration <validate|lock|render> <file>\n  clapper doctor               Check the managed toolchain\n  clapper runtime path         Install/locate the pinned runtime\n\nProject commands read clapper.json. Use <command> --help for render options.")
 		return nil
 	}
 	if args[0] == "--version" || args[0] == "version" {

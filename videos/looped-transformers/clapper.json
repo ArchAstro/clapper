@@ -1,0 +1,6 @@
+{
+  "runtime": "0.4.0",
+  "entry": "src/index.tsx",
+  "composition": "looped-transformers",
+  "narration": "src/narration.ts"
+}

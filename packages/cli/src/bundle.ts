@@ -113,6 +113,8 @@ function baseConfig(t: BundleTarget, dir: string): InlineConfig {
         "@archastro/clapper-core/rigs",
         "@archastro/clapper-core/latex",
         "@archastro/clapper-core/music",
+        "@archastro/clapper-core/narration",
+        "@archastro/clapper-core/narration/models",
       ],
     },
     define: { "process.env.NODE_ENV": JSON.stringify(t.mode === "harness" ? "production" : "development") },

@@ -1,6 +1,6 @@
 {
   "name": "@archastro/clapper-core",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "license": "MIT",
   "description": "React runtime for frame-deterministic animated video: timeline, sequences, tweens, springs, camera, audio, LaTeX.",
   "type": "module",
@@ -13,7 +13,9 @@
     "./harness": "./src/harness/index.tsx",
     "./package.json": "./package.json",
     "./rigs": "./src/rigs/index.ts",
-    "./music": "./src/score-audio.tsx"
+    "./music": "./src/score-audio.tsx",
+    "./narration": "./src/narration-audio.tsx",
+    "./narration/models": "./src/narration.ts"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json --noEmit",

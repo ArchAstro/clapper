@@ -10,6 +10,8 @@ import { reviewComposition } from "./review.ts";
 const HELP = `clapper — React → MP4
 
 Usage:
+  clapper voices <list|install|audition>           Optional local speech models
+  clapper narration <validate|lock|render> <file>  Author and prepare locked narration
   clapper score <validate|render|export|import> <file>  Compose and render music
   clapper instruments <list|install|audition>         Explore sampled instruments
   clapper new <directory> [--template basic|comic]  Create an editable project
@@ -53,6 +55,11 @@ Dependency scripts are disabled; pass --allow-scripts explicitly if needed.
 `;
 
 export async function main(argv: string[]) {
+  if (argv[0] === "narration" || argv[0] === "voices") {
+    const { narrationCLI } = await import("./narration-cli.ts");
+    await narrationCLI(argv[0], argv.slice(1));
+    return;
+  }
   if (argv[0] === "score" || argv[0] === "instruments") {
     const { musicCLI } = await import("./music-cli.ts");
     await musicCLI(argv[0], argv.slice(1));
@@ -141,22 +148,29 @@ export async function main(argv: string[]) {
   if (!fs.existsSync(entry)) throw new Error(`Entry not found: ${entry}`);
   const projectDir = findProjectDir(entry);
   const publicDir = path.join(projectDir, "public");
-  if (project?.config.score && ["preview", "render", "still", "review"].includes(command)) {
-    const scoreFile = path.resolve(project.dir, project.config.score);
-    if (!scoreFile.startsWith(project.dir + path.sep)) throw new Error("Score file must be inside project");
-    const { prepareScore } = await import("./music-render.ts");
-    await prepareScore(scoreFile, project.dir);
-  }
+  const prepareAudio = async () => {
+    if (!project) return;
+    for (const kind of ["score", "narration"] as const) {
+      const configured = project.config[kind];
+      if (!configured) continue;
+      const file = fs.realpathSync(path.resolve(project.dir, configured));
+      if (!file.startsWith(fs.realpathSync(project.dir) + path.sep))
+        throw new Error(`${kind} file must be inside project`);
+      if (kind === "score") {
+        const { prepareScore } = await import("./music-render.ts");
+        await prepareScore(file, project.dir);
+      } else {
+        const { prepareNarration } = await import("./narration-render.ts");
+        await prepareNarration(file, project.dir);
+      }
+    }
+  };
+  if (["preview", "render", "still", "review", "cues"].includes(command)) await prepareAudio();
   const props = values.props ? (JSON.parse(values.props) as Record<string, unknown>) : undefined;
 
   switch (command) {
     case "preview": {
-      const beforeReload = project?.config.score
-        ? async () => {
-            const { prepareScore } = await import("./music-render.ts");
-            return prepareScore(path.resolve(project.dir, project.config.score!), project.dir);
-          }
-        : undefined;
+      const beforeReload = project?.config.score || project?.config.narration ? prepareAudio : undefined;
       const { url } = await startStudio(
         { entry, projectDir, mode: "studio" },
         {

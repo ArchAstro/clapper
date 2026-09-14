@@ -1,0 +1,20 @@
+{
+  "intro": 17.5,
+  "whole": 25,
+  "refine": 24,
+  "architecture": 29.5,
+  "axes": 25,
+  "step": 25.5,
+  "attention": 25.5,
+  "transition": 24.5,
+  "return": 26,
+  "halting": 23.5,
+  "train": 27,
+  "unroll": 24.5,
+  "nudge": 22.5,
+  "projection": 21,
+  "matrix": 24.5,
+  "calculus": 24.5,
+  "sum": 27,
+  "end": 26
+}
