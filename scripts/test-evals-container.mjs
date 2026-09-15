@@ -77,7 +77,15 @@ const r = spawnSync(
     "--out",
     path.join(root, "campaign"),
   ],
-  { cwd: repo, encoding: "utf8", maxBuffer: 8 * 1024 * 1024, timeout: 180000 },
+  {
+    cwd: repo,
+    encoding: "utf8",
+    maxBuffer: 8 * 1024 * 1024,
+    timeout: 180000,
+    // The supervisor must work without host media tools. Only the pinned
+    // container may decode generated media; this override is not forwarded.
+    env: { ...process.env, CLAPPER_FFMPEG: path.join(root, "no-host-ffmpeg") },
+  },
 );
 assert.equal(r.status, 0, r.stderr);
 const dir = path.join(root, "campaign/runs/container-smoke-0"),

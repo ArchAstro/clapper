@@ -5,7 +5,6 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { inspectMedia } from "./capture.ts";
 import { loadCandidate, loadSuite, validateSubmission } from "./contracts.ts";
 import { digest, inside, readJSON, record, snapshot, tree, verify, writeJSON } from "./io.ts";
 import { BudgetExceeded, dockerCommand, execute, RunInterrupted } from "./process.ts";
@@ -384,9 +383,11 @@ export async function runCampaign(
               "none",
             );
             run.machine = readJSON(path.join(frozen, "out/evidence/machine.json"));
-            const media = inspectMedia(path.join(frozen, "out/final.mp4"));
-            assert.equal(media.width, c.size[0]);
-            assert.equal(media.height, c.size[1]);
+            // The pinned collector already decoded the export inside the
+            // boundary. Validate its measurements here; the movie hash is
+            // independently checked below without host-side media parsing.
+            assert.equal(run.machine?.width, c.size[0]);
+            assert.equal(run.machine?.height, c.size[1]);
           } else {
             await execute(renderArgs, frozen, path.join(dir, "render.log"), remaining(), [], {
               CLAPPER_FFMPEG: process.env.CLAPPER_FFMPEG ?? "",
