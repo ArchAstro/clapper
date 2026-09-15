@@ -6,12 +6,13 @@ import { buildHarness, removeHarness, serveBuilt } from "../bundle.ts";
 import { resolveFfmpeg } from "../ffmpeg.ts";
 import { probeCompositions } from "../render.ts";
 import { domLint, probeScenes, reviewComposition } from "../review.ts";
-import { record, sha, writeJSON } from "./io.ts";
+import { finite, record, sha, writeJSON } from "./io.ts";
 import type { FilmCase, MachineEvidence } from "./types.ts";
 /** Decode the actual export. Never substitute source metadata for the encoded artifact. */
 export function inspectMedia(video: string) {
+  const ffmpeg = resolveFfmpeg();
   const r = spawnSync(
-    resolveFfmpeg(),
+    ffmpeg,
     [
       "-hide_banner",
       "-i",
@@ -31,9 +32,25 @@ export function inspectMedia(video: string) {
     { encoding: "utf8", maxBuffer: 8 * 1024 * 1024, timeout: 180000 },
   );
   assert.equal(r.status, 0, `Cannot decode movie: ${r.error?.message ?? r.stderr.slice(-1000)}`);
-  const dimensions = /Video:.*?\b(\d{2,5})x(\d{2,5})\b/.exec(r.stderr);
-  assert.ok(dimensions, "Missing encoded video dimensions");
-  const values = [...r.stdout.matchAll(/^out_time_us=(\d+)/gm)].map((m) => Number(m[1]) / 1e6);
+  // Progress can end at the last frame's PTS (1.966667s for a 2s/30fps
+  // movie in FFmpeg 6), rather than its presentation end. Probe the encoded
+  // container for duration; keep the full decode above as an integrity check.
+  const probe = spawnSync(
+    path.join(path.dirname(ffmpeg), path.extname(ffmpeg) === ".exe" ? "ffprobe.exe" : "ffprobe"),
+    ["-v", "error", "-show_entries", "format=duration:stream=codec_type,width,height", "-of", "json", video],
+    { encoding: "utf8", maxBuffer: 8 * 1024 * 1024, timeout: 180000 },
+  );
+  assert.equal(probe.status, 0, `Cannot probe movie: ${probe.error?.message ?? probe.stderr}`);
+  const metadata = JSON.parse(probe.stdout) as {
+    format?: { duration?: string };
+    streams?: { codec_type: string; width?: number; height?: number }[];
+  };
+  const dimensions = metadata.streams?.find((s) => s.codec_type === "video");
+  assert.ok(dimensions, "Missing encoded video stream");
+  finite(dimensions.width, "encoded width", 1);
+  finite(dimensions.height, "encoded height", 1);
+  const durationSeconds = Number(metadata.format?.duration);
+  finite(durationSeconds, "encoded duration", Number.MIN_VALUE);
   const frames = [...r.stdout.matchAll(/^frame=(\d+)/gm)].map((m) => Number(m[1]));
   const audio = /Stream .*Audio:/.test(r.stderr);
   const number = (label: string) => {
@@ -42,10 +59,10 @@ export function inspectMedia(video: string) {
     return Number.isFinite(n) ? n : null;
   };
   return {
-    durationSeconds: values.at(-1) ?? 0,
+    durationSeconds,
     frames: frames.at(-1) ?? 0,
-    width: Number(dimensions[1]),
-    height: Number(dimensions[2]),
+    width: dimensions.width,
+    height: dimensions.height,
     audio: { present: audio, rmsDb: number("RMS level dB"), peakDb: number("Peak level dB") },
   };
 }
