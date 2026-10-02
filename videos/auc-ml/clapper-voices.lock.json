@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "engine": {
+    "model": "kokoro-82m-v1-q8",
+    "revision": "1939ad2a8e416c0acfeecc08a694d14ef25f2231",
+    "runtime": "478f7432db253cbd8e530daca9641885f62e7c529a6a9e1ab528564aee39bc0b",
+    "renderer": 1
+  },
+  "narrators": {
+    "guide": {
+      "voice": "af_heart",
+      "speed": 1,
+      "embedding": "d583ccff3cdca2f7fae535cb998ac07e9fcb90f09737b9a41fa2734ec44a8f0b"
+    }
+  }
+}

@@ -1,0 +1,133 @@
+@import "./fonts/fonts.css";
+* {
+  box-sizing: border-box;
+}
+.film {
+  position: absolute;
+  inset: 0;
+  background: #f4f1e8;
+  color: #193239;
+  overflow: hidden;
+  font-family: "Schibsted Grotesk", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+/* Faint paper grid: a quiet reference surface for every diagram. */
+.film::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(#193239 1px, transparent 1px), linear-gradient(90deg, #193239 1px, transparent 1px);
+  background-size: 48px 48px;
+  opacity: 0.035;
+}
+.stage {
+  width: 1280px;
+  height: 720px;
+  position: absolute;
+  transform: scale(1.5);
+  transform-origin: 0 0;
+}
+.chapter {
+  position: absolute;
+  left: 76px;
+  top: 30px;
+  color: #0b6d60;
+  font:
+    500 15px "Fragment Mono",
+    monospace;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+}
+.title {
+  position: absolute;
+  left: 76px;
+  top: 54px;
+  width: 1130px;
+  margin: 0;
+  line-height: 1.08;
+  font-size: 42px;
+  font-weight: 650;
+  letter-spacing: -1.1px;
+}
+.subtitle {
+  position: absolute;
+  left: 77px;
+  top: 112px;
+  max-width: 1120px;
+  font-size: 22px;
+  line-height: 1.25;
+  color: #3d5156;
+  margin: 0;
+}
+.canvas {
+  position: absolute;
+  top: 168px;
+  left: 0;
+  width: 1280px;
+  height: 490px;
+}
+.caption {
+  position: absolute;
+  left: 76px;
+  right: 76px;
+  top: 432px;
+  padding: 7px 16px;
+  background: #e6ece2;
+  border-left: 4px solid #0b6d60;
+  font-size: 24px;
+  line-height: 1.22;
+}
+.equation .katex-display {
+  margin: 0;
+}
+.equation .katex {
+  font-size: 1em;
+}
+/* Film-wide chapter rail: where we are in the lesson. */
+.rail {
+  position: absolute;
+  left: 76px;
+  right: 76px;
+  bottom: 10px;
+  height: 30px;
+  display: flex;
+  gap: 8px;
+}
+.rail .seg {
+  position: relative;
+  flex: 1;
+  font:
+    500 18px "Fragment Mono",
+    monospace;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: #8a9894;
+  padding-top: 8px;
+}
+.rail .seg::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #d6ddd6;
+}
+.rail .seg .fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 2px;
+  background: #0b6d60;
+}
+.rail .seg.active {
+  color: #0b6d60;
+}
+.serif {
+  font-family: "Instrument Serif", serif;
+  font-weight: 400;
+}
+.mono {
+  font-family: "Fragment Mono", monospace;
+}

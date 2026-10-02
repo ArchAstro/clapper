@@ -1,0 +1,22 @@
+{
+  "name": "auc-ml",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "preview": "clapper preview",
+    "render": "clapper render -c auc-ml --crf 20 -o out/render.mp4 && node finalize.mjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@archastro/clapper-core": "workspace:*",
+    "@archastro/clapper": "workspace:*",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "@archastro/clapper-music": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0"
+  }
+}
