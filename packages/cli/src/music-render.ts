@@ -182,7 +182,8 @@ export async function renderScore(
         const decoded = spawnSync(
           resolveFfmpeg(),
           ["-v", "error", "-i", stem, "-f", "f32le", "-ar", "48000", "-ac", "2", "pipe:1"],
-          { maxBuffer: 256 * 1024 * 1024 },
+          // f32 stereo at 48 kHz, plus headroom: long scores exceed a fixed cap.
+          { maxBuffer: Math.max(256 * 1024 * 1024, Math.ceil((compiled.durationSeconds + 2) * 48000 * 8)) },
         );
         if (decoded.status !== 0) throw new Error(`Cannot decode ${t.id} for room processing`);
         const n = decoded.stdout.length / 8,

@@ -1,0 +1,7 @@
+{
+  "runtime": "0.4.0",
+  "entry": "src/index.tsx",
+  "composition": "auc-ml",
+  "narration": "src/narration.ts",
+  "score": "src/score.ts"
+}
