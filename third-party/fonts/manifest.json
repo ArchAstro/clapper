@@ -66,6 +66,18 @@
         {
           "file": "videos/intern-promo/src/fonts/4iCr6K5wfMRRjxp0DA6-2CLnB4NHhqcL71Q.woff2",
           "sha256": "4f4dc27f4a770c0d02fde800daa836c8adc0d1e423b28da74baaf0d1cc3ab96c"
+        },
+        {
+          "file": "videos/auc-ml/src/fonts/4iCr6K5wfMRRjxp0DA6-2CLnB41HhqcL71QxtQ.woff2",
+          "sha256": "e3085219252209a8d4128f90ff6d793315c752f73a979082d1d85d9cb46f63a4"
+        },
+        {
+          "file": "videos/auc-ml/src/fonts/4iCr6K5wfMRRjxp0DA6-2CLnB45HhqcL71QxtQ.woff2",
+          "sha256": "ed108107e74221cc5e163f12c6b35ba3e75e7615283828d6862c7a0784e1b0c9"
+        },
+        {
+          "file": "videos/auc-ml/src/fonts/4iCr6K5wfMRRjxp0DA6-2CLnB4NHhqcL71Q.woff2",
+          "sha256": "4f4dc27f4a770c0d02fde800daa836c8adc0d1e423b28da74baaf0d1cc3ab96c"
         }
       ]
     },
@@ -90,6 +102,22 @@
         {
           "file": "videos/intern-promo/src/fonts/jizBRFtNs2ka5fXjeivQ4LroWlx-6zUTjnTLgNs.woff2",
           "sha256": "60c06664b5a95c7de6cc3e00d1f9034d78bd1e40b564016b241674449a067d4d"
+        },
+        {
+          "file": "videos/auc-ml/src/fonts/jizBRFtNs2ka5fXjeivQ4LroWlx-6zUTjnTLgNs.woff2",
+          "sha256": "60c06664b5a95c7de6cc3e00d1f9034d78bd1e40b564016b241674449a067d4d"
+        },
+        {
+          "file": "videos/auc-ml/src/fonts/jizBRFtNs2ka5fXjeivQ4LroWlx-6zsTjnTLgNuZ5w.woff2",
+          "sha256": "a8c4bd7cd7073180e740d2d83a616b5cb0845579b73207eeafeae8532e70c901"
+        },
+        {
+          "file": "videos/auc-ml/src/fonts/jizHRFtNs2ka5fXjeivQ4LroWlx-6zAjgn7Motmp5r61.woff2",
+          "sha256": "a04fc7ed18a8037149ce0bfda58076709d8e0840e136ed00abbdc196b7992443"
+        },
+        {
+          "file": "videos/auc-ml/src/fonts/jizHRFtNs2ka5fXjeivQ4LroWlx-6zAjjH7Motmp5g.woff2",
+          "sha256": "6ee678c33f388dd7ba59700ebea635deb98821baafd817b09891f7927177f702"
         }
       ]
     },
@@ -106,6 +134,14 @@
         {
           "file": "videos/intern-promo/src/fonts/Jqz55SSPQuCQF3t8uOwiUL-taUTtap9GayojdSFO.woff2",
           "sha256": "e3b56e90510a84ac0ed465b822e112983eaf58e37436bf769681c31f77b1f3a7"
+        },
+        {
+          "file": "videos/auc-ml/src/fonts/Jqz55SSPQuCQF3t8uOwiUL-taUTtap9GayojdSFO.woff2",
+          "sha256": "e3b56e90510a84ac0ed465b822e112983eaf58e37436bf769681c31f77b1f3a7"
+        },
+        {
+          "file": "videos/auc-ml/src/fonts/Jqz55SSPQuCQF3t8uOwiUL-taUTtap9IayojdSFOd1I.woff2",
+          "sha256": "f5df746dbc2eccec6d22fdaaa2d253cd6915a30ce9f6ba86138bb6151c7254db"
         }
       ]
     },
