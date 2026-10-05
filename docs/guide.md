@@ -38,8 +38,8 @@ videos/<name>/src/index.tsx            packages/cli (Node)                      
    an inspector with cue preview, and a scratch panel that compiles TSX in the browser.
 4. **The review loop** — `clapper review` writes the kit and a brief with a reviewer prompt; the lint catches blank or flat
    frames after cuts, copy collisions, copy outside the safe area, and non-determinism in sources.
-5. **Reference projects** — `videos/showcase` (six agency-style spots incl. the ArchDev character films), `videos/intern-promo`,
-   `videos/archdev-site` (product pages), and `videos/_template` to start from.
+5. **Reference projects** — `videos/showcase` (three agency-style spots), `videos/intern-promo`,
+   and `videos/_template` to start from.
 
 ## Install
 
@@ -108,10 +108,9 @@ frame-referenced fixes, re-render, repeat. Two or three rounds is typical for sh
 | `packages/core` | `@archastro/clapper-core`: runtime, audio DSL, sketch primitives, `@archastro/clapper-core/rigs` (Person, Scribble), `/latex`, `/player` (studio), `/harness`. |
 | `packages/cli` | `@archastro/clapper`: the `clapper` command, renderer, offline synth and mixer, review kit and lint, doctor. `test/` has the unit tests, `review-check.mjs` (lint fixture), `studio-check.mjs`, `dom-probe.mjs`. |
 | `videos/_template` | Starter project: scenes, score, data, theme, scripts, a 9:16 variant. |
-| `videos/showcase` | Ledger, Orbit, Nimbus (agency spots), ArchDev v1/v2 (character film with a continuous score), ArchDev v3 (rage-comic cut). `README.md` has the review scores per round. |
+| `videos/showcase` | Ledger, Orbit, Nimbus (agency spots). `README.md` has the review scores per round. |
 | `videos/intern-promo` | The tryintern.dev promo (57 s). |
-| `videos/archdev-site` | ArchDev product-page compositions (hero, plans, prs). |
-| `docs/` | `friction-log.md` (what hurt and what was built for it), `archdev-audio-audit.md` (measured before/after of the audio engine). |
+| `docs/` | `friction-log.md` (what hurt and what was built for it). |
 | `CLAUDE.md` | The working rules for agents in this repo. |
 
 ## The model
@@ -165,7 +164,7 @@ frame-referenced fixes, re-render, repeat. Two or three rounds is typical for sh
    `<Bubble x y kind="speech"|"thought" tail at exitAt>` pops a bubble from its tail tip. `evalPose()` is the pure blend behind `usePose()`.
    Two characters ship in `@archastro/clapper-core/rigs`: `<Person pose>` (the monoline developer, with `PERSON_POSES`, `usePersonPose`,
    `<Archie>` and `<Desk>`) and `<Scribble pose typing fury>` (the rage-comic developer, `SCRIBBLE_POSES`, `useScribblePose`).
-   Both are pure functions of a pose record, the frame and, for Scribble, the boil seed; ArchDev v1–v3 use them as-is.
+   Both are pure functions of a pose record, the frame and, for Scribble, the boil seed.
 7. **Media & readiness.** `<Img/>`, `<Video/>` (currentTime driven by the frame; its soundtrack is mixed into the render unless
    `audio={false}`, with `volume`/`fadeIn`/`fadeOut`), `useFont()`, and `delayRender()/continueRender()`
    for anything async: the harness waits for all handles, fonts and images before capturing a frame.
@@ -178,7 +177,6 @@ frame-referenced fixes, re-render, repeat. Two or three rounds is typical for sh
    overshoot), `<SketchWindow title lines>` (a sketched window with scribbled text), `<SketchThought>`, `<PaperScroll foldAt>`
    (unrolls and folds over an edge), `<SketchStamp>` and `<PencilScratch at>` (the sound of drawing). They read `--ink`,
    `--paper`, `--red`, `--hand`, `--marker` from your theme with sensible fallbacks; the fonts themselves are yours to ship.
-   `videos/showcase/src/archdev3` is the reference rage-comic film built on them.
 10. **Formats.** `<Composition id="spot" formats={{ "9:16": { width: 1080, height: 1920 } }}>` also registers `spot@9:16` with the same
    component and scene map. Inside, `useFormat()` gives `{ name, width, height, aspect, portrait, square, pick({ "9:16": 48, default: 64 }) }`
    for restaging; render with `-c spot@9:16`.

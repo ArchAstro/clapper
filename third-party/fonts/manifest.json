@@ -8,10 +8,6 @@
       "source": "https://raw.githubusercontent.com/google/fonts/8e44913e4ff26fc997e6856c1ec40ff4791c98c5/ofl/patrickhand/OFL.txt",
       "files": [
         {
-          "file": "videos/archdev-site/src/fonts/LDI1apSQOAYtSuYWp8ZhfYe8XsLLubg58w.woff2",
-          "sha256": "42156e008dd5fc3000679ff4e9ba9cbd3f417b6317c6dcbe11a12e9c87a09b28"
-        },
-        {
           "file": "videos/showcase/src/fonts/LDI1apSQOAYtSuYWp8ZhfYe8XsLLubg58w.woff2",
           "sha256": "42156e008dd5fc3000679ff4e9ba9cbd3f417b6317c6dcbe11a12e9c87a09b28"
         }
@@ -24,10 +20,6 @@
       "source": "https://raw.githubusercontent.com/google/fonts/8e44913e4ff26fc997e6856c1ec40ff4791c98c5/ofl/gochihand/OFL.txt",
       "files": [
         {
-          "file": "videos/archdev-site/src/fonts/hES06XlsOjtJsgCkx1Pkfon_-18kTWE.woff2",
-          "sha256": "65da857e1941e9856da139e5b4c955cdd49492819565df6ac6e80866bbf92773"
-        },
-        {
           "file": "videos/showcase/src/fonts/hES06XlsOjtJsgCkx1Pkfon_-18kTWE.woff2",
           "sha256": "65da857e1941e9856da139e5b4c955cdd49492819565df6ac6e80866bbf92773"
         }
@@ -39,10 +31,6 @@
       "licenseFile": "third-party/fonts/caveat/OFL.txt",
       "source": "https://raw.githubusercontent.com/google/fonts/8e44913e4ff26fc997e6856c1ec40ff4791c98c5/ofl/caveat/OFL.txt",
       "files": [
-        {
-          "file": "videos/archdev-site/src/fonts/Wnz6HAc5bAfYB2Q7ZjYYiAzcPA.woff2",
-          "sha256": "7a0049db01fdd8fc7af7ef36675862a72a5c76d0cb45ae63c9f5b6f1b769dac7"
-        },
         {
           "file": "videos/showcase/src/fonts/Wnz6HAc5bAfYB2Q7ZjYYiAzcPA.woff2",
           "sha256": "7a0049db01fdd8fc7af7ef36675862a72a5c76d0cb45ae63c9f5b6f1b769dac7"

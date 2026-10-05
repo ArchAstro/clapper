@@ -7,7 +7,7 @@ import { chromium } from "playwright";
 const here = path.dirname(fileURLToPath(import.meta.url));
 const out = process.env.STUDIO_SHOTS ?? path.join(here, "..", "..", "..", "out", "studio");
 await import("node:fs").then((fs) => fs.mkdirSync(out, { recursive: true }));
-const id = process.argv[2] ?? "archdev3";
+const id = process.argv[2] ?? "nimbus";
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1680, height: 1000 } });
 const errors = [];

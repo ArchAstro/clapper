@@ -35,12 +35,10 @@ For the rest of this skill, `clapper` means the exact command prefix resolved du
 | Editorial type and counters | `videos/showcase/src/ledger/` |
 | Playful springs and spatial movement | `videos/showcase/src/orbit/` |
 | Terminal, graphs, camera and grain | `videos/showcase/src/nimbus/` |
-| Character acting and continuous score | `videos/showcase/src/archdev/archdev2.tsx` |
-| Boiling-ink comic and reusable rig | `videos/showcase/src/archdev3/`, `@archastro/clapper-core/rigs` |
-| New opening/ending around approved scenes | `videos/showcase/src/archdev4/archdev4.tsx` |
+| Boiling-ink comic and reusable rig | `@archastro/clapper-core/rigs` |
 | Sampled original score, beat-driven choreography, Music inspector | `videos/cat-ballet/src/score.ts`, `src/index.tsx`, `clapper.json` |
 
-The table names repository examples, not files guaranteed to exist beside an installed skill. Prefer the installed runtime's templates and core/music exports; fetch only a relevant example from the matching official release tag if needed. Missing checkout examples must not block a new film. Use the existing primitive before inventing a replacement. Later local examples such as `archdev5` may contain useful new instruments; check exports and tests before relying on them. They are not automatically reviewed or shipped because their source exists.
+The table names repository examples, not files guaranteed to exist beside an installed skill. Prefer the installed runtime's templates and core/music exports; fetch only a relevant example from the matching official release tag if needed. Missing checkout examples must not block a new film. Use the existing primitive before inventing a replacement. Later local-only examples may contain useful new instruments; check exports and tests before relying on them. They are not automatically reviewed or shipped because their source exists.
 
 ## 2. Get to a working frame
 

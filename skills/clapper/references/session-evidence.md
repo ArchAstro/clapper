@@ -5,7 +5,7 @@ This skill was distilled from Clapper's development and review iterations, check
 ## Primary records
 
 1. `docs/friction-log.md`: original framework development, showcase critique/fix rounds and the move to scene plans.
-2. `videos/showcase/README.md` and `videos/showcase/docs/archdev-audio-audit.md`: review outcomes, measured audio changes and the v4 recut.
+2. `videos/showcase/README.md` and, in Git history, `videos/showcase/docs/archdev-audio-audit.md`: review outcomes, measured audio changes and the v4 recut.
 3. Example source and CLI/runtime implementations provide executable corroboration; dates below identify development iterations, not external sessions required to use this skill.
 
 ## Findings retained

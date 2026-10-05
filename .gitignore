@@ -12,3 +12,13 @@ out
 *.key
 
 .clapper-narration/
+
+# Local-only videos and files: kept on disk, never committed.
+# Park anything private under videos/local/ or name it *.local.*
+videos/local/
+*.local.*
+videos/archdev-site/
+videos/lofi-clapper/
+videos/showcase/src/archdev*/
+videos/showcase/docs/archdev-*
+videos/showcase/public/archdev-*
